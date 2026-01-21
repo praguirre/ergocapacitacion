@@ -1,3 +1,5 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+def health(_request):
+    """Endpoint simple para verificar que el servidor responde."""
+    return HttpResponse("OK")
