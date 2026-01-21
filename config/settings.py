@@ -77,6 +77,12 @@ DATABASES = {
 # CRÍTICO (antes del primer migrate)
 AUTH_USER_MODEL = "accounts.TraineeUser"
 
+# Agregá esto para habilitar el login con CUIL y Email
+AUTHENTICATION_BACKENDS = [
+    "apps.accounts.backends.CuilEmailBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 # Password validators (los defaults; no molestan en commit 1)
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

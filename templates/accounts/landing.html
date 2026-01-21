@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="alert alert-info bg-black text-info border-info mb-4">
+  <p class="mb-0">
+    <strong>¡Bienvenido!</strong> Si es la primera vez que ingresás, debés completá el formulario de <strong>Registro</strong>. 
+    Si ya tenés una cuenta, ingresá por el <strong>Login</strong> completando tu CUIL y Email.
+  </p>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card bg-black text-light border-secondary">
+      <div class="card-header border-secondary">Registro</div>
+      <div class="card-body">
+        <form method="post" action="{% url 'register_post' %}">
+          {% csrf_token %}
+          {% bootstrap_form register_form %}
+          <button class="btn btn-success w-100">Continuar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card bg-black text-light border-secondary">
+      <div class="card-header border-secondary">Login</div>
+      <div class="card-body">
+        <form method="post" action="{% url 'login_post' %}">
+          {% csrf_token %}
+          {% bootstrap_form login_form %}
+          <button class="btn btn-primary w-100">Ingresar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

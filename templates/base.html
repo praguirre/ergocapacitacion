@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}ErgoCapacitación{% endblock %}</title>
+
+  {% load static %}
+  {% load django_bootstrap5 %}
+  {% bootstrap_css %}
+
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-dark text-light">
+  <nav class="navbar navbar-dark bg-black border-bottom border-secondary">
+    <div class="container">
+      <span class="navbar-brand">ErgoCapacitación</span>
+      {% if request.user.is_authenticated %}
+        <form method="post" action="{% url 'logout_post' %}">
+          {% csrf_token %}
+          <button class="btn btn-outline-light btn-sm">Salir</button>
+        </form>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    {% include "includes/messages.html" %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% bootstrap_javascript %}
+</body>
+</html>

@@ -1,5 +1,110 @@
+# apps/accounts/views.py
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.views.decorators.http import require_GET, require_POST
 
+from .forms import RegisterForm, LoginForm
+
+User = get_user_model()
+
+PENDING_KEY = "pending_register_data"
+
+def _post_login_redirect():
+    # Commit 3: cambiar a training_home
+    return reverse("landing")
+
+@require_GET
 def health(_request):
-    """Endpoint simple para verificar que el servidor responde."""
+    """Mantenemos el endpoint de salud pero ahora con restricción GET."""
     return HttpResponse("OK")
+
+@require_GET
+def landing(request):
+    ctx = {
+        "register_form": RegisterForm(),
+        "login_form": LoginForm(),
+    }
+    return render(request, "accounts/landing.html", ctx)
+
+@require_POST
+def register_post(request):
+    form = RegisterForm(request.POST)
+    if not form.is_valid():
+        return render(request, "accounts/landing.html", {
+            "register_form": form,
+            "login_form": LoginForm(),
+        })
+
+    data = form.cleaned_data
+
+    # Validación de duplicados
+    if User.objects.filter(cuil=data["cuil"]).exists() or User.objects.filter(email__iexact=data["email"]).exists():
+        messages.warning(request, "Ese CUIL o email ya está registrado. Ingresá desde Login.")
+        return redirect("landing")
+
+    request.session[PENDING_KEY] = data
+    request.session.modified = True
+    return redirect("confirm")
+
+@require_GET
+def confirm_get(request):
+    data = request.session.get(PENDING_KEY)
+    if not data:
+        messages.info(request, "No hay datos para confirmar. Completá el registro.")
+        return redirect("landing")
+    return render(request, "accounts/confirm.html", {"data": data})
+
+@require_POST
+def confirm_post(request):
+    data = request.session.get(PENDING_KEY)
+    if not data:
+        messages.info(request, "No hay datos para confirmar. Completá el registro.")
+        return redirect("landing")
+
+    # Crear usuario usando el Manager custom
+    user = User.objects.create_user(
+        cuil=data["cuil"],
+        email=data["email"],
+        full_name=data["full_name"],
+        job_title=data["job_title"],
+        company_name=data["company_name"],
+    )
+
+    # Login (sin password, usando nuestro Backend custom)
+    login(request, user, backend="apps.accounts.backends.CuilEmailBackend")
+
+    # Limpieza de sesión
+    request.session.pop(PENDING_KEY, None)
+
+    messages.success(request, "Registro confirmado. ¡Bienvenido!")
+    return redirect(_post_login_redirect())
+
+@require_POST
+def login_post(request):
+    form = LoginForm(request.POST)
+    if not form.is_valid():
+        return render(request, "accounts/landing.html", {
+            "register_form": RegisterForm(),
+            "login_form": form,
+        })
+
+    cuil = form.cleaned_data["cuil"]
+    email = form.cleaned_data["email"]
+    user = authenticate(request, cuil=cuil, email=email)
+
+    if user is None:
+        messages.error(request, "CUIL o email incorrectos, o usuario no registrado.")
+        return redirect("landing")
+
+    login(request, user)
+    messages.success(request, "Ingreso exitoso.")
+    return redirect(_post_login_redirect())
+
+@require_POST
+def logout_post(request):
+    logout(request)
+    messages.info(request, "Sesión cerrada.")
+    return redirect("landing")
