@@ -13,8 +13,11 @@ User = get_user_model()
 PENDING_KEY = "pending_register_data"
 
 def _post_login_redirect():
-    # Commit 3: cambiar a training_home
-    return reverse("landing")
+    """
+    Determina a dónde enviar al usuario tras un registro o login exitoso.
+    Actualizado en Commit 3 para redirigir a la capacitación.
+    """
+    return reverse("training_home")
 
 @require_GET
 def health(_request):

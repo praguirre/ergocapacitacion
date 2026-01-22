@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+{% if not module %}
+  <div class="alert alert-warning">No hay módulo activo. Cargalo desde Admin.</div>
+{% else %}
+  <div class="mb-3">
+    <h1 class="h3">{{ module.title }}</h1>
+    <p class="text-secondary">Seguí los pasos, mirá el video y luego completá el examen.</p>
+  </div>
+
+  <div class="card bg-black text-light border-secondary mb-4">
+    <div class="card-body">
+      <div class="ratio ratio-16x9">
+        <iframe
+          src="https://www.youtube.com/embed/{{ module.youtube_id }}"
+          title="Capacitación"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+      </div>
+      <div class="mt-2">
+        <a class="btn btn-outline-light btn-sm" target="_blank" rel="noopener"
+           href="https://www.youtube.com/watch?v={{ module.youtube_id }}">
+          Abrir en YouTube
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card bg-black text-light border-secondary">
+        <div class="card-header">Ergobot</div>
+        <div class="card-body text-secondary">Se habilita en Commit 4 (AI Integration).</div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card bg-black text-light border-secondary">
+        <div class="card-header">Examen</div>
+        <div class="card-body text-secondary">Se habilita en Commit 5 (Quiz System).</div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
