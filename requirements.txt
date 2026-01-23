@@ -5,4 +5,5 @@ django-bootstrap5>=25.1
 whitenoise>=6.7
 reportlab>=4.0
 openai>=1.0
-agents
+openai-agents>=0.0.19
+uvicorn>=0.30.0

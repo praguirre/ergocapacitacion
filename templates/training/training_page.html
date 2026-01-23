@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
 {% if not module %}
   <div class="alert alert-warning">No hay módulo activo. Cargalo desde Admin.</div>
@@ -29,18 +31,74 @@
 
   <div class="row g-3">
     <div class="col-md-6">
-      <div class="card bg-black text-light border-secondary">
-        <div class="card-header">Ergobot</div>
-        <div class="card-body text-secondary">Se habilita en Commit 4 (AI Integration).</div>
-      </div>
+        <div class="card bg-black text-light border-secondary">
+            <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+                <span>Ergobot AI</span>
+                <span class="badge bg-success">En línea</span>
+            </div>
+            <div class="card-body">
+                <div id="chatLog" class="small p-2 bg-dark rounded" 
+                     style="height:300px; overflow-y:auto; white-space:pre-wrap; border: 1px solid #333;"></div>
+                
+                <div class="input-group mt-2">
+                    <input id="chatInput" class="form-control bg-dark text-light border-secondary" 
+                           placeholder="Consultá sobre el video o material...">
+                    <button id="chatSend" class="btn btn-primary">Enviar</button>
+                </div>
+            </div>
+        </div>
     </div>
+    
     <div class="col-md-6">
-      <div class="card bg-black text-light border-secondary">
-        <div class="card-header">Examen</div>
-        <div class="card-body text-secondary">Se habilita en Commit 5 (Quiz System).</div>
-      </div>
+        <div class="card bg-black text-light border-secondary">
+            <div class="card-header border-secondary">Examen</div>
+            <div class="card-body text-secondary">Se habilita en Commit 5 (Quiz System).</div>
+        </div>
     </div>
   </div>
+
+  <script src="{% static 'js/ergobot_chat.js' %}"></script>
+  <script>
+    const moduleSlug = "{{ module.slug }}";
+    const log = document.getElementById("chatLog");
+    const input = document.getElementById("chatInput");
+    const btn = document.getElementById("chatSend");
+
+    async function handleSend() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      // Deshabilitar UI mientras responde
+      input.value = "";
+      input.disabled = true;
+      btn.disabled = true;
+
+      // Agregar mensaje del usuario al log
+      log.innerHTML += `<div class="mt-2"><strong>👤 Usuario:</strong><br>${text}</div>`;
+      log.innerHTML += `<div class="mt-2"><strong>🤖 Ergobot:</strong><br><span id="currentDelta"></span></div>`;
+      
+      const deltaSpan = document.getElementById("currentDelta");
+      log.scrollTop = log.scrollHeight;
+
+      try {
+          await sendErgobotMessage(moduleSlug, text, (delta) => {
+              deltaSpan.textContent += delta;
+              log.scrollTop = log.scrollHeight;
+          });
+          // Una vez terminado, le quitamos el ID para el próximo mensaje
+          deltaSpan.removeAttribute("id");
+      } catch (err) {
+          log.innerHTML += `<div class="text-danger mt-1">Error: No se pudo conectar con el bot.</div>`;
+      } finally {
+          input.disabled = false;
+          btn.disabled = false;
+          input.focus();
+      }
+    }
+
+    btn.onclick = handleSend;
+    input.onkeypress = (e) => { if(e.key === 'Enter') handleSend(); };
+  </script>
 {% endif %}
 {% endblock %}
 

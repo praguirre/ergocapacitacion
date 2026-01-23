@@ -11,4 +11,7 @@ urlpatterns = [
     
     # NUEVA: Prefijo para toda la sección de capacitación
     path("capacitacion/", include("apps.training.urls")),
+    
+    # NUEVA: Prefijo para la API del chatbot
+    path("ai/", include("apps.ergobot_ai.urls")),
 ]

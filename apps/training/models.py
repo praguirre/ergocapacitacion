@@ -1,3 +1,5 @@
+# apps/training/models.py
+
 from django.db import models
 
 class TrainingModule(models.Model):
