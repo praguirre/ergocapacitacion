@@ -14,4 +14,7 @@ urlpatterns = [
     
     # NUEVA: Prefijo para la API del chatbot
     path("ai/", include("apps.ergobot_ai.urls")),
+    
+    # ✅ NUEVO: Rutas del Quiz (Commit 5)
+    path("quiz/", include("apps.quiz.urls")),
 ]
