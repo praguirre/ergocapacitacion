@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-
 {% block content %}
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -11,7 +10,6 @@
           <h4 class="mb-0">Resultado del Examen</h4>
           <small class="text-muted">{{ module.title }}</small>
         </div>
-
         <div class="card-body text-center p-4">
           {% if attempt.passed %}
             <div class="display-1 text-success mb-3"><i class="bi bi-check-circle-fill"></i></div>
@@ -30,9 +28,7 @@
             </div>
             <p class="mt-3">Revisá los conceptos en el chat con Ergobot antes de volver a intentar.</p>
           {% endif %}
-
           <hr class="border-secondary my-4">
-
           <div class="row text-secondary small mb-4">
             <div class="col-6 border-end border-secondary">
               <div>Intentos usados hoy</div>
@@ -43,25 +39,28 @@
               <strong class="text-light fs-5">{{ attempts_left }}</strong>
             </div>
           </div>
-
           {% if state.lockout_until %}
             <div class="alert alert-warning d-flex align-items-center justify-content-center">
               <i class="bi bi-clock-history me-2"></i>
               Bloqueado hasta: {{ state.lockout_until|date:"d/m/Y H:i" }}
             </div>
           {% endif %}
-
           {% if state.retake_available_at and not state.lockout_until %}
              <div class="alert alert-info small">
               Próximo examen disponible: {{ state.retake_available_at|date:"d/m/Y H:i" }}
             </div>
           {% endif %}
-
           <div class="d-grid gap-2 mt-3">
             <a class="btn btn-outline-light" href="{% url 'training_home' %}">
               <i class="bi bi-arrow-left me-2"></i>Volver a la capacitación
             </a>
 
+            {% comment %}
+            ============================================================
+            BOTÓN "INTENTAR NUEVAMENTE" - TEMPORALMENTE DESACTIVADO
+            ============================================================
+            
+            CÓDIGO ELIMINADO (PARA REFERENCIA):
             {% if not locked_now %}
               <form action="{% url 'quiz_retake' module.slug %}" method="POST" class="d-grid">
                 {% csrf_token %}
@@ -74,11 +73,30 @@
                 <i class="bi bi-lock-fill me-2"></i>Examen bloqueado temporalmente
               </button>
             {% endif %}
-          </div>
 
+            Razón: El endpoint /quiz/<slug>/retake/ devuelve JSON crudo
+            en lugar de redirigir correctamente al examen.
+            
+            Solución temporal: El usuario puede usar "Volver a la 
+            capacitación" que cumple la misma función de reiniciar.
+            
+            TODO: En futuros commits, implementar la vista retake() 
+            para que redirija a la capacitación o inicie un nuevo 
+            intento automáticamente.
+            
+            Fecha de desactivación: Enero 2026 (Commit 5 - Bugfix)
+            ============================================================
+            {% endcomment %}
+            
+            
+            {% if locked_now %}
+              <button class="btn btn-secondary" disabled>
+                <i class="bi bi-lock-fill me-2"></i>Examen bloqueado temporalmente
+              </button>
+            {% endif %}
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
