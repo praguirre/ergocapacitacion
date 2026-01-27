@@ -180,7 +180,7 @@ def result_page(request, module_slug, attempt_id: int):
 def retake(request, module_slug):
     """
     Permite reiniciar el examen si las reglas lo permiten.
-    Resetea contadores si ya pasó el tiempo de bloqueo.
+    Delega el reset de contadores a reset_if_unlocked() via is_locked().
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
 
@@ -189,6 +189,8 @@ def retake(request, module_slug):
         if not state:
             state = ensure_state(request.user, module)
 
+        # is_locked() internamente llama a reset_if_unlocked() 
+        # Si el tiempo expiró, los contadores ya se resetearon automáticamente
         if is_locked(state):
             return JsonResponse({
                 "locked": True,
@@ -196,13 +198,8 @@ def retake(request, module_slug):
                 "retake_available_at": state.retake_available_at,
             }, status=403)
 
-        # Si estaba bloqueado pero ya pasó el tiempo, reseteamos para permitir nuevo intento
-        state.attempts_used = 0
-        state.lockout_until = None
-        state.retake_available_at = None
-        state.last_passed = None
-        state.save(update_fields=["attempts_used", "lockout_until", "retake_available_at", "last_passed"])
-
+        # Si llegamos aquí, el usuario está desbloqueado y puede rendir
+        # No hacemos reset manual - reset_if_unlocked() ya lo hizo si era necesario
         attempt = QuizAttempt.objects.create(user=request.user, module=module)
 
     return JsonResponse({

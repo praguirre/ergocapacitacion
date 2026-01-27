@@ -12,7 +12,7 @@ LOCK_HOURS = 24
 
 def reset_if_unlocked(state: QuizState) -> None:
     """
-    Si venció el lockout, resetea la ventana de intentos.
+    Si venció el lockout, resetea la ventana de intentos COMPLETA.
     Si pasó el tiempo de retake tras aprobar, libera el retake.
     """
     now = timezone.now()
@@ -22,12 +22,14 @@ def reset_if_unlocked(state: QuizState) -> None:
     if state.lockout_until and now >= state.lockout_until:
         state.lockout_until = None
         state.attempts_used = 0
+        state.retake_available_at = None  # <-- AGREGADO: Reset completo = ventana nueva
         changed = True
 
     # 2. Verificar si el tiempo de espera tras aprobar (cool-off) ya expiró
-    # Si había retake tras aprobar, cuando llega el tiempo lo liberamos
-    if state.last_passed and state.retake_available_at and now >= state.retake_available_at:
+    # Solo aplica si NO estaba en lockout (para no resetear dos veces)
+    elif state.last_passed and state.retake_available_at and now >= state.retake_available_at:
         state.retake_available_at = None
+        state.attempts_used = 0  # <-- AGREGADO: Nueva ventana de intentos
         changed = True
 
     if changed:
