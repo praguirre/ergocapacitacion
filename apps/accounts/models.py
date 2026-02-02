@@ -1,4 +1,7 @@
 # apps/accounts/models.py
+# ============================================================================
+# COMMIT 8: Agregados campos employer_email y safety_responsible_email
+# ============================================================================
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.utils import timezone
@@ -36,6 +39,23 @@ class TraineeUser(AbstractBaseUser, PermissionsMixin):
     full_name = models.CharField(max_length=200, blank=True, default="")
     job_title = models.CharField(max_length=200, blank=True, default="")
     company_name = models.CharField(max_length=200, blank=True, default="")
+    
+    # =========================================================================
+    # ✅ COMMIT 8: Nuevos campos de email para notificaciones de certificados
+    # =========================================================================
+    employer_email = models.EmailField(
+        blank=True, 
+        default="",
+        verbose_name="Email del empleador",
+        help_text="Email del empleador para recibir copia del certificado"
+    )
+    safety_responsible_email = models.EmailField(
+        blank=True, 
+        default="",
+        verbose_name="Email del responsable de Seguridad/Higiene/Ergonomía",
+        help_text="Email del responsable de Seg. e Higiene, Salud o Ergonomía"
+    )
+    # =========================================================================
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -48,3 +68,4 @@ class TraineeUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.full_name or self.email} ({self.cuil})"
+    

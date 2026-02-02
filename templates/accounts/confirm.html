@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{# ========================================================================= #}
+{# COMMIT 8: Agregados campos employer_email y safety_responsible_email     #}
+{# ========================================================================= #}
 
 {% block content %}
 <div class="card bg-black text-light border-secondary">
@@ -10,6 +13,16 @@
       <li><strong>Email:</strong> {{ data.email }}</li>
       <li><strong>Puesto:</strong> {{ data.job_title }}</li>
       <li><strong>Empresa:</strong> {{ data.company_name }}</li>
+      {# ================================================================= #}
+      {# ✅ COMMIT 8: Mostrar los nuevos campos de email                   #}
+      {# ================================================================= #}
+      {% if data.employer_email %}
+        <li><strong>Email del empleador:</strong> {{ data.employer_email }}</li>
+      {% endif %}
+      {% if data.safety_responsible_email %}
+        <li><strong>Email resp. Seg. e Higiene:</strong> {{ data.safety_responsible_email }}</li>
+      {% endif %}
+      {# ================================================================= #}
     </ul>
 
     <div class="d-flex gap-2">

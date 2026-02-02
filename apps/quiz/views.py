@@ -1,4 +1,7 @@
 # apps/quiz/views.py
+# ============================================================================
+# COMMIT 8: Modificado para enviar certificados a empleador y responsable SySO
+# ============================================================================
 
 import json
 import logging
@@ -119,6 +122,7 @@ def submit(request, module_slug):
     Finaliza el examen. Calcula score y aplica reglas (bloqueo/aprobación).
     
     ✅ COMMIT 7: Si aprueba, genera certificado PDF y envía por email.
+    ✅ COMMIT 8: Envía también al empleador y responsable de Seg. e Higiene.
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
     data = _json_body(request)
@@ -177,7 +181,7 @@ def submit(request, module_slug):
         passed = apply_submit_rules(state, score)
 
     # =====================================================
-    # ✅ COMMIT 7: Generación de Certificado (si aprobó)
+    # ✅ COMMIT 7 & 8: Generación de Certificado (si aprobó)
     # =====================================================
     if passed:
         certificate_payload = _create_certificate(request.user, module, attempt)
@@ -193,6 +197,8 @@ def submit(request, module_slug):
 def _create_certificate(user, module, attempt) -> dict | None:
     """
     Crea el certificado, genera el PDF, lo guarda y envía por email.
+    
+    ✅ COMMIT 8: Ahora también envía al empleador y responsable de Seg. e Higiene.
     
     Retorna el payload del certificado o None si hay error.
     No lanza excepciones para no romper la aprobación.
@@ -237,18 +243,42 @@ def _create_certificate(user, module, attempt) -> dict | None:
             else:
                 email_filename = filename  # Fallback al UUID
             
+            # =========================================================================
+            # ✅ COMMIT 8: Obtener los nuevos campos de email del usuario
+            # =========================================================================
+            employer_email = getattr(user, 'employer_email', None) or None
+            safety_responsible_email = getattr(user, 'safety_responsible_email', None) or None
+            company_name = getattr(user, 'company_name', None) or None
+            # =========================================================================
+            
             send_certificate_emails(
                 to_email=user.email,
                 pdf_bytes=pdf_bytes,
                 filename=email_filename,
                 user_name=user_name,
                 module_title=module.title,
+                # =====================================================================
+                # ✅ COMMIT 8: Pasar los nuevos emails al emailer
+                # =====================================================================
+                employer_email=employer_email,
+                safety_responsible_email=safety_responsible_email,
+                company_name=company_name,
+                # =====================================================================
             )
             # Marcar como enviado
             cert.email_sent = True
             cert.email_sent_at = timezone.now()
             cert.save(update_fields=["email_sent", "email_sent_at"])
             logger.info(f"Email enviado a {user.email}")
+            
+            # =========================================================================
+            # ✅ COMMIT 8: Log adicional de envíos a empleador y responsable
+            # =========================================================================
+            if employer_email:
+                logger.info(f"Certificado también enviado a empleador: {employer_email}")
+            if safety_responsible_email:
+                logger.info(f"Certificado también enviado a resp. SySO: {safety_responsible_email}")
+            # =========================================================================
             
         except Exception as email_error:
             # NO romper la aprobación, solo registrar el error
@@ -267,7 +297,6 @@ def _create_certificate(user, module, attempt) -> dict | None:
         # Loguear pero NO romper la aprobación
         logger.exception(f"Error creando certificado para {user.email}: {e}")
         return None
-
 
 
 @login_required

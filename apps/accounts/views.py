@@ -1,4 +1,7 @@
 # apps/accounts/views.py
+# ============================================================================
+# COMMIT 8: Modificado para incluir employer_email y safety_responsible_email
+# ============================================================================
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.http import HttpResponse
@@ -67,14 +70,20 @@ def confirm_post(request):
         messages.info(request, "No hay datos para confirmar. Completá el registro.")
         return redirect("landing")
 
-    # Crear usuario usando el Manager custom
+    # =========================================================================
+    # ✅ COMMIT 8: Crear usuario incluyendo los nuevos campos de email
+    # =========================================================================
     user = User.objects.create_user(
         cuil=data["cuil"],
         email=data["email"],
         full_name=data["full_name"],
         job_title=data["job_title"],
         company_name=data["company_name"],
+        # Nuevos campos - usamos .get() con default "" para retrocompatibilidad
+        employer_email=data.get("employer_email", ""),
+        safety_responsible_email=data.get("safety_responsible_email", ""),
     )
+    # =========================================================================
 
     # Login (sin password, usando nuestro Backend custom)
     login(request, user, backend="apps.accounts.backends.CuilEmailBackend")
