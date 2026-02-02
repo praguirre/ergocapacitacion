@@ -18,7 +18,47 @@
               <p class="mb-0 fs-5">Tu puntaje: <strong>{{ attempt.score }}/10</strong></p>
               <small>(Mínimo requerido: 8/10)</small>
             </div>
-            <p class="mt-3">¡Felicitaciones! Tu certificado se está generando.</p>
+            <p class="mt-3">¡Felicitaciones! Tu certificado se ha generado.</p>
+            
+            {% comment %}
+            COMMIT 7: Botón de descarga del certificado
+            {% endcomment %}
+            {% if certificate and certificate.pdf_file %}
+              <div class="d-grid gap-2 mb-4">
+                <a href="{% url 'certificate_download' certificate.id %}" 
+                   class="btn btn-success btn-lg">
+                  <i class="bi bi-download me-2"></i>Descargar Certificado PDF
+                </a>
+                <a href="{% url 'certificate_view' certificate.id %}" 
+                   class="btn btn-outline-success"
+                   target="_blank">
+                  <i class="bi bi-eye me-2"></i>Ver Certificado
+                </a>
+              </div>
+              
+              {% if certificate.email_sent %}
+                <div class="alert alert-info small mb-3">
+                  <i class="bi bi-envelope-check me-2"></i>
+                  También enviamos el certificado a tu email: <strong>{{ request.user.email }}</strong>
+                </div>
+              {% elif certificate.email_error %}
+                <div class="alert alert-warning small mb-3">
+                  <i class="bi bi-exclamation-triangle me-2"></i>
+                  No pudimos enviar el email, pero podés descargar tu certificado arriba.
+                </div>
+              {% endif %}
+              
+              <div class="text-muted small">
+                <i class="bi bi-calendar-check me-1"></i>
+                Válido hasta: {{ certificate.valid_until|date:"d/m/Y" }}
+              </div>
+            {% else %}
+              <div class="alert alert-warning small">
+                <i class="bi bi-hourglass-split me-2"></i>
+                Tu certificado se está generando. Recargá la página en unos segundos.
+              </div>
+            {% endif %}
+            
           {% else %}
             <div class="display-1 text-danger mb-3"><i class="bi bi-x-circle-fill"></i></div>
             <div class="alert alert-danger border-danger">
@@ -28,7 +68,9 @@
             </div>
             <p class="mt-3">Revisá los conceptos en el chat con Ergobot antes de volver a intentar.</p>
           {% endif %}
+          
           <hr class="border-secondary my-4">
+          
           <div class="row text-secondary small mb-4">
             <div class="col-6 border-end border-secondary">
               <div>Intentos usados hoy</div>
@@ -39,17 +81,20 @@
               <strong class="text-light fs-5">{{ attempts_left }}</strong>
             </div>
           </div>
+          
           {% if state.lockout_until %}
             <div class="alert alert-warning d-flex align-items-center justify-content-center">
               <i class="bi bi-clock-history me-2"></i>
               Bloqueado hasta: {{ state.lockout_until|date:"d/m/Y H:i" }}
             </div>
           {% endif %}
+          
           {% if state.retake_available_at and not state.lockout_until %}
              <div class="alert alert-info small">
               Próximo examen disponible: {{ state.retake_available_at|date:"d/m/Y H:i" }}
             </div>
           {% endif %}
+          
           <div class="d-grid gap-2 mt-3">
             <a class="btn btn-outline-light" href="{% url 'training_home' %}">
               <i class="bi bi-arrow-left me-2"></i>Volver a la capacitación
