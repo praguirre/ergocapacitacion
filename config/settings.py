@@ -76,7 +76,7 @@ DATABASES = {
 }
 
 # CRÍTICO (antes del primer migrate)
-AUTH_USER_MODEL = "accounts.TraineeUser"
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 # Agregá esto para habilitar el login con CUIL y Email
 AUTHENTICATION_BACKENDS = [

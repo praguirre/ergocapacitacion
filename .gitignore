@@ -18,3 +18,4 @@ media/
 # OS / IDE
 .DS_Store
 .vscode/
+backup_*.json
