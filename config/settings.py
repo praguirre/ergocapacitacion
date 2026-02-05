@@ -78,11 +78,25 @@ DATABASES = {
 # CRÍTICO (antes del primer migrate)
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-# Agregá esto para habilitar el login con CUIL y Email
+# ============================================================================
+# Authentication Backends (COMMIT 10)
+# ============================================================================
 AUTHENTICATION_BACKENDS = [
+    # Backend para profesionales (email/username + password, SOLO professional)
+    "apps.accounts.backends.ProfessionalBackend",
+    # Backend para trabajadores (CUIL + email, sin password, SOLO trainee)
     "apps.accounts.backends.CuilEmailBackend",
+    # Fallback Django (admin/superuser/compatibilidad)
     "django.contrib.auth.backends.ModelBackend",
 ]
+
+# URLs de login por defecto (trainees)
+LOGIN_URL = "landing"
+LOGIN_REDIRECT_URL = "training_home"
+
+# URLs de login profesionales (para usar en decoradores/mixins/vistas)
+PROFESSIONAL_LOGIN_URL = "professional_login"
+PROFESSIONAL_LOGIN_REDIRECT_URL = "dashboard"
 
 # Password validators (los defaults; no molestan en commit 1)
 AUTH_PASSWORD_VALIDATORS = [
@@ -182,6 +196,7 @@ LOGGING = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 
 
