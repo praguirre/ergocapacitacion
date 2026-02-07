@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1>Mi Perfil</h1>
+
+    <div class="card bg-dark text-light">
+        <div class="card-body">
+            <p><strong>Nombre:</strong> {{ user.display_name|default:"-" }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Profesión:</strong> {{ user.profession|default:"No especificada" }}</p>
+            <p><strong>Matrícula:</strong> {{ user.license_number|default:"No especificada" }}</p>
+        </div>
+    </div>
+
+    <a href="{% url 'dashboard:home' %}" class="btn btn-secondary mt-3">Volver al Dashboard</a>
+</div>
+{% endblock %}

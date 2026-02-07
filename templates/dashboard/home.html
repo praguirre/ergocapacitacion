@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1>Dashboard del Profesional</h1>
+    <p>Bienvenido, {{ user.display_name|default:user.email }}</p>
+
+    <div class="alert alert-info">
+        <strong>En construcción.</strong> Este dashboard se completará en los próximos commits.
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-6">
+            <div class="card bg-secondary text-light">
+                <div class="card-body text-center py-5">
+                    <h3>📋 Evaluaciones</h3>
+                    <p class="text-muted">Próximamente</p>
+                    <button class="btn btn-outline-light" disabled>Acceder</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-secondary text-light">
+                <div class="card-body text-center py-5">
+                    <h3>🎓 Capacitaciones</h3>
+                    <p class="text-muted">Próximamente</p>
+                    <button class="btn btn-outline-light" disabled>Acceder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

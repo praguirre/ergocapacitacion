@@ -31,6 +31,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "apps.accounts",
+    'apps.landing',      # NUEVO
+    'apps.dashboard',    # NUEVO
     "apps.training",
     "apps.quiz",
     "apps.certificates",
