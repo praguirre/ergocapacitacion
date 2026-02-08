@@ -1,10 +1,15 @@
 # apps/accounts/urls.py
+# ============================================================================
+# COMMIT 12: Renombrado 'landing' → 'trainee_landing' para evitar
+# colisión con el namespace 'landing' de la app landing institucional.
+# ============================================================================
+
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Ruta principal (Landing)
-    path("", views.landing, name="landing"),
+    # Ruta principal - Formulario de registro/login para trainees
+    path("", views.landing, name="trainee_landing"),
 
     # Rutas de procesamiento (POST)
     path("register/", views.register_post, name="register_post"),

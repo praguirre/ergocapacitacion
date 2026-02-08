@@ -6,7 +6,7 @@ from django.shortcuts import render
 from .models import TrainingModule
 
 @ensure_csrf_cookie
-@login_required(login_url="landing")
+@login_required(login_url="trainee_landing")
 def training_home(request):
     """
     Obtiene el módulo de capacitación más reciente que esté activo

@@ -1,6 +1,6 @@
 # config/urls.py
 # ============================================================================
-# COMMIT 11: URLs reorganizadas para ErgoSolutions
+# COMMIT 12: URLs reorganizadas + Landing pública ErgoSolutions
 # ============================================================================
 
 from django.contrib import admin
@@ -13,43 +13,45 @@ urlpatterns = [
     # Admin
     # =========================================================================
     path('admin/', admin.site.urls),
-    
-    # =========================================================================
-    # Landing Principal (ErgoSolutions)
-    # =========================================================================
-    # path('', include('apps.landing.urls')),  # Descomentar en Commit 12
-    
-    # =========================================================================
-    # Autenticación de Profesionales
-    # =========================================================================
-    # path('auth/', include('apps.accounts.urls_professional')),  # Commit 13-14
-    
+
     # =========================================================================
     # Dashboard de Profesionales (requiere login)
     # =========================================================================
     path('dashboard/', include('apps.dashboard.urls', namespace='dashboard')),
-    
+
+    # =========================================================================
+    # Landing Principal (ErgoSolutions) - Home pública institucional
+    # La raíz '/' muestra la landing de ErgoSolutions.
+    # Usuarios autenticados son redirigidos a su área correspondiente.
+    # =========================================================================
+    path('', include('apps.landing.urls', namespace='landing')),
+
     # =========================================================================
     # Área de Capacitaciones - TRABAJADORES (sistema actual)
-    # La raíz '/' va al landing de capacitaciones (registro/login trainees)
+    # Prefijo /acceso/ para registro/login de trainees (antes estaba en raíz)
     # =========================================================================
-    path('', include('apps.accounts.urls')),  # Landing actual de trainees
+    path('acceso/', include('apps.accounts.urls')),  # Trainees: login/registro/confirm
     path('capacitacion/', include('apps.training.urls')),  # Páginas de capacitación
     path('quiz/', include('apps.quiz.urls')),  # Quiz
     path('certificados/', include('apps.certificates.urls')),  # Certificados
     path('ai/', include('apps.ergobot_ai.urls')),  # Chatbot
-    
+
+    # =========================================================================
+    # Autenticación de Profesionales (Commit 13-14)
+    # =========================================================================
+    # path('auth/', include('apps.accounts.urls_professional')),
+
     # =========================================================================
     # Área de Capacitaciones - ACCESO VÍA LINK (Commit 22-25)
     # URL corta para links compartibles: /c/<slug>/
     # =========================================================================
-    # path('c/', include('apps.training.urls_public')),  # Commit 25
-    
+    # path('c/', include('apps.training.urls_public')),
+
     # =========================================================================
     # Gestión de Capacitaciones - PROFESIONALES (Commit 16-21)
     # =========================================================================
     # path('capacitaciones/', include('apps.dashboard.urls_capacitaciones')),
-    
+
     # =========================================================================
     # Evaluaciones - PROFESIONALES (Futuro)
     # =========================================================================
