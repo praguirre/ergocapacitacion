@@ -1,0 +1,72 @@
+{% extends "base_landing.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Registro de Profesional - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+
+      <div class="card bg-dark border-secondary shadow-lg">
+        <div class="card-header bg-black border-secondary text-center py-3">
+          <h4 class="mb-0 text-white">
+            <i class="bi bi-person-plus me-2"></i>Registro de Profesional
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="row">
+              <div class="col-md-6">
+                {% bootstrap_field form.first_name %}
+              </div>
+              <div class="col-md-6">
+                {% bootstrap_field form.last_name %}
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                {% bootstrap_field form.dni %}
+              </div>
+              <div class="col-md-6">
+                {% bootstrap_field form.email %}
+              </div>
+            </div>
+
+            {% bootstrap_field form.profession %}
+            {% bootstrap_field form.license_number %}
+
+            <hr class="border-secondary my-4">
+
+            {% bootstrap_field form.username %}
+
+            <div class="row">
+              <div class="col-md-6">
+                {% bootstrap_field form.password1 %}
+              </div>
+              <div class="col-md-6">
+                {% bootstrap_field form.password2 %}
+              </div>
+            </div>
+
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-lg me-2"></i>Crear cuenta
+              </button>
+            </div>
+          </form>
+
+          <p class="text-center text-secondary mt-4 mb-0">
+            ¿Ya tenés cuenta?
+            <a href="{% url 'accounts_professional:professional_login' %}" class="text-primary">Ingresá aquí</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

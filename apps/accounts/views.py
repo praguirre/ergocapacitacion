@@ -3,6 +3,8 @@
 # COMMIT 12: Actualizado redirect("landing") → redirect("trainee_landing")
 # para compatibilidad con nueva estructura de URLs.
 # ============================================================================
+# AJUSTE POST-RENAME: templates/accounts/landing.html → trainee_landing.html
+# ============================================================================
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -38,17 +40,21 @@ def landing(request):
         "register_form": RegisterForm(),
         "login_form": LoginForm(),
     }
-    return render(request, "accounts/landing.html", ctx)
+    return render(request, "accounts/trainee_landing.html", ctx)
 
 
 @require_POST
 def register_post(request):
     form = RegisterForm(request.POST)
     if not form.is_valid():
-        return render(request, "accounts/landing.html", {
-            "register_form": form,
-            "login_form": LoginForm(),
-        })
+        return render(
+            request,
+            "accounts/trainee_landing.html",
+            {
+                "register_form": form,
+                "login_form": LoginForm(),
+            },
+        )
 
     data = form.cleaned_data
 
@@ -107,10 +113,14 @@ def confirm_post(request):
 def login_post(request):
     form = LoginForm(request.POST)
     if not form.is_valid():
-        return render(request, "accounts/landing.html", {
-            "register_form": RegisterForm(),
-            "login_form": form,
-        })
+        return render(
+            request,
+            "accounts/trainee_landing.html",
+            {
+                "register_form": RegisterForm(),
+                "login_form": form,
+            },
+        )
 
     cuil = form.cleaned_data["cuil"]
     email = form.cleaned_data["email"]
