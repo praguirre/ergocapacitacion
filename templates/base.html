@@ -16,11 +16,19 @@
   <nav class="navbar navbar-dark bg-black border-bottom border-secondary">
     <div class="container">
       <span class="navbar-brand">ErgoCapacitación</span>
+
       {% if request.user.is_authenticated %}
-        <form method="post" action="{% url 'logout_post' %}">
-          {% csrf_token %}
-          <button class="btn btn-outline-light btn-sm">Salir</button>
-        </form>
+        {% if request.user.is_professional %}
+          <form method="post" action="{% url 'accounts_professional:professional_logout' %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-light btn-sm">Salir</button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'logout_post' %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-light btn-sm">Salir</button>
+          </form>
+        {% endif %}
       {% endif %}
     </div>
   </nav>

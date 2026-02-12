@@ -1,0 +1,62 @@
+{% extends "base_landing.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Ingresar - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+
+      <div class="card bg-dark border-secondary shadow-lg">
+        <div class="card-header bg-black border-secondary text-center py-3">
+          <h4 class="mb-0 text-white">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
+          </h4>
+        </div>
+
+        <div class="card-body p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if next %}
+              <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            {% bootstrap_form form %}
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-door-open me-2"></i>Ingresar
+              </button>
+            </div>
+          </form>
+
+          <hr class="border-secondary my-4">
+
+          <p class="text-center text-secondary mb-2">
+            ¿No tenés cuenta?
+            <a href="{% url 'accounts_professional:professional_register' %}" class="text-primary">Registrate</a>
+          </p>
+
+          <p class="text-center text-secondary small mb-0">
+            <a href="#" class="text-muted">¿Olvidaste tu contraseña?</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Link a capacitaciones (trainees) -->
+      <div class="card bg-secondary mt-4">
+        <div class="card-body py-3 text-center">
+          <small class="text-dark">
+            ¿Sos trabajador?
+            <a href="{% url 'trainee_landing' %}" class="text-dark fw-bold">
+              Ingresá a Capacitaciones
+            </a>
+          </small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

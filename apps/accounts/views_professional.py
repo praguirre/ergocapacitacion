@@ -60,6 +60,12 @@ def login_view(request):
     # Preservar next tanto por GET (primer acceso) como por POST (submit)
     next_url = request.POST.get("next") or request.GET.get("next", "")
 
+    # Hardening opcional: evitar redirects extraños tipo //dominio
+    # Permitimos solo paths internos que empiecen con "/" pero NO con "//"
+    safe_next = ""
+    if next_url and next_url.startswith("/") and not next_url.startswith("//"):
+        safe_next = next_url
+
     if request.method == "POST":
         form = ProfessionalLoginForm(request.POST)
         if form.is_valid():
@@ -74,11 +80,15 @@ def login_view(request):
                 name = getattr(user, "display_name", "") or user.first_name or user.email
                 messages.success(request, f"¡Hola {name}!")
 
-                if next_url and next_url.startswith("/"):
-                    return redirect(next_url)
+                if safe_next:
+                    return redirect(safe_next)
                 return redirect("dashboard:home")
 
-            messages.error(request, "Usuario o contraseña incorrectos.")
+            # Mensaje más útil (evita confusión entre flujos)
+            messages.error(
+                request,
+                "Credenciales incorrectas. Si sos trabajador, ingresá desde Capacitaciones."
+            )
     else:
         form = ProfessionalLoginForm()
 
@@ -87,14 +97,14 @@ def login_view(request):
         "accounts/professional/login.html",
         {
             "form": form,
-            "next": next_url,
+            "next": next_url,  # mantenemos el original para que el hidden preserve lo que vino por GET
         },
     )
 
 
 @require_POST
 def logout_view(request):
-    """Logout de profesionales."""
+    """Logout de profesionales (POST-only)."""
     logout(request)
-    messages.info(request, "Has cerrado sesión.")
+    messages.success(request, "Has cerrado sesión correctamente.")
     return redirect("landing:home")

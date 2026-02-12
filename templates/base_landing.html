@@ -77,12 +77,10 @@
             color: #ff6b6b;
         }
 
-        /* Opcional: placeholders un poco más visibles en dark */
         .form-control::placeholder {
             color: rgba(255, 255, 255, 0.45);
         }
 
-        /* Opcional: links sobre fondo oscuro */
         a.text-primary:hover {
             text-decoration: underline;
         }
@@ -107,23 +105,54 @@
                         <a class="nav-link" href="#features">Características</a>
                     </li>
 
-                    {# Ingresar (deshabilitado hasta crear login.html) #}
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary ms-lg-2 px-3 disabled"
-                           href="#"
-                           tabindex="-1"
-                           aria-disabled="true">
-                            Ingresar
-                        </a>
-                    </li>
+                    {% if user.is_authenticated and user.is_professional %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light ms-lg-2 px-3" href="{% url 'dashboard:home' %}">
+                                <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                            </a>
+                        </li>
 
-                    {# Registrarse (activo: ya existe /auth/registro/) #}
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-primary ms-lg-2 px-3 text-white"
-                           href="{% url 'accounts_professional:professional_register' %}">
-                            Registrarse
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'accounts_professional:professional_logout' %}" class="ms-lg-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger px-3">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            </form>
+                        </li>
+
+                    {% elif user.is_authenticated %}
+                        {# Trainee autenticado: puede caer acá (raro), igual le damos salida clara #}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light ms-lg-2 px-3" href="{% url 'training_home' %}">
+                                <i class="bi bi-mortarboard me-1"></i>Capacitaciones
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout_post' %}" class="ms-lg-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger px-3">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </button>
+                            </form>
+                        </li>
+
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-primary ms-lg-2 px-3"
+                               href="{% url 'accounts_professional:professional_login' %}">
+                                Ingresar
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary ms-lg-2 px-3 text-white"
+                               href="{% url 'accounts_professional:professional_register' %}">
+                                Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

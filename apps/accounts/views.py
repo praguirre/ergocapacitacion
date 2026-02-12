@@ -104,6 +104,7 @@ def confirm_post(request):
 
     # Limpieza de sesión
     request.session.pop(PENDING_KEY, None)
+    request.session.modified = True
 
     messages.success(request, "Registro confirmado. ¡Bienvenido!")
     return redirect(_post_login_redirect())
