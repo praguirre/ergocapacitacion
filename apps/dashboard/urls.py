@@ -1,14 +1,15 @@
 # apps/dashboard/urls.py
 # ============================================================================
-# COMMIT 11: URLs del dashboard de profesionales
+# COMMIT 15: URLs del dashboard de profesionales
 # ============================================================================
 
 from django.urls import path
+
 from . import views
 
-app_name = 'dashboard'
+app_name = "dashboard"
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('perfil/', views.profile, name='profile'),
+    path("", views.home, name="home"),
+    path("perfil/", views.profile, name="profile"),
 ]

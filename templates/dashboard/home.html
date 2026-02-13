@@ -1,33 +1,121 @@
-{% extends "base.html" %}
+{% extends "base_dashboard.html" %}
+
+{% block title %}Dashboard - ErgoSolutions{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h1>Dashboard del Profesional</h1>
-    <p>Bienvenido, {{ user.display_name|default:user.email }}</p>
+<div class="container-fluid py-4 px-4">
 
-    <div class="alert alert-info">
-        <strong>En construcción.</strong> Este dashboard se completará en los próximos commits.
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-grid-1x2 me-2 text-primary"></i>Dashboard
+            </h2>
+            <p class="text-secondary mb-0">
+                Bienvenido, <strong class="text-light">{{ request.user.display_name }}</strong>
+                {% if request.user.profession %}
+                    — {{ request.user.profession }}
+                    {% if request.user.license_number %}
+                        ({{ request.user.license_number }})
+                    {% endif %}
+                {% endif %}
+            </p>
+        </div>
     </div>
 
-    <div class="row g-4 mt-4">
-        <div class="col-md-6">
-            <div class="card bg-secondary text-light">
-                <div class="card-body text-center py-5">
-                    <h3>📋 Evaluaciones</h3>
-                    <p class="text-muted">Próximamente</p>
-                    <button class="btn btn-outline-light" disabled>Acceder</button>
+    <!-- Stats rápidas -->
+    <div class="row g-3 mb-5">
+        <div class="col-md-4">
+            <div class="stat-card bg-dark border border-secondary">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="bi bi-mortarboard text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number text-success">{{ stats.capacitaciones_total|default:"0" }}</div>
+                        <small class="text-secondary">Sesiones realizadas</small>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card bg-secondary text-light">
-                <div class="card-body text-center py-5">
-                    <h3>🎓 Capacitaciones</h3>
-                    <p class="text-muted">Próximamente</p>
-                    <button class="btn btn-outline-light" disabled>Acceder</button>
+        <div class="col-md-4">
+            <div class="stat-card bg-dark border border-secondary">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="bi bi-link-45deg text-info" style="font-size: 2rem;"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number text-info">{{ stats.links_generados|default:"0" }}</div>
+                        <small class="text-secondary">Links generados</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card bg-dark border border-secondary">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="bi bi-people text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number text-warning">{{ stats.trabajadores_capacitados|default:"0" }}</div>
+                        <small class="text-secondary">Trabajadores capacitados</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Selector principal -->
+    <div class="row mb-4">
+        <div class="col">
+            <h4 class="text-secondary mb-3">
+                <i class="bi bi-collection me-2"></i>Herramientas
+            </h4>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <!-- Card EVALUACIONES (desactivado) -->
+        <div class="col-md-6 col-lg-5">
+            <div class="card dashboard-card disabled-card bg-dark border-secondary h-100">
+                <div class="card-body text-center py-5 px-4">
+                    <div class="card-icon text-secondary">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                    <h3 class="card-title text-secondary">Evaluaciones</h3>
+                    <p class="card-text text-muted mb-4">
+                        Evaluaciones de riesgos ergonómicos, iluminación, ruido y más.
+                        Todo según normativa vigente.
+                    </p>
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                        <i class="bi bi-clock me-1"></i>Próximamente
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card CAPACITACIONES (activo) -->
+        <div class="col-md-6 col-lg-5">
+            <a href="#" class="text-decoration-none" aria-label="Capacitaciones disponible en commit 16">
+                <div class="card dashboard-card bg-dark border-success h-100">
+                    <div class="card-body text-center py-5 px-4">
+                        <div class="card-icon text-success">
+                            <i class="bi bi-mortarboard"></i>
+                        </div>
+                        <h3 class="card-title text-white">Capacitaciones</h3>
+                        <p class="card-text text-secondary mb-4">
+                            Capacitaciones online y presenciales con certificación automática.
+                            Gestioná la formación de tus trabajadores.
+                        </p>
+                        <span class="badge bg-success fs-6 px-3 py-2">
+                            <i class="bi bi-check-circle me-1"></i>Disponible
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
