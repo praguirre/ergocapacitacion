@@ -30,7 +30,7 @@
         {% for module in modules %}
         <div class="col-sm-6 col-lg-4 col-xl-3">
             {% if module.is_active %}
-            <a href="#" class="text-decoration-none" aria-label="Selector de modalidad disponible en próximos commits">
+            <a href="{% url 'dashboard:modalidad_selector' module.slug %}" class="text-decoration-none">
             {% endif %}
                 <div class="card training-card bg-dark border-secondary h-100 {% if not module.is_active %}disabled-card{% endif %}">
                     <div class="card-body text-center py-4">

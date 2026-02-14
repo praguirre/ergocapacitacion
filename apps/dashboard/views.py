@@ -1,10 +1,10 @@
 # apps/dashboard/views.py
 # ============================================================================
-# COMMIT 15-16: Dashboard y Menu de Capacitaciones
+# COMMIT 15-17: Dashboard, Menu y Selector de Modalidad
 # ============================================================================
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from apps.accounts.decorators import professional_required
 from apps.training.models import TrainingModule
@@ -47,3 +47,16 @@ def capacitaciones_menu(request):
 def profile(request):
     """Perfil del profesional (placeholder - se completa en Commit 26)."""
     return render(request, "dashboard/profile.html")
+
+
+@login_required
+@professional_required
+def modalidad_selector(request, module_slug):
+    """
+    Selector de modalidad: Presencial u Online.
+    """
+    module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+
+    return render(request, "dashboard/modalidad_selector.html", {
+        "module": module,
+    })

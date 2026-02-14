@@ -1,0 +1,96 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}{{ module.title }} - Modalidad - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb breadcrumb-dark">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:capacitaciones_menu' %}">Capacitaciones</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ module.title }}</li>
+        </ol>
+    </nav>
+
+    <!-- Encabezado -->
+    <div class="text-center mb-5">
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+             style="width: 80px; height: 80px; background-color: {{ module.color }}20;">
+            <i class="{{ module.icon }}" style="font-size: 2.5rem; color: {{ module.color }};"></i>
+        </div>
+        <h2 class="fw-bold text-white">{{ module.title }}</h2>
+        <p class="text-secondary lead">¿Cómo vas a realizar esta capacitación?</p>
+    </div>
+
+    <!-- Cards de modalidad -->
+    <div class="row g-4 justify-content-center">
+
+        <!-- Presencial -->
+        <div class="col-md-6 col-lg-5">
+            <a href="#" class="text-decoration-none" aria-label="Modo presencial disponible en próximos commits">
+                <div class="card modality-card presencial bg-dark border-secondary h-100">
+                    <div class="card-body text-center py-5 px-4">
+                        <i class="bi bi-people-fill display-3 text-warning mb-3"></i>
+                        <h3 class="text-white mb-3">Modo Presencial</h3>
+                        <p class="text-secondary mb-4">
+                            Para capacitaciones en el lugar de trabajo.
+                            Proyectá el video, usá el chat con Ergobot y
+                            generá la planilla de asistencia al finalizar.
+                        </p>
+                        <ul class="list-unstyled text-start text-secondary small">
+                            <li class="mb-2"><i class="bi bi-check2 text-warning me-2"></i>Video de capacitación + Chat IA</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-warning me-2"></i>Quiz grupal (solo resultado)</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-warning me-2"></i>Planilla PDF de asistencia</li>
+                            <li><i class="bi bi-check2 text-warning me-2"></i>Sin registro individual de trabajadores</li>
+                        </ul>
+                        <div class="mt-4">
+                            <span class="btn btn-warning btn-lg px-4">
+                                <i class="bi bi-easel me-2"></i>Iniciar Presencial
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Online -->
+        <div class="col-md-6 col-lg-5">
+            <a href="#" class="text-decoration-none" aria-label="Modo online disponible en próximos commits">
+                <div class="card modality-card online bg-dark border-secondary h-100">
+                    <div class="card-body text-center py-5 px-4">
+                        <i class="bi bi-globe display-3 text-primary mb-3"></i>
+                        <h3 class="text-white mb-3">Modo Online</h3>
+                        <p class="text-secondary mb-4">
+                            Generá un link único para compartir con los trabajadores.
+                            Cada uno accede de forma individual, completa el quiz
+                            y recibe su certificado automáticamente.
+                        </p>
+                        <ul class="list-unstyled text-start text-secondary small">
+                            <li class="mb-2"><i class="bi bi-check2 text-primary me-2"></i>Link compartible por email/WhatsApp</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-primary me-2"></i>Registro individual de trabajadores</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-primary me-2"></i>Quiz con reglas completas (3 intentos)</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i>Certificado PDF individual automático</li>
+                        </ul>
+                        <div class="mt-4">
+                            <span class="btn btn-primary btn-lg px-4">
+                                <i class="bi bi-link-45deg me-2"></i>Gestionar Links
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Volver -->
+    <div class="text-center mt-5">
+        <a href="{% url 'dashboard:capacitaciones_menu' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver al menú de capacitaciones
+        </a>
+    </div>
+
+</div>
+{% endblock %}
