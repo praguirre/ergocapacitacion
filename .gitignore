@@ -19,3 +19,7 @@ media/
 .DS_Store
 .vscode/
 backup_*.json
+
+# ErgoSolutions - Planificación y Documentación Local
+PLAN_MAESTRO_COMMITS_FASES_3_4_5_6.md
+AGENTS.md
