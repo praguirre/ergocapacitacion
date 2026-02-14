@@ -1,0 +1,70 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Capacitaciones - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb breadcrumb-dark">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Capacitaciones</li>
+        </ol>
+    </nav>
+
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-mortarboard me-2 text-success"></i>Capacitaciones
+            </h2>
+            <p class="text-secondary">
+                Seleccioná una capacitación para iniciar en modo presencial o generar un link para modo online.
+            </p>
+        </div>
+    </div>
+
+    <!-- Grid de capacitaciones -->
+    <div class="row g-4">
+        {% for module in modules %}
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+            {% if module.is_active %}
+            <a href="#" class="text-decoration-none" aria-label="Selector de modalidad disponible en próximos commits">
+            {% endif %}
+                <div class="card training-card bg-dark border-secondary h-100 {% if not module.is_active %}disabled-card{% endif %}">
+                    <div class="card-body text-center py-4">
+                        <div class="card-icon mx-auto" style="background-color: {{ module.color }}20;">
+                            <i class="{{ module.icon }}" style="color: {{ module.color }};"></i>
+                        </div>
+                        <h5 class="card-title text-white mb-2">{{ module.title }}</h5>
+                        <p class="card-text text-secondary small mb-3">
+                            {{ module.description|default:"Capacitación disponible." }}
+                        </p>
+                        {% if module.is_active %}
+                            <span class="badge bg-success px-3 py-1">
+                                <i class="bi bi-check-circle me-1"></i>Disponible
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark px-3 py-1">
+                                <i class="bi bi-clock me-1"></i>Próximamente
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% if module.is_active %}
+            </a>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                No hay capacitaciones cargadas aún. Contactá al administrador.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
