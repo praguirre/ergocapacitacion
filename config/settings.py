@@ -38,6 +38,7 @@ LOCAL_APPS = [
     "apps.accounts",
     'apps.landing',      # NUEVO
     'apps.dashboard',    # NUEVO
+    "apps.presencial",   # NUEVO - Commit 18
     "apps.training",
     "apps.quiz",
     "apps.certificates",

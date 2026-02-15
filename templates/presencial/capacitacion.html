@@ -1,0 +1,180 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}{{ module.title }} (Presencial) - ErgoSolutions{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilos optimizados para proyeccion */
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 */
+        height: 0;
+        overflow: hidden;
+        border-radius: 8px;
+        background: #000;
+    }
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
+    /* Chat container */
+    #chat-container {
+        height: 450px;
+        display: flex;
+        flex-direction: column;
+    }
+    #chatLog {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #1a1a2e;
+        border-radius: 8px 8px 0 0;
+        white-space: pre-wrap;
+        border: 1px solid #333;
+    }
+    #chat-input-area {
+        padding: 0.75rem;
+        background: #16213e;
+        border-radius: 0 0 8px 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3 px-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb breadcrumb-dark">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:capacitaciones_menu' %}">Capacitaciones</a></li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'dashboard:modalidad_selector' module.slug %}">{{ module.title }}</a>
+            </li>
+            <li class="breadcrumb-item active">Presencial</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">
+            <i class="{{ module.icon }} me-2" style="color: {{ module.color }};"></i>
+            {{ module.title }}
+            <span class="badge bg-warning text-dark ms-2 fs-6">Presencial</span>
+        </h3>
+    </div>
+
+    <div class="row g-4">
+        <!-- Video -->
+        <div class="col-lg-7">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header border-secondary py-2">
+                    <h5 class="mb-0 text-white">
+                        <i class="bi bi-play-circle me-2"></i>Video de Capacitacion
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="video-container">
+                        <iframe
+                            src="https://www.youtube.com/embed/{{ module.youtube_id }}"
+                            title="{{ module.title }}"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+                <div class="card-footer border-secondary text-center py-2">
+                    <a href="https://www.youtube.com/watch?v={{ module.youtube_id }}"
+                       target="_blank" class="text-secondary small">
+                        <i class="bi bi-youtube me-1"></i>Abrir en YouTube
+                    </a>
+                </div>
+            </div>
+
+            <!-- Boton Quiz (debajo del video) -->
+            <div class="d-grid mt-3">
+                <a href="#" aria-label="Quiz disponible en proximos commits" class="btn btn-outline-warning btn-lg">
+                    <i class="bi bi-pencil-square me-2"></i>Iniciar Quiz de Evaluacion
+                </a>
+            </div>
+        </div>
+
+        <!-- Chat Ergobot -->
+        <div class="col-lg-5">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header border-secondary py-2">
+                    <h5 class="mb-0 text-white">
+                        <i class="bi bi-robot me-2 text-info"></i>Chat con Ergobot
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="chat-container">
+                        <div id="chatLog" class="small"></div>
+                        <div id="chat-input-area">
+                            <div class="input-group">
+                                <input id="chatInput" class="form-control bg-dark text-light border-secondary"
+                                       placeholder="Escribi tu consulta...">
+                                <button id="chatSend" class="btn btn-info px-3">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/ergobot_chat.js' %}"></script>
+<script>
+(function() {
+    const moduleSlug = "{{ module.slug }}";
+    const log = document.getElementById("chatLog");
+    const input = document.getElementById("chatInput");
+    const btn = document.getElementById("chatSend");
+
+    log.innerHTML = `<div><strong>🤖 Ergobot:</strong><br>¡Hola! Soy Ergobot, tu asistente de ergonomía. Podés hacerme preguntas sobre el contenido de la capacitación.</div>`;
+
+    async function handleSend() {
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = "";
+        input.disabled = true;
+        btn.disabled = true;
+
+        log.innerHTML += `<div class="mt-2"><strong>👤 Usuario:</strong><br>${text}</div>`;
+        log.innerHTML += `<div class="mt-2"><strong>🤖 Ergobot:</strong><br><span id="currentDelta"></span></div>`;
+        const deltaSpan = document.getElementById("currentDelta");
+        log.scrollTop = log.scrollHeight;
+
+        try {
+            await sendErgobotMessage(moduleSlug, text, (delta) => {
+                deltaSpan.textContent += delta;
+                log.scrollTop = log.scrollHeight;
+            });
+            deltaSpan.removeAttribute("id");
+        } catch (err) {
+            log.innerHTML += `<div class="text-danger mt-1">Error al conectar con Ergobot. Intenta de nuevo.</div>`;
+        } finally {
+            input.disabled = false;
+            btn.disabled = false;
+            input.focus();
+        }
+    }
+
+    btn.onclick = handleSend;
+    input.onkeypress = (e) => { if (e.key === "Enter") handleSend(); };
+})();
+</script>
+{% endblock %}
