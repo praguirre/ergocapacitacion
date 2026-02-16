@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render
 
 from apps.accounts.decorators import professional_required
 from apps.training.models import TrainingModule
+from apps.presencial.models import PresencialSession
 
 
 @login_required
@@ -17,8 +18,12 @@ def home(request):
     Dashboard principal del profesional.
     Muestra selector de Evaluaciones / Capacitaciones y stats basicas.
     """
+    presencial_count = PresencialSession.objects.filter(
+        professional=request.user
+    ).count()
+
     stats = {
-        "capacitaciones_total": 0,
+        "capacitaciones_total": presencial_count,
         "links_generados": 0,
         "trabajadores_capacitados": 0,
     }

@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 from apps.accounts.decorators import professional_required
 from apps.quiz.models import Question
 from apps.training.models import TrainingModule
+from .models import PresencialSession
 from .pdf import build_planilla_presencial_pdf
 
 
@@ -130,6 +131,20 @@ def planilla_pdf(request, module_slug):
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
 
+    participants_raw = request.GET.get('participants', 0)
+    try:
+        participants_count = int(participants_raw or 0)
+    except (TypeError, ValueError):
+        participants_count = 0
+
+    PresencialSession.objects.create(
+        module=module,
+        professional=request.user,
+        session_date=date.today(),
+        location=request.GET.get('location', ''),
+        participants_count=participants_count,
+    )
+
     pdf_bytes = build_planilla_presencial_pdf(
         module=module,
         professional=request.user,
@@ -140,3 +155,18 @@ def planilla_pdf(request, module_slug):
     response = HttpResponse(pdf_bytes, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
+
+
+@login_required
+@professional_required
+def historial_presencial(request):
+    """
+    Historial de sesiones presenciales del profesional.
+    """
+    sessions = PresencialSession.objects.filter(
+        professional=request.user
+    ).select_related('module')
+
+    return render(request, 'presencial/historial.html', {
+        'sessions': sessions,
+    })
