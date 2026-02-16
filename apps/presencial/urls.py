@@ -1,14 +1,16 @@
 # apps/presencial/urls.py
 # ============================================================================
-# COMMIT 18: URLs de capacitación presencial
+# COMMIT 18-19: URLs de capacitación presencial
 # ============================================================================
 
 from django.urls import path
 
 from . import views
 
-app_name = 'presencial'
+app_name = "presencial"
 
 urlpatterns = [
-    path('<slug:module_slug>/', views.capacitacion_presencial, name='capacitacion'),
+    path("<slug:module_slug>/", views.capacitacion_presencial, name="capacitacion"),
+    path("<slug:module_slug>/quiz/", views.quiz_presencial, name="quiz"),
+    path("<slug:module_slug>/quiz/submit/", views.quiz_presencial_submit, name="quiz_submit"),
 ]

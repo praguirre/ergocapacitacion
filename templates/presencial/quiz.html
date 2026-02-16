@@ -1,0 +1,230 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Quiz - {{ module.title }} (Presencial) - ErgoSolutions{% endblock %}
+
+{% block extra_css %}
+<style>
+    .question-card { border-radius: 12px; }
+    .choice-btn {
+        transition: all 0.2s ease;
+        border: 2px solid #495057;
+        border-radius: 8px;
+        cursor: pointer;
+        text-align: left;
+    }
+    .choice-btn:hover { border-color: #6c757d; background: #1a1a2e; }
+    .choice-btn.selected { border-color: #0d6efd; background: #0d6efd20; }
+    .choice-btn.correct { border-color: #198754; background: #19875420; }
+    .choice-btn.incorrect { border-color: #dc3545; background: #dc354520; }
+
+    /* Resultado */
+    .result-score { font-size: 5rem; font-weight: 800; }
+    .result-passed { color: #198754; }
+    .result-failed { color: #dc3545; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb breadcrumb-dark">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:capacitaciones_menu' %}">Capacitaciones</a></li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'dashboard:presencial:capacitacion' module.slug %}">{{ module.title }}</a>
+            </li>
+            <li class="breadcrumb-item active">Quiz Presencial</li>
+        </ol>
+    </nav>
+
+    <!-- Quiz Container -->
+    <div id="quiz-section">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold">
+                <i class="bi bi-pencil-square me-2 text-warning"></i>
+                Quiz de Evaluación
+                <span class="badge bg-warning text-dark ms-2">Presencial</span>
+            </h3>
+            <p class="text-secondary">
+                Pregunta <span id="current-q">1</span> de {{ total_questions }}
+            </p>
+            <div class="progress mx-auto" style="max-width: 500px; height: 6px;">
+                <div class="progress-bar bg-warning" id="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div id="question-area">
+                    <!-- Se llena con JS -->
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button class="btn btn-outline-secondary" id="prev-btn" disabled>
+                        <i class="bi bi-arrow-left me-2"></i>Anterior
+                    </button>
+                    <button class="btn btn-warning" id="next-btn" disabled>
+                        Siguiente<i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                    <button class="btn btn-success d-none" id="submit-btn">
+                        <i class="bi bi-check-lg me-2"></i>Finalizar Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultado (oculto hasta submit) -->
+    <div id="result-section" class="d-none">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 text-center">
+                <div class="card bg-dark border-secondary shadow-lg">
+                    <div class="card-body py-5">
+                        <div id="result-icon" class="mb-3"></div>
+                        <div id="result-score" class="result-score mb-2"></div>
+                        <p id="result-text" class="lead mb-4"></p>
+
+                        <div class="d-grid gap-3">
+                            <a href="#" aria-label="Disponible en próximos commits"
+                               class="btn btn-warning btn-lg" id="btn-planilla">
+                                <i class="bi bi-file-earmark-pdf me-2"></i>Generar Planilla de Asistencia
+                            </a>
+                            <a href="{% url 'dashboard:presencial:capacitacion' module.slug %}"
+                               class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left me-2"></i>Volver a la Capacitación
+                            </a>
+                            <button class="btn btn-outline-secondary" onclick="location.reload()">
+                                <i class="bi bi-arrow-repeat me-2"></i>Repetir Quiz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const questions = {{ questions_json|safe }};
+    const answers = {};
+    let currentIndex = 0;
+
+    const questionArea = document.getElementById('question-area');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const progressBar = document.getElementById('progress-bar');
+    const currentQSpan = document.getElementById('current-q');
+
+    function renderQuestion(index) {
+        const q = questions[index];
+        currentQSpan.textContent = index + 1;
+        progressBar.style.width = ((index + 1) / questions.length * 100) + '%';
+
+        let html = `
+            <div class="card question-card bg-dark border-secondary">
+                <div class="card-body p-4">
+                    <h5 class="text-white mb-4">${index + 1}. ${q.text}</h5>
+                    <div class="d-grid gap-2">
+        `;
+
+        q.choices.forEach(c => {
+            const selected = answers[q.id] === c.id ? 'selected' : '';
+            html += `
+                <button class="btn choice-btn p-3 text-light ${selected}"
+                        onclick="selectChoice(${q.id}, ${c.id}, this)">
+                    ${c.text}
+                </button>
+            `;
+        });
+
+        html += '</div></div></div>';
+        questionArea.innerHTML = html;
+
+        prevBtn.disabled = index === 0;
+
+        if (index === questions.length - 1) {
+            nextBtn.classList.add('d-none');
+            submitBtn.classList.remove('d-none');
+        } else {
+            nextBtn.classList.remove('d-none');
+            submitBtn.classList.add('d-none');
+        }
+
+        nextBtn.disabled = !answers[q.id];
+        submitBtn.disabled = Object.keys(answers).length < questions.length;
+    }
+
+    window.selectChoice = function(qId, cId, btn) {
+        answers[qId] = cId;
+        document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        nextBtn.disabled = false;
+        submitBtn.disabled = Object.keys(answers).length < questions.length;
+    };
+
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) { currentIndex--; renderQuestion(currentIndex); }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < questions.length - 1) { currentIndex++; renderQuestion(currentIndex); }
+    });
+
+    submitBtn.addEventListener('click', async () => {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enviando...';
+
+        const csrfToken = document.cookie.split('csrftoken=')[1]?.split(';')[0];
+
+        try {
+            const resp = await fetch('{% url "dashboard:presencial:quiz_submit" module.slug %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ answers }),
+            });
+
+            const data = await resp.json();
+            showResult(data);
+        } catch (err) {
+            alert('Error al enviar el quiz. Intentá de nuevo.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Finalizar Quiz';
+        }
+    });
+
+    function showResult(data) {
+        document.getElementById('quiz-section').classList.add('d-none');
+        const resultSection = document.getElementById('result-section');
+        resultSection.classList.remove('d-none');
+
+        const iconEl = document.getElementById('result-icon');
+        const scoreEl = document.getElementById('result-score');
+        const textEl = document.getElementById('result-text');
+
+        if (data.passed) {
+            iconEl.innerHTML = '<i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>';
+            scoreEl.innerHTML = `<span class="result-passed">${data.score}/${data.total}</span>`;
+            textEl.textContent = '¡Aprobado! Podés generar la planilla de asistencia.';
+        } else {
+            iconEl.innerHTML = '<i class="bi bi-x-circle-fill text-danger" style="font-size: 4rem;"></i>';
+            scoreEl.innerHTML = `<span class="result-failed">${data.score}/${data.total}</span>`;
+            textEl.textContent = 'No aprobado. Mínimo requerido: 8/10.';
+        }
+    }
+
+    // Iniciar
+    renderQuestion(0);
+})();
+</script>
+{% endblock %}
