@@ -4,9 +4,10 @@
 # ============================================================================
 
 import json
+from datetime import date
 
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
@@ -14,6 +15,7 @@ from django.views.decorators.http import require_POST
 from apps.accounts.decorators import professional_required
 from apps.quiz.models import Question
 from apps.training.models import TrainingModule
+from .pdf import build_planilla_presencial_pdf
 
 
 @login_required
@@ -118,3 +120,23 @@ def quiz_presencial_submit(request, module_slug):
             "module_title": module.title,
         }
     )
+
+
+@login_required
+@professional_required
+def planilla_pdf(request, module_slug):
+    """
+    Genera y descarga la planilla PDF de asistencia.
+    """
+    module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+
+    pdf_bytes = build_planilla_presencial_pdf(
+        module=module,
+        professional=request.user,
+    )
+
+    filename = f"planilla_{module.slug}_{date.today().strftime('%Y%m%d')}.pdf"
+
+    response = HttpResponse(pdf_bytes, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response

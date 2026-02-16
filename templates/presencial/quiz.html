@@ -88,8 +88,8 @@
                         <p id="result-text" class="lead mb-4"></p>
 
                         <div class="d-grid gap-3">
-                            <a href="#" aria-label="Disponible en próximos commits"
-                               class="btn btn-warning btn-lg" id="btn-planilla">
+                            <a href="{% url 'dashboard:presencial:planilla_pdf' module.slug %}"
+                               class="btn btn-warning btn-lg" id="btn-planilla" target="_blank">
                                 <i class="bi bi-file-earmark-pdf me-2"></i>Generar Planilla de Asistencia
                             </a>
                             <a href="{% url 'dashboard:presencial:capacitacion' module.slug %}"
