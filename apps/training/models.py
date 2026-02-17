@@ -112,3 +112,24 @@ class CapacitacionLink(models.Model):
 
     def get_absolute_url(self) -> str:
         return f"/c/{self.module.slug}/?ref={self.id}"
+
+
+class LinkShareLog(models.Model):
+    """Registro de envíos de links por email."""
+
+    link = models.ForeignKey(
+        CapacitacionLink,
+        on_delete=models.CASCADE,
+        related_name="share_logs",
+        verbose_name="Link",
+    )
+    shared_to_email = models.EmailField(verbose_name="Email destinatario")
+    shared_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-shared_at"]
+        verbose_name = "Envío de link"
+        verbose_name_plural = "Envíos de links"
+
+    def __str__(self):
+        return f"{self.link} → {self.shared_to_email}"

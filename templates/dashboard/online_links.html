@@ -90,9 +90,8 @@
                     <span class="badge bg-info me-2">
                         <i class="bi bi-eye me-1"></i>{{ link.access_count }} accesos
                     </span>
-                    <a href="#"
-                       aria-label="Disponible en próximos commits"
-                       class="btn btn-sm btn-outline-warning disabled" title="Enviar por email">
+                    <a href="{% url 'dashboard:share_link' module.slug link.id %}"
+                       class="btn btn-sm btn-outline-warning" title="Enviar por email">
                         <i class="bi bi-envelope"></i>
                     </a>
                 </div>

@@ -5,12 +5,16 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.conf import settings as django_settings
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.accounts.decorators import professional_required
 from apps.presencial.models import PresencialSession
-from apps.training.models import CapacitacionLink, TrainingModule
+from apps.training.models import CapacitacionLink, LinkShareLog, TrainingModule
+
+from .forms import ShareLinkForm
 
 
 @login_required
@@ -99,6 +103,72 @@ def generate_link(request, module_slug):
 
     messages.success(request, "Link generado exitosamente.")
     return redirect("dashboard:online_links", module_slug=module_slug)
+
+
+@login_required
+@professional_required
+def share_link(request, module_slug, link_id):
+    """
+    Formulario para compartir link por email.
+    """
+    module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+    link = get_object_or_404(
+        CapacitacionLink, id=link_id, module=module, created_by=request.user
+    )
+
+    if request.method == "POST":
+        form = ShareLinkForm(request.POST)
+        if form.is_valid():
+            emails = form.cleaned_data["emails"]
+            custom_message = form.cleaned_data.get("message", "")
+
+            link_url = f"{request.scheme}://{request.get_host()}{link.get_absolute_url()}"
+
+            sent_count = 0
+            for email in emails:
+                try:
+                    subject = f"Capacitación: {module.title} - ErgoSolutions"
+                    body = (
+                        f"Hola,\n\n"
+                        f"{request.user.display_name} te envía la siguiente capacitación:\n\n"
+                        f"📚 {module.title}\n\n"
+                    )
+                    if custom_message:
+                        body += f"Mensaje: {custom_message}\n\n"
+                    body += (
+                        f"Accedé al siguiente link para realizar la capacitación:\n"
+                        f"{link_url}\n\n"
+                        f"---\n"
+                        f"ErgoSolutions - Plataforma de Capacitación\n"
+                    )
+
+                    send_mail(
+                        subject=subject,
+                        message=body,
+                        from_email=django_settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[email],
+                        fail_silently=True,
+                    )
+
+                    LinkShareLog.objects.create(
+                        link=link,
+                        shared_to_email=email,
+                    )
+                    sent_count += 1
+
+                except Exception:
+                    pass  # No bloquear por fallos individuales
+
+            messages.success(request, f"Link enviado a {sent_count} email(s).")
+            return redirect("dashboard:online_links", module_slug=module_slug)
+    else:
+        form = ShareLinkForm()
+
+    return render(request, "dashboard/share_link.html", {
+        "module": module,
+        "link": link,
+        "form": form,
+    })
 
 
 @login_required
