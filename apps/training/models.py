@@ -3,7 +3,11 @@
 # COMMIT 16: Agregados campos icon, color, order para menu visual
 # ============================================================================
 
+import uuid
+
+from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class TrainingModule(models.Model):
@@ -55,3 +59,56 @@ class TrainingModule(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title} ({self.slug})"
+
+
+class CapacitacionLink(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    module = models.ForeignKey(
+        TrainingModule,
+        on_delete=models.CASCADE,
+        related_name="capacitacion_links",
+        verbose_name="Módulo de capacitación",
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="capacitacion_links",
+        verbose_name="Creado por",
+    )
+    label = models.CharField(
+        max_length=120,
+        blank=True,
+        default="",
+        verbose_name="Etiqueta",
+        help_text="Nombre interno para identificar el link (ej: Planta Norte - Turno Mañana).",
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de creación")
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Vence el",
+        help_text="Opcional. Si se define, el link deja de ser usable después de esta fecha/hora.",
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Activo")
+    access_count = models.PositiveIntegerField(default=0, verbose_name="Cantidad de accesos")
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Link de capacitación"
+        verbose_name_plural = "Links de capacitación"
+
+    def __str__(self):
+        return f"{self.module.title} - {self.id}"
+
+    @property
+    def is_expired(self) -> bool:
+        if not self.expires_at:
+            return False
+        return timezone.now() > self.expires_at
+
+    @property
+    def is_usable(self) -> bool:
+        return self.is_active and not self.is_expired
+
+    def get_absolute_url(self) -> str:
+        return f"/c/{self.module.slug}/?ref={self.id}"

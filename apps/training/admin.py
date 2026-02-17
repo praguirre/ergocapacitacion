@@ -5,7 +5,7 @@
 
 from django.contrib import admin
 
-from .models import TrainingModule
+from .models import CapacitacionLink, TrainingModule
 
 
 @admin.register(TrainingModule)
@@ -38,3 +38,11 @@ class TrainingModuleAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+@admin.register(CapacitacionLink)
+class CapacitacionLinkAdmin(admin.ModelAdmin):
+    list_display = ("module", "label", "created_by", "created_at", "is_active", "access_count")
+    list_filter = ("module", "is_active", "created_at")
+    search_fields = ("label", "created_by__email")
+    readonly_fields = ("id", "created_at", "access_count")
