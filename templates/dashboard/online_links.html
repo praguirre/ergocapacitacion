@@ -1,0 +1,136 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Links Online - {{ module.title }} - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb breadcrumb-dark">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:capacitaciones_menu' %}">Capacitaciones</a></li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'dashboard:modalidad_selector' module.slug %}">{{ module.title }}</a>
+            </li>
+            <li class="breadcrumb-item active">Links Online</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">
+                <i class="bi bi-globe me-2 text-primary"></i>
+                Modo Online — {{ module.title }}
+            </h3>
+            <p class="text-secondary mb-0">
+                Generá links para compartir la capacitación con los trabajadores.
+            </p>
+        </div>
+    </div>
+
+    <!-- Formulario para crear link -->
+    <div class="card bg-dark border-primary mb-4">
+        <div class="card-body">
+            <h5 class="card-title text-white mb-3">
+                <i class="bi bi-plus-circle me-2"></i>Generar nuevo link
+            </h5>
+            <form method="post" action="{% url 'dashboard:generate_link' module.slug %}" class="row g-3 align-items-end">
+                {% csrf_token %}
+                <div class="col-md-8">
+                    <label class="form-label text-secondary">Etiqueta (opcional)</label>
+                    <input type="text" name="label" class="form-control bg-black text-light border-secondary"
+                           placeholder="Ej: Empresa XYZ - Marzo 2026">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-link-45deg me-2"></i>Generar Link
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de links existentes -->
+    <h5 class="text-secondary mb-3">
+        <i class="bi bi-list-ul me-2"></i>Links generados ({{ links.count }})
+    </h5>
+
+    {% for link in links %}
+    <div class="card bg-dark border-secondary mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-5">
+                    <h6 class="text-white mb-1">
+                        {% if link.label %}{{ link.label }}{% else %}Link {{ link.id|truncatechars:12 }}{% endif %}
+                    </h6>
+                    <small class="text-secondary">
+                        Creado: {{ link.created_at|date:"d/m/Y H:i" }}
+                        {% if link.is_expired %}
+                            <span class="badge bg-danger ms-2">Expirado</span>
+                        {% elif not link.is_active %}
+                            <span class="badge bg-secondary ms-2">Inactivo</span>
+                        {% else %}
+                            <span class="badge bg-success ms-2">Activo</span>
+                        {% endif %}
+                    </small>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control bg-black text-light border-secondary"
+                               value="{{ request.scheme }}://{{ request.get_host }}{{ link.get_absolute_url }}"
+                               readonly id="link-{{ link.id }}">
+                        <button class="btn btn-outline-info" onclick="copyLink('{{ link.id }}')" title="Copiar">
+                            <i class="bi bi-clipboard" id="icon-{{ link.id }}"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    <span class="badge bg-info me-2">
+                        <i class="bi bi-eye me-1"></i>{{ link.access_count }} accesos
+                    </span>
+                    <a href="#"
+                       aria-label="Disponible en próximos commits"
+                       class="btn btn-sm btn-outline-warning disabled" title="Enviar por email">
+                        <i class="bi bi-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        No hay links generados para esta capacitación. Creá uno arriba.
+    </div>
+    {% endfor %}
+
+    <!-- Volver -->
+    <div class="mt-4">
+        <a href="{% url 'dashboard:modalidad_selector' module.slug %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Volver
+        </a>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyLink(linkId) {
+    const input = document.getElementById('link-' + linkId);
+    const icon = document.getElementById('icon-' + linkId);
+
+    navigator.clipboard.writeText(input.value).then(() => {
+        icon.className = 'bi bi-clipboard-check text-success';
+        setTimeout(() => { icon.className = 'bi bi-clipboard'; }, 2000);
+    }).catch(() => {
+        input.select();
+        document.execCommand('copy');
+        icon.className = 'bi bi-clipboard-check text-success';
+        setTimeout(() => { icon.className = 'bi bi-clipboard'; }, 2000);
+    });
+}
+</script>
+{% endblock %}
