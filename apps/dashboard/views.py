@@ -1,9 +1,10 @@
 # apps/dashboard/views.py
 # ============================================================================
-# COMMIT 15-23: Dashboard, Capacitaciones y Links Online
+# COMMIT 15-26: Dashboard, Capacitaciones, Links y Perfil
 # ============================================================================
 
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.conf import settings as django_settings
 from django.core.mail import send_mail
@@ -15,7 +16,7 @@ from apps.accounts.decorators import professional_required
 from apps.presencial.models import PresencialSession
 from apps.training.models import CapacitacionLink, LinkShareLog, TrainingModule
 
-from .forms import ShareLinkForm
+from .forms import ChangePasswordForm, ProfessionalProfileForm, ShareLinkForm
 
 
 @login_required
@@ -181,5 +182,49 @@ def share_link(request, module_slug, link_id):
 @login_required
 @professional_required
 def profile(request):
-    """Perfil del profesional (placeholder - se completa en Commit 26)."""
-    return render(request, "dashboard/profile.html")
+    """Perfil del profesional con edición y stats."""
+    user = request.user
+
+    profile_form = ProfessionalProfileForm(user=user)
+    password_form = ChangePasswordForm(user=user)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "update_profile":
+            profile_form = ProfessionalProfileForm(request.POST, user=user)
+            if profile_form.is_valid():
+                user.first_name = profile_form.cleaned_data["first_name"]
+                user.last_name = profile_form.cleaned_data["last_name"]
+                user.email = profile_form.cleaned_data["email"]
+                user.profession = profile_form.cleaned_data.get("profession", "")
+                user.license_number = profile_form.cleaned_data.get("license_number", "")
+                user.dni = profile_form.cleaned_data.get("dni", "")
+                user.save()
+                messages.success(request, "Perfil actualizado correctamente.")
+                return redirect("dashboard:profile")
+
+        elif action == "change_password":
+            password_form = ChangePasswordForm(request.POST, user=user)
+            if password_form.is_valid():
+                user.set_password(password_form.cleaned_data["new_password1"])
+                user.save()
+                # Re-autenticar para no cerrar sesión
+                update_session_auth_hash(request, user)
+                messages.success(request, "Contraseña actualizada correctamente.")
+                return redirect("dashboard:profile")
+
+    # Stats
+    presencial_count = PresencialSession.objects.filter(professional=user).count()
+    links_count = CapacitacionLink.objects.filter(created_by=user).count()
+    shares_count = LinkShareLog.objects.filter(link__created_by=user).count()
+
+    return render(request, "dashboard/profile.html", {
+        "profile_form": profile_form,
+        "password_form": password_form,
+        "stats": {
+            "presencial": presencial_count,
+            "links": links_count,
+            "shares": shares_count,
+        },
+    })
