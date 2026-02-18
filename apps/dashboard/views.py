@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings as django_settings
 from django.core.mail import send_mail
+from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -27,11 +28,17 @@ def home(request):
     presencial_count = PresencialSession.objects.filter(
         professional=request.user
     ).count()
+    links_count = CapacitacionLink.objects.filter(created_by=request.user).count()
+    total_accesses = (
+        CapacitacionLink.objects.filter(created_by=request.user)
+        .aggregate(total=models.Sum("access_count"))["total"]
+        or 0
+    )
 
     stats = {
         "capacitaciones_total": presencial_count,
-        "links_generados": 0,
-        "trabajadores_capacitados": 0,
+        "links_generados": links_count,
+        "trabajadores_capacitados": total_accesses,
     }
 
     return render(request, "dashboard/home.html", {

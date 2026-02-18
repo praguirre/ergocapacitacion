@@ -3,10 +3,10 @@
 # COMMIT 12: URLs reorganizadas + Landing pública ErgoSolutions
 # ============================================================================
 
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 
 urlpatterns = [
     # =========================================================================
@@ -47,17 +47,7 @@ urlpatterns = [
     # =========================================================================
     # Área de Capacitaciones - ACCESO VÍA LINK (Commit 22-25)
     # =========================================================================
-    # path('c/', include('apps.training.urls_public')),
-
-    # =========================================================================
-    # Gestión de Capacitaciones - PROFESIONALES (Commit 16-21)
-    # =========================================================================
-    # path('capacitaciones/', include('apps.dashboard.urls_capacitaciones')),
-
-    # =========================================================================
-    # Evaluaciones - PROFESIONALES (Futuro)
-    # =========================================================================
-    # path('evaluaciones/', include('apps.evaluaciones.urls')),
+    path("c/", include("apps.training.urls_public")),
 ]
 
 if settings.DEBUG:
