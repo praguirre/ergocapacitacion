@@ -1,0 +1,82 @@
+[
+    {
+        "model": "training.trainingmodule",
+        "fields": {
+            "slug": "ergonomia",
+            "title": "Ergonomía y Prevención de Riesgos",
+            "description": "Capacitación sobre factores de riesgo ergonómicos en puestos de trabajo. Incluye video, asistente IA y evaluación con certificación.",
+            "youtube_id": "IIgZp_NbsAE",
+            "icon": "bi-body-text",
+            "color": "#28a745",
+            "order": 1,
+            "is_active": true,
+            "intro_md": "",
+            "material_md": "",
+            "transcript_md": ""
+        }
+    },
+    {
+        "model": "training.trainingmodule",
+        "fields": {
+            "slug": "riesgo-electrico",
+            "title": "Riesgo Eléctrico",
+            "description": "Prevención de accidentes por contacto eléctrico directo e indirecto. Normas de seguridad y procedimientos de bloqueo/etiquetado.",
+            "youtube_id": "",
+            "icon": "bi-lightning-charge",
+            "color": "#ffc107",
+            "order": 2,
+            "is_active": false,
+            "intro_md": "",
+            "material_md": "",
+            "transcript_md": ""
+        }
+    },
+    {
+        "model": "training.trainingmodule",
+        "fields": {
+            "slug": "trabajo-en-altura",
+            "title": "Trabajo en Altura",
+            "description": "Medidas de prevención para tareas en altura. Uso de arnés, líneas de vida y sistemas de protección contra caídas.",
+            "youtube_id": "",
+            "icon": "bi-building-up",
+            "color": "#17a2b8",
+            "order": 3,
+            "is_active": false,
+            "intro_md": "",
+            "material_md": "",
+            "transcript_md": ""
+        }
+    },
+    {
+        "model": "training.trainingmodule",
+        "fields": {
+            "slug": "prevencion-incendios",
+            "title": "Prevención de Incendios",
+            "description": "Prevención, detección y combate de incendios. Uso de extintores, evacuación y plan de emergencia.",
+            "youtube_id": "",
+            "icon": "bi-fire",
+            "color": "#dc3545",
+            "order": 4,
+            "is_active": false,
+            "intro_md": "",
+            "material_md": "",
+            "transcript_md": ""
+        }
+    },
+    {
+        "model": "training.trainingmodule",
+        "fields": {
+            "slug": "elementos-proteccion-personal",
+            "title": "Elementos de Protección Personal",
+            "description": "Selección, uso correcto y mantenimiento de EPP según el tipo de riesgo laboral.",
+            "youtube_id": "",
+            "icon": "bi-shield-check",
+            "color": "#6f42c1",
+            "order": 5,
+            "is_active": false,
+            "intro_md": "",
+            "material_md": "",
+            "transcript_md": ""
+        }
+    }
+]
