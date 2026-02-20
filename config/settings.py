@@ -2,6 +2,7 @@
 from pathlib import Path
 import os
 import environ
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -155,6 +156,7 @@ EMAIL_BACKEND = env(
 EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=False)
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 
@@ -164,8 +166,25 @@ DEFAULT_FROM_EMAIL = env(
     default="Capacitación Ergonomía <no-reply@ergocap.local>"
 )
 
+# Para emails de error de Django (500 errors → ADMINS)
+SERVER_EMAIL = env("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
+
 # Email del administrador que recibe copia de certificados
 ADMIN_EMAIL = env("ADMIN_EMAIL", default="")
+
+# Validar credenciales SMTP en producción
+_is_smtp_backend = "smtp" in EMAIL_BACKEND.lower()
+if _is_smtp_backend and not DEBUG:
+    _missing = []
+    if not EMAIL_HOST_USER:
+        _missing.append("EMAIL_HOST_USER")
+    if not EMAIL_HOST_PASSWORD:
+        _missing.append("EMAIL_HOST_PASSWORD")
+    if _missing:
+        raise ImproperlyConfigured(
+            f"SMTP email backend activo pero falta{'n' if len(_missing) > 1 else ''}: "
+            f"{', '.join(_missing)}. Agregalos al archivo .env"
+        )
 
 # =====================================================
 # OPENAI API (para Ergobot)
