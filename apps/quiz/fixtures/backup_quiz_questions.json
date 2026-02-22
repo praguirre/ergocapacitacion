@@ -1,0 +1,542 @@
+[
+{
+  "model": "quiz.question",
+  "pk": 11,
+  "fields": {
+    "module": 1,
+    "order": 1,
+    "text": "Según el video, ¿cuál es la idea central de la ergonomía?",
+    "explanation_correct": "La ergonomía busca que el trabajo se adapte a la persona y no al revés, para prevenir daños que se acumulan con el tiempo."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 12,
+  "fields": {
+    "module": 1,
+    "order": 2,
+    "text": "¿Qué diferencia principal marca el video entre un accidente y una enfermedad profesional?",
+    "explanation_correct": "El accidente es súbito e inesperado; la enfermedad profesional se gesta con el tiempo por exposición repetida a riesgos."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 13,
+  "fields": {
+    "module": 1,
+    "order": 3,
+    "text": "Para que una dolencia sea reconocida legalmente como enfermedad profesional, ¿qué condiciones deben cumplirse?",
+    "explanation_correct": "Debe existir un agente de riesgo laboral, un diagnóstico médico claro y una relación directa entre el riesgo y la enfermedad."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 14,
+  "fields": {
+    "module": 1,
+    "order": 4,
+    "text": "El video menciona siete factores de riesgo ergonómico. ¿Cuál de los siguientes NO es uno de ellos?",
+    "explanation_correct": "Los 7 factores mencionados son: manejo de cargas, posturas forzadas, movimientos repetitivos, estar de pie por mucho tiempo, vibraciones, frío/calor excesivo y presión constante (estrés por contacto)."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 15,
+  "fields": {
+    "module": 1,
+    "order": 5,
+    "text": "¿Por qué es especialmente riesgoso manipular una carga pesada e inestable con mal agarre?",
+    "explanation_correct": "Cuando el agarre es malo y el peso se mueve, aumenta mucho el riesgo de lesión, especialmente en la zona lumbar."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 16,
+  "fields": {
+    "module": 1,
+    "order": 6,
+    "text": "Según el video, levantar cargas por encima de los hombros es muy peligroso principalmente porque…",
+    "explanation_correct": "Al levantar por encima de los hombros, el cuerpo pierde ventaja mecánica y la tensión en hombros y cuello aumenta mucho."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 17,
+  "fields": {
+    "module": 1,
+    "order": 7,
+    "text": "El video compara la presión en la espalda al levantar una caja de 25 kg 'bien' vs 'mal'. ¿Qué valores menciona?",
+    "explanation_correct": "Menciona aproximadamente 75 kg de presión si se levanta bien vs 375 kg si se levanta mal (cinco veces más)."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 18,
+  "fields": {
+    "module": 1,
+    "order": 8,
+    "text": "¿Cuáles son las 'cuatro reglas de oro' para levantar cargas que se mencionan en el video?",
+    "explanation_correct": "1) Base estable y buen agarre con toda la mano. 2) Fuerza desde las piernas con espalda recta. 3) Carga pegada al cuerpo. 4) No girar la cintura; girar moviendo los pies."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 19,
+  "fields": {
+    "module": 1,
+    "order": 9,
+    "text": "Según el video, ¿cuál es el peso máximo recomendado para levantar de forma rutinaria?",
+    "explanation_correct": "El video menciona 25 kg como límite recomendado para levantamiento rutinario. Si pesa más, se requiere ayuda mecánica o de otra persona."
+  }
+},
+{
+  "model": "quiz.question",
+  "pk": 20,
+  "fields": {
+    "module": 1,
+    "order": 10,
+    "text": "Si aparece dolor o un síntoma, ¿qué indica el protocolo del video y cuál es la herramienta preventiva más efectiva?",
+    "explanation_correct": "Protocolo: avisar inmediatamente, gestionar atención médica por la aseguradora y no volver a la tarea hasta el alta. Prevención: la pausa activa."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 41,
+  "fields": {
+    "question": 11,
+    "label": "A",
+    "text": "Comprar una silla cómoda para estar mejor.",
+    "is_correct": false,
+    "explanation_if_chosen": "La ergonomía no se limita a la silla; se trata de adaptar el trabajo a la persona."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 42,
+  "fields": {
+    "question": 11,
+    "label": "B",
+    "text": "Que el trabajo se adapte a la persona y no al revés.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 43,
+  "fields": {
+    "question": 11,
+    "label": "C",
+    "text": "Evitar accidentes visibles como resbalones y caídas únicamente.",
+    "is_correct": false,
+    "explanation_if_chosen": "Los accidentes visibles son una parte; el foco del video está en daños acumulativos."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 44,
+  "fields": {
+    "question": 11,
+    "label": "D",
+    "text": "Trabajar con más fuerza para terminar más rápido.",
+    "is_correct": false,
+    "explanation_if_chosen": "Trabajar con más fuerza no previene lesiones; puede aumentarlas."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 45,
+  "fields": {
+    "question": 12,
+    "label": "A",
+    "text": "La enfermedad profesional ocurre por una caída y el accidente por postura.",
+    "is_correct": false,
+    "explanation_if_chosen": "Está invertido: la caída es accidente; la postura sostenida contribuye a enfermedad profesional."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 46,
+  "fields": {
+    "question": 12,
+    "label": "B",
+    "text": "La enfermedad profesional siempre aparece de un día para otro.",
+    "is_correct": false,
+    "explanation_if_chosen": "En el video se explica que es un daño silencioso y progresivo."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 47,
+  "fields": {
+    "question": 12,
+    "label": "C",
+    "text": "El accidente es súbito; la enfermedad profesional se desarrolla con el tiempo.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 48,
+  "fields": {
+    "question": 12,
+    "label": "D",
+    "text": "No hay diferencias, son lo mismo.",
+    "is_correct": false,
+    "explanation_if_chosen": "Legal y clínicamente se diferencian por su forma de aparición y criterios."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 49,
+  "fields": {
+    "question": 13,
+    "label": "A",
+    "text": "Agente de riesgo + diagnóstico médico + relación directa con el trabajo.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 50,
+  "fields": {
+    "question": 13,
+    "label": "B",
+    "text": "Solo tener dolor y haber trabajado muchos años.",
+    "is_correct": false,
+    "explanation_if_chosen": "El video remarca que se requieren criterios específicos, no solo antigüedad o dolor."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 51,
+  "fields": {
+    "question": 13,
+    "label": "C",
+    "text": "Que el jefe lo confirme y el trabajador lo firme.",
+    "is_correct": false,
+    "explanation_if_chosen": "No es un criterio médico-legal válido."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 52,
+  "fields": {
+    "question": 13,
+    "label": "D",
+    "text": "Que sea una lesión visible como un golpe.",
+    "is_correct": false,
+    "explanation_if_chosen": "Las enfermedades profesionales pueden no ser visibles al inicio."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 53,
+  "fields": {
+    "question": 14,
+    "label": "A",
+    "text": "Movimientos repetitivos.",
+    "is_correct": false,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 54,
+  "fields": {
+    "question": 14,
+    "label": "B",
+    "text": "Vibraciones de herramientas.",
+    "is_correct": false,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 55,
+  "fields": {
+    "question": 14,
+    "label": "C",
+    "text": "Manejo manual de cargas.",
+    "is_correct": false,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 56,
+  "fields": {
+    "question": 14,
+    "label": "D",
+    "text": "Exposición a radiación ionizante.",
+    "is_correct": true,
+    "explanation_if_chosen": "Ese factor no aparece en la lista de 7 riesgos ergonómicos del video."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 57,
+  "fields": {
+    "question": 15,
+    "label": "A",
+    "text": "Porque solo se lastiman las manos.",
+    "is_correct": false,
+    "explanation_if_chosen": "El video destaca el riesgo de espalda/lumbar, no solo manos."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 58,
+  "fields": {
+    "question": 15,
+    "label": "B",
+    "text": "Porque aumenta mucho el riesgo de lesión lumbar por inestabilidad y mal agarre.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 59,
+  "fields": {
+    "question": 15,
+    "label": "C",
+    "text": "Porque el cuerpo se vuelve más fuerte y resistente.",
+    "is_correct": false,
+    "explanation_if_chosen": "No: incrementa la probabilidad de lesión."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 60,
+  "fields": {
+    "question": 15,
+    "label": "D",
+    "text": "Porque es seguro si la carga es un saco y no una caja.",
+    "is_correct": false,
+    "explanation_if_chosen": "El tipo de objeto no elimina el riesgo; lo clave es peso, agarre y postura."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 61,
+  "fields": {
+    "question": 16,
+    "label": "A",
+    "text": "Porque se ve mal ante los compañeros.",
+    "is_correct": false,
+    "explanation_if_chosen": "No es un motivo ergonómico."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 62,
+  "fields": {
+    "question": 16,
+    "label": "B",
+    "text": "Porque mejora la postura automáticamente.",
+    "is_correct": false,
+    "explanation_if_chosen": "No: aumenta la carga sobre cuello/hombros."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 63,
+  "fields": {
+    "question": 16,
+    "label": "C",
+    "text": "Porque se pierde ventaja mecánica y sube la tensión en hombros y cuello.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 64,
+  "fields": {
+    "question": 16,
+    "label": "D",
+    "text": "Porque la carga pesa menos en esa posición.",
+    "is_correct": false,
+    "explanation_if_chosen": "No: la exigencia biomecánica aumenta."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 65,
+  "fields": {
+    "question": 17,
+    "label": "A",
+    "text": "75 kg vs 375 kg.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 66,
+  "fields": {
+    "question": 17,
+    "label": "B",
+    "text": "25 kg vs 50 kg.",
+    "is_correct": false,
+    "explanation_if_chosen": "El video habla de presión resultante mucho mayor que el peso real."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 67,
+  "fields": {
+    "question": 17,
+    "label": "C",
+    "text": "100 kg vs 200 kg.",
+    "is_correct": false,
+    "explanation_if_chosen": "Los valores citados en el video son 75 y 375."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 68,
+  "fields": {
+    "question": 17,
+    "label": "D",
+    "text": "375 kg vs 75 kg.",
+    "is_correct": false,
+    "explanation_if_chosen": "Está invertido: la mala técnica aumenta la presión."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 69,
+  "fields": {
+    "question": 18,
+    "label": "A",
+    "text": "Espalda redonda, piernas estiradas, girar cintura, carga lejos.",
+    "is_correct": false,
+    "explanation_if_chosen": "Son exactamente los errores que aumentan el riesgo."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 70,
+  "fields": {
+    "question": 18,
+    "label": "B",
+    "text": "Apoyar la carga en el cuello, levantar rápido, girar tronco, mirar hacia abajo.",
+    "is_correct": false,
+    "explanation_if_chosen": "No corresponde a las reglas del video."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 71,
+  "fields": {
+    "question": 18,
+    "label": "C",
+    "text": "Separar los pies, pero levantar con la espalda y girar con la cintura.",
+    "is_correct": false,
+    "explanation_if_chosen": "La regla clave es usar piernas y NO girar cintura con carga."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 72,
+  "fields": {
+    "question": 18,
+    "label": "D",
+    "text": "Base estable y buen agarre + fuerza desde piernas con espalda recta + carga cerca + girar con los pies, no con la cintura.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 73,
+  "fields": {
+    "question": 19,
+    "label": "A",
+    "text": "15 kg.",
+    "is_correct": false,
+    "explanation_if_chosen": "El valor mencionado en el video es 25 kg."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 74,
+  "fields": {
+    "question": 19,
+    "label": "B",
+    "text": "25 kg.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 75,
+  "fields": {
+    "question": 19,
+    "label": "C",
+    "text": "35 kg.",
+    "is_correct": false,
+    "explanation_if_chosen": "El video marca 25 kg como límite recomendado."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 76,
+  "fields": {
+    "question": 19,
+    "label": "D",
+    "text": "No existe un límite recomendado.",
+    "is_correct": false,
+    "explanation_if_chosen": "Sí: el video indica un límite claro."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 77,
+  "fields": {
+    "question": 20,
+    "label": "A",
+    "text": "Avisar, gestionar atención médica por aseguradora y no volver sin alta; la herramienta preventiva es la pausa activa.",
+    "is_correct": true,
+    "explanation_if_chosen": ""
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 78,
+  "fields": {
+    "question": 20,
+    "label": "B",
+    "text": "Aguantar el dolor, automedicarse y seguir trabajando; la prevención es trabajar más rápido.",
+    "is_correct": false,
+    "explanation_if_chosen": "El video dice lo contrario: no ocultar dolor y no volver sin alta."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 79,
+  "fields": {
+    "question": 20,
+    "label": "C",
+    "text": "Cambiar solo la silla; la prevención es evitar hablar del tema.",
+    "is_correct": false,
+    "explanation_if_chosen": "La silla no es la solución única y ocultar síntomas es un error."
+  }
+},
+{
+  "model": "quiz.choice",
+  "pk": 80,
+  "fields": {
+    "question": 20,
+    "label": "D",
+    "text": "Esperar una semana y ver si se pasa; la prevención es no moverse durante la jornada.",
+    "is_correct": false,
+    "explanation_if_chosen": "El video remarca que el cuerpo está hecho para moverse y que no hay que ocultar síntomas."
+  }
+}
+]
