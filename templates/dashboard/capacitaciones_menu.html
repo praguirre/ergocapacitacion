@@ -25,9 +25,17 @@
         </div>
     </div>
 
-    <!-- Grid de capacitaciones -->
-    <div class="row g-4">
-        {% for module in modules %}
+    <div class="row mb-3">
+        <div class="col">
+            <h4 class="text-secondary mb-0">
+                <i class="bi bi-collection me-2"></i>Capacitaciones Generales
+            </h4>
+            <small class="text-muted">Disponibles para todos los profesionales</small>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        {% for module in general_modules %}
         <div class="col-sm-6 col-lg-4 col-xl-3">
             {% if module.is_active %}
             <a href="{% url 'dashboard:modalidad_selector' module.slug %}" class="text-decoration-none">
@@ -60,11 +68,63 @@
         <div class="col-12">
             <div class="alert alert-info">
                 <i class="bi bi-info-circle me-2"></i>
-                No hay capacitaciones cargadas aún. Contactá al administrador.
+                No hay capacitaciones generales cargadas aún. Contactá al administrador.
             </div>
         </div>
         {% endfor %}
     </div>
+
+    {% if has_personalized %}
+    <div class="row mb-3">
+        <div class="col">
+            <h4 class="text-secondary mb-0">
+                <i class="bi bi-shield-lock me-2"></i>Mis Capacitaciones Personalizadas
+            </h4>
+            <small class="text-muted">Disponibles solo para profesionales asignados</small>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for module in personalized_modules %}
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+            {% if module.is_active %}
+            <a href="{% url 'dashboard:modalidad_selector' module.slug %}" class="text-decoration-none">
+            {% endif %}
+                <div class="card training-card bg-dark border-info h-100 {% if not module.is_active %}disabled-card{% endif %}">
+                    <div class="card-body text-center py-4">
+                        <div class="card-icon mx-auto" style="background-color: {{ module.color }}20;">
+                            <i class="{{ module.icon }}" style="color: {{ module.color }};"></i>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-info text-dark">
+                                <i class="bi bi-shield-lock me-1"></i>Personalizada
+                            </span>
+                        </div>
+                        <h5 class="card-title text-white mb-2">{{ module.title }}</h5>
+                        {% if module.company_name_custom %}
+                        <p class="text-info small mb-2">{{ module.company_name_custom }}</p>
+                        {% endif %}
+                        <p class="card-text text-secondary small mb-3">
+                            {{ module.description|default:"Capacitación personalizada disponible." }}
+                        </p>
+                        {% if module.is_active %}
+                            <span class="badge bg-success px-3 py-1">
+                                <i class="bi bi-check-circle me-1"></i>Disponible
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark px-3 py-1">
+                                <i class="bi bi-clock me-1"></i>Próximamente
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% if module.is_active %}
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
 </div>
 {% endblock %}

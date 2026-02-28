@@ -17,6 +17,7 @@ from apps.presencial.models import PresencialSession
 from apps.training.models import CapacitacionLink, LinkShareLog, TrainingModule
 
 from .forms import ChangePasswordForm, ProfessionalProfileForm, ShareLinkForm
+from .utils import check_module_access
 
 
 @login_required
@@ -54,10 +55,13 @@ def capacitaciones_menu(request):
     Menu de capacitaciones disponibles.
     Muestra grid de cards con iconos y estados.
     """
-    modules = TrainingModule.objects.all()
+    general_modules = TrainingModule.get_general_modules()
+    personalized_modules = TrainingModule.get_personalized_for_user(request.user)
 
     return render(request, "dashboard/capacitaciones_menu.html", {
-        "modules": modules,
+        "general_modules": general_modules,
+        "personalized_modules": personalized_modules,
+        "has_personalized": personalized_modules.exists(),
     })
 
 
@@ -68,6 +72,9 @@ def modalidad_selector(request, module_slug):
     Selector de modalidad: Presencial u Online.
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+    access_error = check_module_access(module, request.user)
+    if access_error:
+        return access_error
 
     return render(request, "dashboard/modalidad_selector.html", {
         "module": module,
@@ -82,6 +89,9 @@ def online_links(request, module_slug):
     Lista links existentes y permite crear nuevos.
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+    access_error = check_module_access(module, request.user)
+    if access_error:
+        return access_error
 
     links = CapacitacionLink.objects.filter(
         module=module,
@@ -100,6 +110,9 @@ def online_links(request, module_slug):
 def generate_link(request, module_slug):
     """Genera un nuevo link de capacitación."""
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+    access_error = check_module_access(module, request.user)
+    if access_error:
+        return access_error
 
     label = request.POST.get("label", "").strip()
 
@@ -120,6 +133,10 @@ def share_link(request, module_slug, link_id):
     Formulario para compartir link por email.
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+    access_error = check_module_access(module, request.user)
+    if access_error:
+        return access_error
+
     link = get_object_or_404(
         CapacitacionLink, id=link_id, module=module, created_by=request.user
     )
