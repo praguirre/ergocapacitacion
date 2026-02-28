@@ -49,6 +49,41 @@ class TrainingModule(models.Model):
 
     is_active = models.BooleanField(default=False, verbose_name="¿Está activo?")
 
+    is_personalized = models.BooleanField(
+        default=False,
+        verbose_name="¿Es personalizada?",
+        help_text="Si es True, solo los profesionales asignados pueden ver esta capacitación.",
+    )
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="requested_trainings",
+        verbose_name="Solicitada por",
+        help_text="Profesional que solicitó esta capacitación personalizada.",
+    )
+    assigned_professionals = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="personalized_trainings",
+        verbose_name="Profesionales asignados",
+        help_text="Profesionales que pueden ver y acceder a esta capacitación.",
+    )
+    company_name_custom = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        verbose_name="Empresa/Cliente",
+        help_text="Nombre de la empresa o cliente para esta capacitación personalizada.",
+    )
+    custom_notes = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Notas internas",
+        help_text="Notas internas sobre esta capacitación (no visibles para los usuarios).",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -59,6 +94,25 @@ class TrainingModule(models.Model):
 
     def __str__(self) -> str:
         return f"{self.title} ({self.slug})"
+
+    @classmethod
+    def get_general_modules(cls):
+        return cls.objects.filter(is_personalized=False)
+
+    @classmethod
+    def get_personalized_for_user(cls, user):
+        if not getattr(user, "is_authenticated", False):
+            return cls.objects.none()
+        return cls.objects.filter(is_personalized=True, assigned_professionals=user)
+
+    @classmethod
+    def get_all_for_user(cls, user):
+        if not getattr(user, "is_authenticated", False):
+            return cls.get_general_modules()
+        return cls.objects.filter(
+            models.Q(is_personalized=False)
+            | models.Q(is_personalized=True, assigned_professionals=user)
+        ).distinct()
 
 
 class CapacitacionLink(models.Model):
