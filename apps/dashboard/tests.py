@@ -134,3 +134,112 @@ class PublicLinkTests(TestCase):
         self.client.get(url)
         self.link.refresh_from_db()
         self.assertEqual(self.link.access_count, 1)
+
+
+@override_settings(STORAGES=TEST_STORAGES)
+class PersonalizedTrainingAccessTests(TestCase):
+    """Tests de visibilidad y acceso para capacitaciones personalizadas."""
+
+    def setUp(self):
+        self.client = Client()
+        self.professional_a = User.objects.create_professional(
+            email="proa@test.com",
+            password="testpass123",
+            username="proauser",
+            first_name="Profesional",
+            last_name="A",
+        )
+        self.professional_b = User.objects.create_professional(
+            email="prob@test.com",
+            password="testpass123",
+            username="probuser",
+            first_name="Profesional",
+            last_name="B",
+        )
+        self.general_module = TrainingModule.objects.create(
+            slug="general-module",
+            title="Módulo General",
+            youtube_id="general123",
+            is_active=True,
+            is_personalized=False,
+            icon="bi-book",
+            color="#28a745",
+            order=1,
+        )
+        self.personalized_module = TrainingModule.objects.create(
+            slug="personalized-module",
+            title="Módulo Personalizado",
+            youtube_id="personal123",
+            is_active=True,
+            is_personalized=True,
+            requested_by=self.professional_a,
+            company_name_custom="Acme S.A.",
+            icon="bi-shield-lock",
+            color="#17a2b8",
+            order=2,
+        )
+        self.personalized_module.assigned_professionals.add(self.professional_a)
+
+    def test_professional_a_sees_general_and_personalized_modules(self):
+        self.client.force_login(self.professional_a)
+
+        response = self.client.get(reverse("dashboard:capacitaciones_menu"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Módulo General")
+        self.assertContains(response, "Módulo Personalizado")
+        self.assertContains(response, "Mis Capacitaciones Personalizadas")
+
+    def test_professional_b_sees_only_general_modules(self):
+        self.client.force_login(self.professional_b)
+
+        response = self.client.get(reverse("dashboard:capacitaciones_menu"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Módulo General")
+        self.assertNotContains(response, "Módulo Personalizado")
+        self.assertNotContains(response, "Mis Capacitaciones Personalizadas")
+
+    def test_professional_b_gets_403_on_personalized_modalidad_selector(self):
+        self.client.force_login(self.professional_b)
+
+        response = self.client.get(
+            reverse("dashboard:modalidad_selector", args=[self.personalized_module.slug])
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_professional_a_can_access_personalized_modalidad_selector(self):
+        self.client.force_login(self.professional_a)
+
+        response = self.client.get(
+            reverse("dashboard:modalidad_selector", args=[self.personalized_module.slug])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Módulo Personalizado")
+
+    def test_professional_b_gets_403_on_personalized_online_links(self):
+        self.client.force_login(self.professional_b)
+
+        response = self.client.get(
+            reverse("dashboard:online_links", args=[self.personalized_module.slug])
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_professional_b_cannot_generate_link_for_unassigned_personalized_module(self):
+        self.client.force_login(self.professional_b)
+
+        response = self.client.post(
+            reverse("dashboard:generate_link", args=[self.personalized_module.slug]),
+            {"label": "Intento no autorizado"},
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(
+            CapacitacionLink.objects.filter(
+                module=self.personalized_module,
+                created_by=self.professional_b,
+            ).exists()
+        )
