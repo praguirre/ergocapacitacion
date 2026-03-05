@@ -45,6 +45,17 @@ urlpatterns = [
     ),
 
     # =========================================================================
+    # Autenticación de Empresas (Etapa 3, Commit 32) - CON NAMESPACE
+    # =========================================================================
+    path(
+        "empresa/auth/",
+        include(
+            ("apps.accounts.urls_company", "accounts_company"),
+            namespace="accounts_company",
+        ),
+    ),
+
+    # =========================================================================
     # Área de Capacitaciones - ACCESO VÍA LINK (Commit 22-25)
     # =========================================================================
     path("c/", include("apps.training.urls_public")),

@@ -1,0 +1,162 @@
+{% extends "base_landing.html" %}
+{% load static %}
+
+{% block title %}Registro de Empresa - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="text-center mb-4" style="margin-top: 80px;">
+                <h2 class="fw-bold">
+                    <i class="bi bi-building me-2 text-primary"></i>Registrar Empresa
+                </h2>
+                <p class="text-secondary">
+                    Creá tu cuenta empresa para gestionar capacitaciones, trabajadores y vencimientos.
+                </p>
+            </div>
+
+            <div class="card bg-dark border-secondary">
+                <div class="card-body p-4">
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Sección: Datos de la empresa -->
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-building me-1"></i> Datos de la empresa
+                        </h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.razon_social.label }} *</label>
+                                {{ form.razon_social }}
+                                {% if form.razon_social.errors %}
+                                <div class="text-danger small mt-1">{{ form.razon_social.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.nombre_comercial.label }}</label>
+                                {{ form.nombre_comercial }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.cuit.label }} *</label>
+                                {{ form.cuit }}
+                                {% if form.cuit.errors %}
+                                <div class="text-danger small mt-1">{{ form.cuit.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.rubro.label }}</label>
+                                {{ form.rubro }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.cantidad_trabajadores.label }}</label>
+                                {{ form.cantidad_trabajadores }}
+                            </div>
+                        </div>
+
+                        <!-- Sección: Contacto principal -->
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-person-badge me-1"></i> Contacto principal
+                        </h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.contacto_nombre.label }} *</label>
+                                {{ form.contacto_nombre }}
+                                {% if form.contacto_nombre.errors %}
+                                <div class="text-danger small mt-1">{{ form.contacto_nombre.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.contacto_cargo.label }}</label>
+                                {{ form.contacto_cargo }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.contacto_telefono.label }}</label>
+                                {{ form.contacto_telefono }}
+                            </div>
+                        </div>
+
+                        <!-- Sección: Ubicación -->
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-geo-alt me-1"></i> Ubicación
+                        </h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <label class="form-label">{{ form.domicilio.label }}</label>
+                                {{ form.domicilio }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.provincia.label }}</label>
+                                {{ form.provincia }}
+                            </div>
+                        </div>
+
+                        <!-- Sección: Datos de acceso -->
+                        <h5 class="text-primary mb-3">
+                            <i class="bi bi-key me-1"></i> Datos de acceso
+                        </h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label">{{ form.email.label }} *</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.password1.label }} *</label>
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+                                {% endif %}
+                                <small class="text-muted">Mínimo 8 caracteres</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.password2.label }} *</label>
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mt-2">
+                            <i class="bi bi-building-add me-2"></i>Registrar Empresa
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small class="text-secondary">
+                            ¿Ya tenés cuenta empresa?
+                            <a href="{% url 'accounts_company:company_login' %}" class="text-primary">Ingresá</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Link cruzado a profesional -->
+            <div class="card bg-secondary mt-3">
+                <div class="card-body py-3 text-center">
+                    <small class="text-dark">
+                        ¿Sos profesional?
+                        <a href="{% url 'accounts_professional:professional_login' %}" class="text-dark fw-bold">
+                            Ingresá como profesional
+                        </a>
+                    </small>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

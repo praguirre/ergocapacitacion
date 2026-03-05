@@ -185,3 +185,158 @@ class ProfessionalLoginForm(forms.Form):
         label="Contraseña",
         widget=forms.PasswordInput(attrs={"placeholder": "••••••••"}),
     )
+
+
+# ============================================================================
+# COMMIT 32: Formulario de registro de Empresa
+# ============================================================================
+
+import re as _re
+
+
+def normalize_cuit(value: str) -> str:
+    """Normaliza CUIT: extrae solo dígitos y valida longitud 11."""
+    digits = _re.sub(r"\D", "", (value or "").strip())
+    if len(digits) != 11:
+        raise forms.ValidationError("CUIT inválido (debe tener 11 dígitos).")
+    return digits
+
+
+class CompanyRegisterForm(forms.Form):
+    """
+    Formulario de registro para empresas.
+    Crea tanto el CustomUser como el CompanyProfile.
+    """
+
+    # --- Datos de la empresa ---
+    razon_social = forms.CharField(
+        label='Razón social',
+        max_length=300,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': 'Ej: Acme S.A.',
+        }),
+    )
+    nombre_comercial = forms.CharField(
+        label='Nombre comercial (opcional)',
+        max_length=300,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': 'Nombre de fantasía',
+        }),
+    )
+    cuit = forms.CharField(
+        label='CUIT',
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': '20-12345678-9',
+        }),
+        help_text='Ingresá solo números o con guiones.',
+    )
+    rubro = forms.CharField(
+        label='Rubro / Actividad',
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': 'Ej: Construcción, Alimentos, etc.',
+        }),
+    )
+    cantidad_trabajadores = forms.IntegerField(
+        label='Cantidad aprox. de trabajadores',
+        min_value=0,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': '0',
+        }),
+    )
+
+    # --- Contacto principal ---
+    contacto_nombre = forms.CharField(
+        label='Nombre del contacto principal',
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': 'Nombre y apellido',
+        }),
+    )
+    contacto_cargo = forms.CharField(
+        label='Cargo del contacto',
+        max_length=200,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': 'Ej: Responsable RRHH',
+        }),
+    )
+    contacto_telefono = forms.CharField(
+        label='Teléfono',
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': '+54 11 XXXX-XXXX',
+        }),
+    )
+
+    # --- Ubicación ---
+    domicilio = forms.CharField(
+        label='Domicilio',
+        max_length=400,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+        }),
+    )
+    provincia = forms.CharField(
+        label='Provincia',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+        }),
+    )
+
+    # --- Datos de acceso ---
+    email = forms.EmailField(
+        label='Email de acceso',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': 'empresa@ejemplo.com',
+        }),
+    )
+    password1 = forms.CharField(
+        label='Contraseña',
+        min_length=8,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+        }),
+    )
+    password2 = forms.CharField(
+        label='Confirmar contraseña',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+        }),
+    )
+
+    def clean_cuit(self):
+        return normalize_cuit(self.cleaned_data['cuit'])
+
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('Ya existe una cuenta con este email.')
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        p1 = cleaned_data.get('password1')
+        p2 = cleaned_data.get('password2')
+        if p1 and p2 and p1 != p2:
+            self.add_error('password2', 'Las contraseñas no coinciden.')
+        return cleaned_data
