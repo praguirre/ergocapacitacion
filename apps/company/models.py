@@ -143,3 +143,58 @@ class CompanyProfile(models.Model):
     def display_name(self):
         """Nombre corto para mostrar en la UI."""
         return self.nombre_comercial or self.razon_social
+
+
+class CompanyWorker(models.Model):
+    """Relación formal entre una empresa y un trabajador (trainee)."""
+
+    company = models.ForeignKey(
+        CompanyProfile, on_delete=models.CASCADE,
+        related_name='workers', verbose_name='Empresa',
+    )
+    worker = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='company_assignments', verbose_name='Trabajador',
+        limit_choices_to={'user_type': 'trainee'},
+    )
+    employee_code = models.CharField(
+        max_length=50, blank=True, default='',
+        verbose_name='Legajo',
+    )
+    department = models.CharField(
+        max_length=200, blank=True, default='',
+        verbose_name='Sector',
+    )
+    position = models.CharField(
+        max_length=200, blank=True, default='',
+        verbose_name='Puesto',
+    )
+    is_active = models.BooleanField(default=True, verbose_name='Activo')
+    start_date = models.DateField(
+        null=True, blank=True,
+        verbose_name='Fecha inicio',
+    )
+    end_date = models.DateField(
+        null=True, blank=True,
+        verbose_name='Fecha baja',
+    )
+    notes = models.TextField(
+        blank=True, default='',
+        verbose_name='Notas',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Trabajador de empresa'
+        verbose_name_plural = 'Trabajadores de empresa'
+        ordering = ['company', 'worker__last_name', 'worker__first_name']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['company', 'worker'],
+                name='uq_company_worker',
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.worker.display_name} → {self.company.display_name}"

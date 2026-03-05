@@ -4,7 +4,7 @@
 # ============================================================================
 
 from django.contrib import admin
-from .models import CompanyProfile
+from .models import CompanyProfile, CompanyWorker
 
 
 @admin.register(CompanyProfile)
@@ -55,3 +55,17 @@ class CompanyProfileAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
         }),
     )
+
+
+@admin.register(CompanyWorker)
+class CompanyWorkerAdmin(admin.ModelAdmin):
+    list_display = (
+        'worker', 'company', 'employee_code', 'department',
+        'position', 'is_active', 'start_date',
+    )
+    list_filter = ('is_active', 'company', 'department')
+    search_fields = (
+        'worker__email', 'worker__cuil', 'worker__full_name',
+        'employee_code', 'company__razon_social',
+    )
+    raw_id_fields = ('worker', 'company')
