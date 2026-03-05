@@ -80,6 +80,7 @@ Kinesiólogo y Especialista en Ergonomía
 ## Roadmap técnico (beta)
 
 - Etapa 3A — Commit 29 completado: soporte base de `user_type='company'` en `CustomUser`.
+- Etapa 3A — Commit 30 completado: nueva app `apps.company` y modelo `CompanyProfile`.
 
 ---
 
