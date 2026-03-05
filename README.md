@@ -77,6 +77,10 @@ python manage.py test apps.accounts apps.dashboard apps.presencial
 **Lic. Pablo Aguirre** — MN 10.027  
 Kinesiólogo y Especialista en Ergonomía
 
+## Roadmap técnico (beta)
+
+- Etapa 3A — Commit 29 completado: soporte base de `user_type='company'` en `CustomUser`.
+
 ---
 
 *ErgoSolutions © 2026*

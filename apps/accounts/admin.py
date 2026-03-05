@@ -69,6 +69,11 @@ class CustomUserAdmin(DjangoUserAdmin):
             "classes": ("collapse",),
             "description": "Solo para usuarios tipo Trabajador"
         }),
+        ("Datos de Empresa", {
+            "fields": (),
+            "classes": ("collapse",),
+            "description": "Los datos de empresa se gestionan vía CompanyProfile (ver admin de Gestión de Empresas)"
+        }),
         ("Emails de Notificación (Trabajadores)", {
             "fields": ("employer_email", "safety_responsible_email"),
             "classes": ("collapse",),
@@ -108,4 +113,3 @@ class CustomUserAdmin(DjangoUserAdmin):
         return obj.display_name
     display_name_admin.short_description = "Nombre"
     display_name_admin.admin_order_field = "full_name"
-

@@ -29,9 +29,9 @@ class CustomUserManager(BaseUserManager):
         
         user = self.model(email=email, user_type=user_type, **extra_fields)
         
-        if user_type == 'professional':
+        if user_type in ('professional', 'company'):
             if not password:
-                raise ValueError("Los profesionales requieren contraseña")
+                raise ValueError("Los profesionales y empresas requieren contraseña")
             user.set_password(password)
         else:
             user.set_unusable_password()
@@ -52,6 +52,17 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Username es requerido para profesionales")
         extra_fields['username'] = username
         return self.create_user(email=email, user_type='professional', password=password, **extra_fields)
+
+    def create_company(self, email: str, password: str, username: str = None, **extra_fields):
+        """Atajo para crear un usuario empresa con password."""
+        if username:
+            extra_fields['username'] = username
+        return self.create_user(
+            email=email,
+            user_type='company',
+            password=password,
+            **extra_fields,
+        )
     
     def create_superuser(self, email: str, password: str, **extra_fields):
         """Crea un superusuario (siempre es tipo professional)."""
@@ -78,6 +89,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class UserType(models.TextChoices):
         PROFESSIONAL = 'professional', 'Profesional SySO'
         TRAINEE = 'trainee', 'Trabajador'
+        COMPANY = 'company', 'Empresa'
     
     user_type = models.CharField(
         max_length=20,
@@ -251,6 +263,22 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def is_trainee(self) -> bool:
         """Retorna True si es un trabajador/trainee."""
         return self.user_type == self.UserType.TRAINEE
+
+    @property
+    def is_company(self) -> bool:
+        """Retorna True si es un usuario empresa."""
+        return self.user_type == self.UserType.COMPANY
+
+    @property
+    def is_backoffice_user(self) -> bool:
+        """
+        Retorna True si es un usuario de gestión (professional o company).
+        Usado para controlar acceso al dashboard y funciones compartidas.
+        """
+        return self.user_type in (
+            self.UserType.PROFESSIONAL,
+            self.UserType.COMPANY,
+        )
     
     @property
     def display_name(self) -> str:
