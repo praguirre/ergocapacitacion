@@ -43,7 +43,7 @@
                     {% if is_company_user %}
                     <li class="nav-item">
                         <a class="nav-link {% if 'nomina' in request.path %}active{% endif %}"
-                           href="#">
+                           href="{% url 'dashboard:company:nomina_list' %}">
                             <i class="bi bi-people me-1"></i>Nómina
                         </a>
                     </li>

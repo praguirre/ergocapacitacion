@@ -17,5 +17,9 @@ urlpatterns = [
     path('capacitaciones/<slug:module_slug>/links/generar/', views.generate_link, name='generate_link'),
     path('capacitaciones/<slug:module_slug>/links/<uuid:link_id>/compartir/', views.share_link, name='share_link'),
     path('presencial/', include('apps.presencial.urls')),
+    # =========================================================================
+    # Empresa (Etapa 3, Commit 36)
+    # =========================================================================
+    path('empresa/', include('apps.company.urls')),
     path('perfil/', views.profile, name='profile'),
 ]
