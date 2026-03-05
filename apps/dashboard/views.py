@@ -12,7 +12,7 @@ from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from apps.accounts.decorators import professional_required
+from apps.accounts.decorators import backoffice_required, professional_required
 from apps.presencial.models import PresencialSession
 from apps.training.models import CapacitacionLink, LinkShareLog, TrainingModule
 
@@ -21,7 +21,7 @@ from .utils import check_module_access
 
 
 @login_required
-@professional_required
+@backoffice_required
 def home(request):
     """
     Dashboard principal del profesional.
@@ -49,7 +49,7 @@ def home(request):
 
 
 @login_required
-@professional_required
+@backoffice_required
 def capacitaciones_menu(request):
     """
     Menu de capacitaciones disponibles.
@@ -66,7 +66,7 @@ def capacitaciones_menu(request):
 
 
 @login_required
-@professional_required
+@backoffice_required
 def modalidad_selector(request, module_slug):
     """
     Selector de modalidad: Presencial u Online.
@@ -82,7 +82,7 @@ def modalidad_selector(request, module_slug):
 
 
 @login_required
-@professional_required
+@backoffice_required
 def online_links(request, module_slug):
     """
     Gestión de links para una capacitación online.
@@ -105,7 +105,7 @@ def online_links(request, module_slug):
 
 
 @login_required
-@professional_required
+@backoffice_required
 @require_POST
 def generate_link(request, module_slug):
     """Genera un nuevo link de capacitación."""
@@ -127,7 +127,7 @@ def generate_link(request, module_slug):
 
 
 @login_required
-@professional_required
+@backoffice_required
 def share_link(request, module_slug, link_id):
     """
     Formulario para compartir link por email.
@@ -197,7 +197,7 @@ def share_link(request, module_slug, link_id):
 
 
 @login_required
-@professional_required
+@backoffice_required
 def profile(request):
     """Perfil del profesional con edición y stats."""
     user = request.user

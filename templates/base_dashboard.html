@@ -35,19 +35,37 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'capacitaciones_menu' %}active{% endif %}"
+                        <a class="nav-link {% if 'capacitaciones' in request.resolver_match.url_name|default:'' %}active{% endif %}"
                            href="{% url 'dashboard:capacitaciones_menu' %}">
                             <i class="bi bi-mortarboard me-1"></i>Capacitaciones
                         </a>
                     </li>
+                    {% if is_company_user %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'nomina' in request.path %}active{% endif %}"
+                           href="#">
+                            <i class="bi bi-people me-1"></i>Nómina
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'agenda' in request.path %}active{% endif %}"
+                           href="#">
+                            <i class="bi bi-calendar-event me-1"></i>Agenda
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
 
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-1"></i>
-                            {{ request.user.display_name }}
+                            <i class="bi bi-{% if is_company_user %}building{% else %}person-circle{% endif %} me-1"></i>
+                            {% if is_company_user and company_profile %}
+                                {{ company_profile.display_name }}
+                            {% else %}
+                                {{ request.user.display_name }}
+                            {% endif %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
                             <li>
