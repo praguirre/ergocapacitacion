@@ -81,6 +81,7 @@ Kinesiólogo y Especialista en Ergonomía
 
 - Etapa 3A — Commit 29 completado: soporte base de `user_type='company'` en `CustomUser`.
 - Etapa 3A — Commit 30 completado: nueva app `apps.company` y modelo `CompanyProfile`.
+- Etapa 3A — Commit 31 completado: decoradores y mixins backoffice multi-tipo (`professional` + `company`).
 
 ---
 

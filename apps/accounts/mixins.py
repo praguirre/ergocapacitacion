@@ -50,6 +50,43 @@ class TraineeRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         return self.request.user.is_active and self.request.user.is_trainee
 
 
+class BackofficeRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """
+    Mixin para vistas basadas en clase que requieren un usuario de backoffice
+    (professional o company).
+    """
+    login_url = None
+
+    def get_login_url(self):
+        return reverse('professional_login')
+
+    def test_func(self):
+        return self.request.user.is_backoffice_user
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return redirect('dashboard:home')
+        return super().handle_no_permission()
+
+
+class CompanyRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """
+    Mixin para vistas basadas en clase que requieren un usuario de tipo empresa.
+    """
+    login_url = None
+
+    def get_login_url(self):
+        return reverse('professional_login')
+
+    def test_func(self):
+        return self.request.user.is_company
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return redirect('dashboard:home')
+        return super().handle_no_permission()
+
+
 class SubscriptionRequiredMixin(ProfessionalRequiredMixin):
     """
     Mixin que requiere suscripción activa (para futuro).
