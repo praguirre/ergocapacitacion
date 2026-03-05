@@ -147,3 +147,91 @@ class ChangePasswordForm(forms.Form):
         if p1 and p2 and p1 != p2:
             self.add_error("new_password2", "Las contraseñas no coinciden.")
         return cleaned_data
+
+
+# ============================================================================
+# COMMIT 34: Formulario de edición de perfil empresa
+# ============================================================================
+
+
+class CompanyProfileEditForm(forms.Form):
+    """Formulario de edición de perfil para empresas."""
+
+    razon_social = forms.CharField(
+        label='Razón social', max_length=300,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    nombre_comercial = forms.CharField(
+        label='Nombre comercial', max_length=300, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    cuit = forms.CharField(
+        label='CUIT', max_length=20,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-black text-light border-secondary',
+            'readonly': 'readonly',
+        }),
+        help_text='El CUIT no se puede modificar.',
+    )
+    rubro = forms.CharField(
+        label='Rubro / Actividad', max_length=200, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    cantidad_trabajadores = forms.IntegerField(
+        label='Cantidad aprox. de trabajadores', min_value=0, required=False,
+        widget=forms.NumberInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    contacto_nombre = forms.CharField(
+        label='Contacto principal', max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    contacto_cargo = forms.CharField(
+        label='Cargo', max_length=200, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    contacto_telefono = forms.CharField(
+        label='Teléfono', max_length=50, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    email = forms.EmailField(
+        label='Email de acceso',
+        widget=forms.EmailInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    domicilio = forms.CharField(
+        label='Domicilio', max_length=400, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    provincia = forms.CharField(
+        label='Provincia', max_length=100, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+
+    def __init__(self, *args, company_profile=None, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.company_profile = company_profile
+        self.user = user
+        if company_profile and not args:
+            self.initial.update({
+                'razon_social': company_profile.razon_social,
+                'nombre_comercial': company_profile.nombre_comercial,
+                'cuit': company_profile.cuit,
+                'rubro': company_profile.rubro,
+                'cantidad_trabajadores': company_profile.cantidad_trabajadores,
+                'contacto_nombre': company_profile.contacto_nombre,
+                'contacto_cargo': company_profile.contacto_cargo,
+                'contacto_telefono': company_profile.contacto_telefono,
+                'domicilio': company_profile.domicilio,
+                'provincia': company_profile.provincia,
+                'email': user.email if user else '',
+            })
+
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        qs = User.objects.filter(email__iexact=email)
+        if self.user:
+            qs = qs.exclude(pk=self.user.pk)
+        if qs.exists():
+            raise forms.ValidationError('Ya existe otra cuenta con este email.')
+        return email

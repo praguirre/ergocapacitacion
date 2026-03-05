@@ -13,10 +13,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.accounts.decorators import backoffice_required, professional_required
+from apps.company.models import CompanyProfile
 from apps.presencial.models import PresencialSession
 from apps.training.models import CapacitacionLink, LinkShareLog, TrainingModule
 
-from .forms import ChangePasswordForm, ProfessionalProfileForm, ShareLinkForm
+from .forms import (
+    ChangePasswordForm, CompanyProfileEditForm,
+    ProfessionalProfileForm, ShareLinkForm,
+)
 from .utils import check_module_access
 
 
@@ -199,7 +203,14 @@ def share_link(request, module_slug, link_id):
 @login_required
 @backoffice_required
 def profile(request):
-    """Perfil del profesional con edición y stats."""
+    """Perfil unificado: despacha al correcto según tipo de usuario."""
+    if request.user.is_company:
+        return _company_profile_view(request)
+    return _professional_profile_view(request)
+
+
+def _professional_profile_view(request):
+    """Lógica de perfil para profesional (preserva funcionalidad existente)."""
     user = request.user
 
     profile_form = ProfessionalProfileForm(user=user)
@@ -244,4 +255,57 @@ def profile(request):
             "links": links_count,
             "shares": shares_count,
         },
+    })
+
+
+def _company_profile_view(request):
+    """Lógica de perfil para empresa."""
+    user = request.user
+    try:
+        cp = user.company_profile
+    except CompanyProfile.DoesNotExist:
+        messages.error(request, "No se encontró el perfil de empresa.")
+        return redirect("dashboard:home")
+
+    profile_form = CompanyProfileEditForm(company_profile=cp, user=user)
+    password_form = ChangePasswordForm(user=user)
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "update_profile":
+            profile_form = CompanyProfileEditForm(
+                request.POST, company_profile=cp, user=user,
+            )
+            if profile_form.is_valid():
+                cd = profile_form.cleaned_data
+                cp.razon_social = cd["razon_social"]
+                cp.nombre_comercial = cd.get("nombre_comercial", "")
+                cp.rubro = cd.get("rubro", "")
+                cp.cantidad_trabajadores = cd.get("cantidad_trabajadores") or 0
+                cp.contacto_nombre = cd["contacto_nombre"]
+                cp.contacto_cargo = cd.get("contacto_cargo", "")
+                cp.contacto_telefono = cd.get("contacto_telefono", "")
+                cp.domicilio = cd.get("domicilio", "")
+                cp.provincia = cd.get("provincia", "")
+                cp.save()
+                user.email = cd["email"]
+                user.save()
+                messages.success(request, "Perfil de empresa actualizado correctamente.")
+                return redirect("dashboard:profile")
+        elif action == "change_password":
+            password_form = ChangePasswordForm(request.POST, user=user)
+            if password_form.is_valid():
+                user.set_password(password_form.cleaned_data["new_password1"])
+                user.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Contraseña actualizada correctamente.")
+                return redirect("dashboard:profile")
+
+    links_count = CapacitacionLink.objects.filter(created_by=user).count()
+
+    return render(request, "dashboard/company_profile.html", {
+        "profile_form": profile_form,
+        "password_form": password_form,
+        "company_profile": cp,
+        "stats": {"links": links_count},
     })
