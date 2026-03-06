@@ -6,7 +6,9 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+import csv
 
 from apps.accounts.decorators import company_required
 from apps.quiz.models import QuizAttempt, QuizState
@@ -238,3 +240,41 @@ def nomina_edit(request, worker_id):
         "form": form,
         "assignment": assignment,
     })
+
+
+@company_required
+def nomina_export_csv(request):
+    """Exportar nómina completa a CSV."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="nomina_{cp.cuit}.csv"'
+    response.write('\ufeff')  # BOM para UTF-8 en Excel
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Nombre', 'CUIL', 'Email', 'Legajo', 'Sector',
+        'Puesto', 'Activo', 'Fecha Inicio', 'Fecha Baja',
+    ])
+
+    workers = CompanyWorker.objects.filter(
+        company=cp
+    ).select_related('worker').order_by('worker__last_name')
+
+    for cw in workers:
+        w = cw.worker
+        writer.writerow([
+            w.display_name,
+            w.cuil or '',
+            w.email,
+            cw.employee_code,
+            cw.department,
+            cw.position,
+            'Sí' if cw.is_active else 'No',
+            cw.start_date.strftime('%d/%m/%Y') if cw.start_date else '',
+            cw.end_date.strftime('%d/%m/%Y') if cw.end_date else '',
+        ])
+
+    return response
