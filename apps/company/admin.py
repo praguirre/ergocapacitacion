@@ -4,7 +4,7 @@
 # ============================================================================
 
 from django.contrib import admin
-from .models import CompanyProfile, CompanyWorker
+from .models import CompanyProfile, CompanyWorker, AgendaEvent
 
 
 @admin.register(CompanyProfile)
@@ -69,3 +69,15 @@ class CompanyWorkerAdmin(admin.ModelAdmin):
         'employee_code', 'company__razon_social',
     )
     raw_id_fields = ('worker', 'company')
+
+
+@admin.register(AgendaEvent)
+class AgendaEventAdmin(admin.ModelAdmin):
+    list_display = (
+        'title', 'company', 'event_type', 'status',
+        'priority', 'due_at', 'worker',
+    )
+    list_filter = ('event_type', 'status', 'priority', 'company')
+    search_fields = ('title', 'description', 'company__razon_social')
+    readonly_fields = ('created_at', 'updated_at')
+    raw_id_fields = ('worker', 'created_by', 'assigned_professional')

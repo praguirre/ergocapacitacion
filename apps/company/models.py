@@ -198,3 +198,93 @@ class CompanyWorker(models.Model):
 
     def __str__(self):
         return f"{self.worker.display_name} → {self.company.display_name}"
+
+
+class AgendaEvent(models.Model):
+    """Evento genérico de agenda para empresas."""
+
+    class EventType(models.TextChoices):
+        TRAINING_DUE = 'training_due', 'Vencimiento de capacitación'
+        CERTIFICATE_EXPIRY = 'certificate_expiry', 'Vencimiento de certificado'
+        PROFESSIONAL_VISIT = 'professional_visit', 'Visita de profesional'
+        EVALUATION_DUE = 'evaluation_due', 'Evaluación pendiente'
+        REMINDER = 'reminder', 'Recordatorio'
+        OTHER = 'other', 'Otro'
+
+    class EventStatus(models.TextChoices):
+        PENDING = 'pending', 'Pendiente'
+        COMPLETED = 'completed', 'Completado'
+        OVERDUE = 'overdue', 'Vencido'
+        CANCELLED = 'cancelled', 'Cancelado'
+
+    class Priority(models.TextChoices):
+        LOW = 'low', 'Baja'
+        MEDIUM = 'medium', 'Media'
+        HIGH = 'high', 'Alta'
+        URGENT = 'urgent', 'Urgente'
+
+    company = models.ForeignKey(
+        CompanyProfile, on_delete=models.CASCADE,
+        related_name='agenda_events', verbose_name='Empresa',
+    )
+    worker = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='agenda_events',
+        verbose_name='Trabajador relacionado',
+    )
+    title = models.CharField(max_length=300, verbose_name='Título')
+    description = models.TextField(blank=True, default='', verbose_name='Descripción')
+    event_type = models.CharField(
+        max_length=30, choices=EventType.choices,
+        default=EventType.REMINDER, verbose_name='Tipo de evento',
+    )
+    status = models.CharField(
+        max_length=20, choices=EventStatus.choices,
+        default=EventStatus.PENDING, verbose_name='Estado',
+    )
+    priority = models.CharField(
+        max_length=10, choices=Priority.choices,
+        default=Priority.MEDIUM, verbose_name='Prioridad',
+    )
+    start_at = models.DateTimeField(
+        null=True, blank=True, verbose_name='Fecha/hora de inicio',
+    )
+    due_at = models.DateTimeField(verbose_name='Fecha/hora límite')
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='created_agenda_events',
+        verbose_name='Creado por',
+    )
+    assigned_professional = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='assigned_agenda_events',
+        verbose_name='Profesional asignado',
+    )
+    related_object_type = models.CharField(
+        max_length=50, blank=True, default='',
+        verbose_name='Tipo de objeto relacionado',
+        help_text='Ej: certificate, training_module',
+    )
+    related_object_id = models.CharField(
+        max_length=100, blank=True, default='',
+        verbose_name='ID del objeto relacionado',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Evento de agenda'
+        verbose_name_plural = 'Eventos de agenda'
+        ordering = ['due_at', '-priority']
+        indexes = [
+            models.Index(fields=['company', 'status', 'due_at']),
+            models.Index(fields=['company', 'event_type', 'due_at']),
+        ]
+
+    def __str__(self):
+        return f"[{self.get_event_type_display()}] {self.title}"
+
+    @property
+    def is_overdue(self):
+        from django.utils import timezone
+        return self.status == self.EventStatus.PENDING and self.due_at < timezone.now()
