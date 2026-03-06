@@ -10,6 +10,7 @@ from django.conf import settings as django_settings
 from django.core.mail import send_mail
 from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.accounts.decorators import backoffice_required, professional_required
@@ -27,6 +28,15 @@ from .utils import check_module_access
 @login_required
 @backoffice_required
 def home(request):
+    """
+    Dashboard home: despacha al dashboard correcto según tipo.
+    """
+    if request.user.is_company:
+        return _company_dashboard(request)
+    return _professional_dashboard(request)
+
+
+def _professional_dashboard(request):
     """
     Dashboard principal del profesional.
     Muestra selector de Evaluaciones / Capacitaciones y stats basicas.
@@ -49,6 +59,55 @@ def home(request):
 
     return render(request, "dashboard/home.html", {
         "stats": stats,
+    })
+
+
+def _company_dashboard(request):
+    """Dashboard para empresas con panel de vencimientos y agenda."""
+    from apps.company.models import CompanyWorker, AgendaEvent
+    from apps.certificates.models import Certificate
+    from apps.training.models import CapacitacionLink
+
+    user = request.user
+    try:
+        cp = user.company_profile
+    except CompanyProfile.DoesNotExist:
+        return render(request, "dashboard/home.html", {})
+
+    now = timezone.now()
+
+    total_workers = CompanyWorker.objects.filter(
+        company=cp, is_active=True
+    ).count()
+
+    events_pending = AgendaEvent.objects.filter(
+        company=cp, status='pending'
+    ).count()
+    events_overdue = AgendaEvent.objects.filter(
+        company=cp, status='pending', due_at__lt=now
+    ).count()
+    upcoming_events = AgendaEvent.objects.filter(
+        company=cp, status='pending', due_at__gte=now
+    ).order_by('due_at')[:5]
+
+    workers_with_certs = Certificate.objects.filter(
+        user__company_assignments__company=cp,
+        user__company_assignments__is_active=True,
+    ).values('user').distinct().count()
+    coverage = round(workers_with_certs / total_workers * 100, 1) if total_workers > 0 else 0
+
+    links_count = CapacitacionLink.objects.filter(created_by=user).count()
+
+    return render(request, "dashboard/home_company.html", {
+        "company_profile": cp,
+        "stats": {
+            "total_workers": total_workers,
+            "events_pending": events_pending,
+            "events_overdue": events_overdue,
+            "coverage": coverage,
+            "links_count": links_count,
+        },
+        "upcoming_events": upcoming_events,
     })
 
 
