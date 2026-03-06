@@ -9,6 +9,9 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from apps.accounts.decorators import company_required
+from apps.quiz.models import QuizAttempt, QuizState
+from apps.certificates.models import Certificate
+from apps.training.models import TrainingModule
 from .forms import AddWorkerForm
 from .models import CompanyProfile, CompanyWorker
 
@@ -156,3 +159,50 @@ def nomina_add_worker(request):
         form = AddWorkerForm()
 
     return render(request, "company/nomina_add.html", {"form": form})
+
+
+@company_required
+def nomina_detail(request, worker_id):
+    """Ficha individual de un trabajador con historial de capacitaciones."""
+    cp = _get_company_profile(request)
+    if not cp:
+        messages.error(request, "No se encontró el perfil de empresa.")
+        return redirect("dashboard:home")
+
+    assignment = get_object_or_404(CompanyWorker, company=cp, id=worker_id)
+    worker = assignment.worker
+
+    # Últimos intentos de quiz
+    quiz_attempts = QuizAttempt.objects.filter(
+        user=worker
+    ).select_related('module').order_by('-started_at')[:20]
+
+    # Certificados obtenidos
+    certificates = Certificate.objects.filter(
+        user=worker
+    ).select_related('module').order_by('-issued_at')
+
+    # Estado por módulo general activo
+    modules = TrainingModule.objects.filter(
+        is_active=True, is_personalized=False
+    )
+    module_status = []
+    for mod in modules:
+        qs = QuizState.objects.filter(user=worker, module=mod).first()
+        cert = Certificate.objects.filter(user=worker, module=mod).first()
+        from django.utils import timezone
+        module_status.append({
+            'module': mod,
+            'quiz_state': qs,
+            'certificate': cert,
+            'is_approved': qs.is_approved if qs else False,
+            'is_valid': cert and cert.valid_until and cert.valid_until > timezone.now() if cert else False,
+        })
+
+    return render(request, "company/nomina_detail.html", {
+        "assignment": assignment,
+        "worker": worker,
+        "quiz_attempts": quiz_attempts,
+        "certificates": certificates,
+        "module_status": module_status,
+    })

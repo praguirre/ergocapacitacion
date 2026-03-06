@@ -1,0 +1,182 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Ficha del Trabajador - Nómina{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:company:nomina_list' %}">Nómina</a></li>
+            <li class="breadcrumb-item active">Ficha del trabajador</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="bi bi-person-vcard me-2 text-primary"></i>Ficha individual</h3>
+        <a href="{% url 'dashboard:company:nomina_list' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Volver a nómina
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card bg-dark border-secondary h-100">
+                <div class="card-header border-secondary">
+                    <strong>Datos personales</strong>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><span class="text-secondary">Nombre:</span> {{ worker.display_name }}</p>
+                    <p class="mb-2"><span class="text-secondary">CUIL:</span> <code>{{ worker.cuil|default:"-" }}</code></p>
+                    <p class="mb-0"><span class="text-secondary">Email:</span> {{ worker.email }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card bg-dark border-secondary h-100">
+                <div class="card-header border-secondary">
+                    <strong>Datos laborales</strong>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><span class="text-secondary">Legajo:</span> {{ assignment.employee_code|default:"-" }}</p>
+                    <p class="mb-2"><span class="text-secondary">Sector:</span> {{ assignment.department|default:"-" }}</p>
+                    <p class="mb-2"><span class="text-secondary">Puesto:</span> {{ assignment.position|default:"-" }}</p>
+                    <p class="mb-2"><span class="text-secondary">Fecha inicio:</span> {{ assignment.start_date|date:"d/m/Y"|default:"-" }}</p>
+                    <p class="mb-2"><span class="text-secondary">Fecha baja:</span> {{ assignment.end_date|date:"d/m/Y"|default:"-" }}</p>
+                    <p class="mb-2">
+                        <span class="text-secondary">Estado:</span>
+                        {% if assignment.is_active %}
+                            <span class="badge bg-success">Activo</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">Inactivo</span>
+                        {% endif %}
+                    </p>
+                    <p class="mb-0"><span class="text-secondary">Notas:</span> {{ assignment.notes|default:"-" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary mb-4">
+        <div class="card-header border-secondary">
+            <strong>Estado por módulo</strong>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Módulo</th>
+                            <th>Quiz</th>
+                            <th>Certificado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in module_status %}
+                        <tr>
+                            <td>{{ item.module.title }}</td>
+                            <td>
+                                {% if item.is_approved %}
+                                    <span class="badge bg-success">Aprobado</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Pendiente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.certificate %}
+                                    {% if item.is_valid %}
+                                        <span class="badge bg-success">Vigente</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Vencido</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">Sin certificado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-secondary py-3">No hay módulos para mostrar.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary mb-4">
+        <div class="card-header border-secondary">
+            <strong>Historial de Quiz</strong>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Módulo</th>
+                            <th>Score</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attempt in quiz_attempts %}
+                        <tr>
+                            <td>{{ attempt.module.title }}</td>
+                            <td>{{ attempt.score|default:"-" }}</td>
+                            <td>{{ attempt.started_at|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-secondary py-3">Sin intentos registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary">
+            <strong>Certificados</strong>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Módulo</th>
+                            <th>Emisión</th>
+                            <th>Vencimiento</th>
+                            <th>Descarga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cert in certificates %}
+                        <tr>
+                            <td>{{ cert.module.title }}</td>
+                            <td>{{ cert.issued_at|date:"d/m/Y" }}</td>
+                            <td>{{ cert.valid_until|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if cert.pdf_file %}
+                                    <a href="{% url 'certificate_download' cert.id %}" class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-download me-1"></i>Descargar
+                                    </a>
+                                {% else %}
+                                    <span class="text-secondary">Disponible en certificados</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-secondary py-3">Sin certificados emitidos.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

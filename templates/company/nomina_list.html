@@ -115,7 +115,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <a href="#" class="btn btn-sm btn-outline-info" title="Ver ficha">
+                                <a href="{% url 'dashboard:company:nomina_detail' cw.id %}" class="btn btn-sm btn-outline-info" title="Ver ficha">
                                     <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="#" class="btn btn-sm btn-outline-warning" title="Editar">
@@ -146,5 +146,5 @@
     </div>
 
 </div>
-<!-- NOTA: Los href="#" de "Ver ficha" y "Editar" se actualizarán en Commits 38 y 39 respectivamente. -->
+<!-- NOTA: Los href="#" de "Editar" se actualizarán en Commit 39. -->
 {% endblock %}
