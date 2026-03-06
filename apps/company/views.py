@@ -8,6 +8,8 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from datetime import timedelta
 import csv
 
 from apps.accounts.decorators import company_required
@@ -15,7 +17,7 @@ from apps.quiz.models import QuizAttempt, QuizState
 from apps.certificates.models import Certificate
 from apps.training.models import TrainingModule
 from .forms import AddWorkerForm, EditWorkerForm
-from .models import CompanyProfile, CompanyWorker
+from .models import CompanyProfile, CompanyWorker, AgendaEvent
 
 User = get_user_model()
 
@@ -278,3 +280,56 @@ def nomina_export_csv(request):
         ])
 
     return response
+
+
+@company_required
+def agenda_list(request):
+    """Listado de eventos de agenda con filtros."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    events_qs = AgendaEvent.objects.filter(
+        company=cp
+    ).select_related('worker')
+
+    # --- Filtro por tipo ---
+    event_type = request.GET.get('type', '')
+    if event_type:
+        events_qs = events_qs.filter(event_type=event_type)
+
+    # --- Filtro por estado ---
+    status = request.GET.get('status', '')
+    if status:
+        events_qs = events_qs.filter(status=status)
+
+    # --- Filtro por rango de fechas ---
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+    if date_from:
+        events_qs = events_qs.filter(due_at__date__gte=date_from)
+    if date_to:
+        events_qs = events_qs.filter(due_at__date__lte=date_to)
+
+    # --- Stats ---
+    now = timezone.now()
+    all_events = AgendaEvent.objects.filter(company=cp)
+    stats = {
+        'total_pending': all_events.filter(status='pending').count(),
+        'total_overdue': all_events.filter(status='pending', due_at__lt=now).count(),
+        'upcoming_7d': all_events.filter(
+            status='pending',
+            due_at__range=(now, now + timedelta(days=7)),
+        ).count(),
+    }
+
+    return render(request, "company/agenda_list.html", {
+        "events": events_qs[:100],
+        "stats": stats,
+        "event_type": event_type,
+        "status": status,
+        "date_from": date_from,
+        "date_to": date_to,
+        "event_types": AgendaEvent.EventType.choices,
+        "event_statuses": AgendaEvent.EventStatus.choices,
+    })

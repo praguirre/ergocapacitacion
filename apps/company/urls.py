@@ -15,4 +15,6 @@ urlpatterns = [
     path('nomina/exportar/', views.nomina_export_csv, name='nomina_export_csv'),
     path('nomina/<int:worker_id>/', views.nomina_detail, name='nomina_detail'),
     path('nomina/<int:worker_id>/editar/', views.nomina_edit, name='nomina_edit'),
+    # --- Agenda ---
+    path('agenda/', views.agenda_list, name='agenda_list'),
 ]
