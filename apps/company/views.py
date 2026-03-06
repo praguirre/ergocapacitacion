@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from apps.accounts.decorators import company_required
+from .forms import AddWorkerForm
 from .models import CompanyProfile, CompanyWorker
 
 User = get_user_model()
@@ -83,3 +84,75 @@ def nomina_list(request):
         "status_filter": status_filter,
         "departments": departments,
     })
+
+
+@company_required
+def nomina_add_worker(request):
+    """Agregar un trabajador a la nómina."""
+    cp = _get_company_profile(request)
+    if not cp:
+        messages.error(request, "No se encontró el perfil de empresa.")
+        return redirect("dashboard:home")
+
+    if request.method == "POST":
+        form = AddWorkerForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            cuil = cd['cuil']
+            email = cd['email'].strip().lower()
+
+            # 1. Buscar trainee existente por CUIL
+            worker = User.objects.filter(
+                cuil=cuil, user_type='trainee'
+            ).first()
+
+            # 2. Si no encontró por CUIL, buscar por email
+            if not worker:
+                worker = User.objects.filter(
+                    email__iexact=email, user_type='trainee'
+                ).first()
+
+            # 3. Si no existe, crear nuevo trainee
+            if not worker:
+                parts = cd['full_name'].strip().split(' ', 1)
+                first = parts[0]
+                last = parts[1] if len(parts) > 1 else ''
+
+                worker = User.objects.create_trainee(
+                    cuil=cuil,
+                    email=email,
+                    full_name=cd['full_name'],
+                    first_name=first,
+                    last_name=last,
+                    job_title=cd.get('job_title', ''),
+                    company_name=cp.razon_social,
+                )
+
+            # 4. Verificar si ya está en la nómina
+            if CompanyWorker.objects.filter(company=cp, worker=worker).exists():
+                messages.warning(
+                    request,
+                    f"{worker.display_name} ya está en tu nómina."
+                )
+                return render(request, "company/nomina_add.html", {"form": form})
+
+            # 5. Crear la relación
+            CompanyWorker.objects.create(
+                company=cp,
+                worker=worker,
+                employee_code=cd.get('employee_code', ''),
+                department=cd.get('department', ''),
+                position=cd.get('position', ''),
+                start_date=cd.get('start_date'),
+                notes=cd.get('notes', ''),
+            )
+
+            messages.success(
+                request,
+                f"{worker.display_name} agregado a la nómina exitosamente."
+            )
+            return redirect("dashboard:company:nomina_list")
+    else:
+        form = AddWorkerForm()
+
+    return render(request, "company/nomina_add.html", {"form": form})
