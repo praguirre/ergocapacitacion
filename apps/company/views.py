@@ -12,7 +12,7 @@ from apps.accounts.decorators import company_required
 from apps.quiz.models import QuizAttempt, QuizState
 from apps.certificates.models import Certificate
 from apps.training.models import TrainingModule
-from .forms import AddWorkerForm
+from .forms import AddWorkerForm, EditWorkerForm
 from .models import CompanyProfile, CompanyWorker
 
 User = get_user_model()
@@ -205,4 +205,36 @@ def nomina_detail(request, worker_id):
         "quiz_attempts": quiz_attempts,
         "certificates": certificates,
         "module_status": module_status,
+    })
+
+
+@company_required
+def nomina_edit(request, worker_id):
+    """Editar datos laborales de un trabajador."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    assignment = get_object_or_404(CompanyWorker, company=cp, id=worker_id)
+
+    if request.method == "POST":
+        form = EditWorkerForm(request.POST, assignment=assignment)
+        if form.is_valid():
+            cd = form.cleaned_data
+            assignment.employee_code = cd.get('employee_code', '')
+            assignment.department = cd.get('department', '')
+            assignment.position = cd.get('position', '')
+            assignment.start_date = cd.get('start_date')
+            assignment.end_date = cd.get('end_date')
+            assignment.is_active = cd.get('is_active', True)
+            assignment.notes = cd.get('notes', '')
+            assignment.save()
+            messages.success(request, "Datos laborales actualizados correctamente.")
+            return redirect("dashboard:company:nomina_detail", worker_id=worker_id)
+    else:
+        form = EditWorkerForm(assignment=assignment)
+
+    return render(request, "company/nomina_edit.html", {
+        "form": form,
+        "assignment": assignment,
     })

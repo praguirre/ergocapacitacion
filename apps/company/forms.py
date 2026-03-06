@@ -96,3 +96,55 @@ class AddWorkerForm(forms.Form):
 
     def clean_cuil(self):
         return normalize_cuil(self.cleaned_data['cuil'])
+
+
+class EditWorkerForm(forms.Form):
+    """Editar datos laborales de un trabajador en la nómina."""
+
+    employee_code = forms.CharField(
+        label='Legajo', max_length=50, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    department = forms.CharField(
+        label='Sector', max_length=200, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    position = forms.CharField(
+        label='Puesto', max_length=200, required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    start_date = forms.DateField(
+        label='Fecha de inicio', required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control bg-black text-light border-secondary', 'type': 'date',
+        }),
+    )
+    end_date = forms.DateField(
+        label='Fecha de baja', required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control bg-black text-light border-secondary', 'type': 'date',
+        }),
+    )
+    is_active = forms.BooleanField(
+        label='Activo', required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+    )
+    notes = forms.CharField(
+        label='Notas', required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control bg-black text-light border-secondary', 'rows': 3,
+        }),
+    )
+
+    def __init__(self, *args, assignment=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if assignment and not args:
+            self.initial.update({
+                'employee_code': assignment.employee_code,
+                'department': assignment.department,
+                'position': assignment.position,
+                'start_date': assignment.start_date,
+                'end_date': assignment.end_date,
+                'is_active': assignment.is_active,
+                'notes': assignment.notes,
+            })
