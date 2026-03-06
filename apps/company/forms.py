@@ -5,6 +5,7 @@
 
 from django import forms
 import re
+from .models import AgendaEvent
 
 
 def normalize_cuil(value: str) -> str:
@@ -147,4 +148,61 @@ class EditWorkerForm(forms.Form):
                 'end_date': assignment.end_date,
                 'is_active': assignment.is_active,
                 'notes': assignment.notes,
+            })
+
+
+class AgendaEventForm(forms.Form):
+    """Formulario para crear/editar eventos de agenda."""
+
+    title = forms.CharField(
+        label='Título', max_length=300,
+        widget=forms.TextInput(attrs={'class': 'form-control bg-black text-light border-secondary'}),
+    )
+    description = forms.CharField(
+        label='Descripción', required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control bg-black text-light border-secondary', 'rows': 3,
+        }),
+    )
+    event_type = forms.ChoiceField(
+        label='Tipo de evento',
+        choices=AgendaEvent.EventType.choices,
+        widget=forms.Select(attrs={'class': 'form-select bg-black text-light border-secondary'}),
+    )
+    priority = forms.ChoiceField(
+        label='Prioridad',
+        choices=AgendaEvent.Priority.choices,
+        initial='medium',
+        widget=forms.Select(attrs={'class': 'form-select bg-black text-light border-secondary'}),
+    )
+    due_at = forms.DateTimeField(
+        label='Fecha/hora límite',
+        widget=forms.DateTimeInput(attrs={
+            'class': 'form-control bg-black text-light border-secondary',
+            'type': 'datetime-local',
+        }),
+    )
+    start_at = forms.DateTimeField(
+        label='Fecha/hora de inicio (opcional)', required=False,
+        widget=forms.DateTimeInput(attrs={
+            'class': 'form-control bg-black text-light border-secondary',
+            'type': 'datetime-local',
+        }),
+    )
+    worker_id = forms.IntegerField(
+        label='Trabajador relacionado (ID)', required=False,
+        widget=forms.HiddenInput(),
+    )
+
+    def __init__(self, *args, event=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if event and not args:
+            self.initial.update({
+                'title': event.title,
+                'description': event.description,
+                'event_type': event.event_type,
+                'priority': event.priority,
+                'due_at': event.due_at.strftime('%Y-%m-%dT%H:%M') if event.due_at else '',
+                'start_at': event.start_at.strftime('%Y-%m-%dT%H:%M') if event.start_at else '',
+                'worker_id': event.worker_id,
             })

@@ -17,4 +17,7 @@ urlpatterns = [
     path('nomina/<int:worker_id>/editar/', views.nomina_edit, name='nomina_edit'),
     # --- Agenda ---
     path('agenda/', views.agenda_list, name='agenda_list'),
+    path('agenda/crear/', views.agenda_create, name='agenda_create'),
+    path('agenda/<int:event_id>/editar/', views.agenda_edit, name='agenda_edit'),
+    path('agenda/<int:event_id>/completar/', views.agenda_complete, name='agenda_complete'),
 ]

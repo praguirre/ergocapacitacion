@@ -16,7 +16,7 @@ from apps.accounts.decorators import company_required
 from apps.quiz.models import QuizAttempt, QuizState
 from apps.certificates.models import Certificate
 from apps.training.models import TrainingModule
-from .forms import AddWorkerForm, EditWorkerForm
+from .forms import AddWorkerForm, EditWorkerForm, AgendaEventForm
 from .models import CompanyProfile, CompanyWorker, AgendaEvent
 
 User = get_user_model()
@@ -333,3 +333,87 @@ def agenda_list(request):
         "event_types": AgendaEvent.EventType.choices,
         "event_statuses": AgendaEvent.EventStatus.choices,
     })
+
+
+@company_required
+def agenda_create(request):
+    """Crear un evento de agenda."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    if request.method == "POST":
+        form = AgendaEventForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            worker = None
+            if cd.get('worker_id'):
+                assignment = CompanyWorker.objects.filter(
+                    company=cp, id=cd['worker_id']
+                ).first()
+                if assignment:
+                    worker = assignment.worker
+
+            AgendaEvent.objects.create(
+                company=cp,
+                created_by=request.user,
+                worker=worker,
+                title=cd['title'],
+                description=cd.get('description', ''),
+                event_type=cd['event_type'],
+                priority=cd['priority'],
+                due_at=cd['due_at'],
+                start_at=cd.get('start_at'),
+            )
+            messages.success(request, "Evento creado exitosamente.")
+            return redirect("dashboard:company:agenda_list")
+    else:
+        form = AgendaEventForm()
+
+    return render(request, "company/agenda_form.html", {
+        "form": form, "editing": False,
+    })
+
+
+@company_required
+def agenda_edit(request, event_id):
+    """Editar un evento de agenda."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    event = get_object_or_404(AgendaEvent, company=cp, id=event_id)
+
+    if request.method == "POST":
+        form = AgendaEventForm(request.POST, event=event)
+        if form.is_valid():
+            cd = form.cleaned_data
+            event.title = cd['title']
+            event.description = cd.get('description', '')
+            event.event_type = cd['event_type']
+            event.priority = cd['priority']
+            event.due_at = cd['due_at']
+            event.start_at = cd.get('start_at')
+            event.save()
+            messages.success(request, "Evento actualizado correctamente.")
+            return redirect("dashboard:company:agenda_list")
+    else:
+        form = AgendaEventForm(event=event)
+
+    return render(request, "company/agenda_form.html", {
+        "form": form, "editing": True, "event": event,
+    })
+
+
+@company_required
+def agenda_complete(request, event_id):
+    """Marcar un evento como completado."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    event = get_object_or_404(AgendaEvent, company=cp, id=event_id)
+    event.status = AgendaEvent.EventStatus.COMPLETED
+    event.save()
+    messages.success(request, f"Evento '{event.title}' marcado como completado.")
+    return redirect("dashboard:company:agenda_list")
