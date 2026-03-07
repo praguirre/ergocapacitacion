@@ -288,3 +288,52 @@ class AgendaEvent(models.Model):
     def is_overdue(self):
         from django.utils import timezone
         return self.status == self.EventStatus.PENDING and self.due_at < timezone.now()
+
+
+class ContactRequest(models.Model):
+    """Solicitud de contacto de empresa a profesional."""
+
+    class RequestStatus(models.TextChoices):
+        PENDING = 'pending', 'Pendiente'
+        ACCEPTED = 'accepted', 'Aceptada'
+        REJECTED = 'rejected', 'Rechazada'
+        CANCELLED = 'cancelled', 'Cancelada'
+
+    company = models.ForeignKey(
+        CompanyProfile, on_delete=models.CASCADE,
+        related_name='contact_requests_sent', verbose_name='Empresa',
+    )
+    professional = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='contact_requests_received', verbose_name='Profesional',
+        limit_choices_to={'user_type': 'professional'},
+    )
+    message = models.TextField(
+        verbose_name='Mensaje',
+        help_text='Mensaje de presentación de la empresa al profesional.',
+    )
+    status = models.CharField(
+        max_length=20, choices=RequestStatus.choices,
+        default=RequestStatus.PENDING, verbose_name='Estado',
+    )
+    response_message = models.TextField(
+        blank=True, default='',
+        verbose_name='Respuesta del profesional',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Solicitud de contacto'
+        verbose_name_plural = 'Solicitudes de contacto'
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['company', 'professional'],
+                condition=models.Q(status='pending'),
+                name='uq_pending_contact_request',
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.company.display_name} → {self.professional.display_name} ({self.status})"

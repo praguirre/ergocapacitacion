@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from apps.accounts.decorators import backoffice_required, professional_required
-from apps.company.models import CompanyProfile
+from apps.company.models import CompanyProfile, ContactRequest
 from apps.presencial.models import PresencialSession
 from apps.training.models import CapacitacionLink, LinkShareLog, TrainingModule
 
@@ -368,3 +368,44 @@ def _company_profile_view(request):
         "company_profile": cp,
         "stats": {"links": links_count},
     })
+
+
+@professional_required
+def my_contact_requests(request):
+    """Profesional ve solicitudes pendientes."""
+    pending_requests = ContactRequest.objects.filter(
+        professional=request.user,
+        status=ContactRequest.RequestStatus.PENDING,
+    ).select_related('company').order_by('-created_at')
+
+    return render(request, "dashboard/my_contact_requests.html", {
+        "pending_requests": pending_requests,
+    })
+
+
+@professional_required
+def respond_contact_request(request, request_id):
+    """Profesional acepta o rechaza solicitud."""
+    contact_request = get_object_or_404(
+        ContactRequest,
+        id=request_id,
+        professional=request.user,
+        status=ContactRequest.RequestStatus.PENDING,
+    )
+
+    if request.method != "POST":
+        messages.error(request, "Método no permitido para responder solicitud.")
+        return redirect("dashboard:my_contact_requests")
+
+    response_action = request.POST.get("response_action", "").strip().lower()
+    if response_action not in {"accepted", "rejected"}:
+        messages.error(request, "Respuesta inválida.")
+        return redirect("dashboard:my_contact_requests")
+
+    contact_request.status = response_action
+    contact_request.responded_at = timezone.now()
+    contact_request.response_message = request.POST.get("response_message", "").strip()
+    contact_request.save(update_fields=["status", "responded_at", "response_message"])
+
+    messages.success(request, "Solicitud respondida correctamente.")
+    return redirect("dashboard:my_contact_requests")

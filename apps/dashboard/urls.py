@@ -21,5 +21,7 @@ urlpatterns = [
     # Empresa (Etapa 3, Commit 36)
     # =========================================================================
     path('empresa/', include('apps.company.urls')),
+    path('solicitudes-contacto/', views.my_contact_requests, name='my_contact_requests'),
+    path('solicitudes-contacto/<int:request_id>/responder/', views.respond_contact_request, name='respond_contact_request'),
     path('perfil/', views.profile, name='profile'),
 ]

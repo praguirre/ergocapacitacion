@@ -1,0 +1,61 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Solicitudes de contacto - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="mb-1">
+                <i class="bi bi-inbox me-2 text-primary"></i>Solicitudes de contacto
+            </h3>
+            <p class="text-secondary mb-0">Gestioná las solicitudes pendientes de empresas.</p>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        {% for req in pending_requests %}
+        <div class="col-12">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">{{ req.company.display_name }}</h5>
+                            <p class="text-secondary small mb-0">Recibida: {{ req.created_at|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <span class="badge bg-warning text-dark">{{ req.get_status_display }}</span>
+                    </div>
+                    <p class="mb-3">{{ req.message }}</p>
+                    <form method="post" action="{% url 'dashboard:respond_contact_request' req.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small mb-1">Respuesta (opcional)</label>
+                            <textarea name="response_message" rows="2"
+                                      class="form-control bg-black text-light border-secondary"
+                                      placeholder="Escribí un mensaje breve para la empresa..."></textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" name="response_action" value="accepted" class="btn btn-success btn-sm">
+                                <i class="bi bi-check-circle me-1"></i>Aceptar
+                            </button>
+                            <button type="submit" name="response_action" value="rejected" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-x-circle me-1"></i>Rechazar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-check2-all display-6 text-secondary d-block mb-3"></i>
+                    <p class="text-secondary mb-0">No tenés solicitudes de contacto pendientes.</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

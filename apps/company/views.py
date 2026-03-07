@@ -17,7 +17,7 @@ from apps.quiz.models import QuizAttempt, QuizState
 from apps.certificates.models import Certificate
 from apps.training.models import TrainingModule
 from .forms import AddWorkerForm, EditWorkerForm, AgendaEventForm
-from .models import CompanyProfile, CompanyWorker, AgendaEvent
+from .models import CompanyProfile, CompanyWorker, AgendaEvent, ContactRequest
 
 User = get_user_model()
 
@@ -449,3 +449,46 @@ def directorio_profesionales(request):
         "search": search,
         "profession_filter": profession_filter,
     })
+
+
+@company_required
+def send_contact_request(request, professional_id):
+    """Empresa envía solicitud de contacto a un profesional."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    professional = get_object_or_404(
+        User,
+        id=professional_id,
+        user_type='professional',
+        is_active=True,
+        is_visible_in_directory=True,
+    )
+
+    if ContactRequest.objects.filter(
+        company=cp,
+        professional=professional,
+        status=ContactRequest.RequestStatus.PENDING,
+    ).exists():
+        messages.warning(request, "Ya existe una solicitud pendiente para este profesional.")
+        return redirect("dashboard:company:directorio")
+
+    if request.method != "POST":
+        messages.error(request, "Método no permitido para enviar solicitud.")
+        return redirect("dashboard:company:directorio")
+
+    message = request.POST.get("message", "").strip()
+    if not message:
+        message = (
+            f"Hola {professional.display_name}, te contactamos desde "
+            f"{cp.display_name} para coordinar servicios profesionales."
+        )
+
+    ContactRequest.objects.create(
+        company=cp,
+        professional=professional,
+        message=message,
+    )
+    messages.success(request, "Solicitud de contacto enviada correctamente.")
+    return redirect("dashboard:company:directorio")

@@ -22,4 +22,5 @@ urlpatterns = [
     path('agenda/<int:event_id>/completar/', views.agenda_complete, name='agenda_complete'),
     # --- Directorio ---
     path('directorio/', views.directorio_profesionales, name='directorio'),
+    path('directorio/<int:professional_id>/contactar/', views.send_contact_request, name='send_contact_request'),
 ]
