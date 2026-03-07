@@ -1,0 +1,66 @@
+{% extends "base_dashboard.html" %}
+
+{% block title %}Directorio de profesionales - ErgoSolutions{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="mb-1">
+                <i class="bi bi-person-badge me-2 text-primary"></i>Directorio de profesionales
+            </h3>
+            <p class="text-secondary mb-0">Buscá profesionales visibles para tu empresa.</p>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label text-secondary small mb-1">Buscar</label>
+                    <input type="text" name="q" value="{{ search }}"
+                           class="form-control bg-black text-light border-secondary"
+                           placeholder="Nombre, apellido o profesión...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-secondary small mb-1">Profesión</label>
+                    <input type="text" name="profession" value="{{ profession_filter }}"
+                           class="form-control bg-black text-light border-secondary"
+                           placeholder="Filtrar por profesión">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        {% for professional in professionals %}
+        <div class="col-md-6 col-xl-4">
+            <div class="card bg-dark border-secondary h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-light mb-1">{{ professional.display_name }}</h5>
+                    <p class="text-secondary small mb-2">{{ professional.profession|default:"Profesional SySO" }}</p>
+                    {% if professional.license_number %}
+                    <p class="mb-1"><span class="text-secondary">Matrícula:</span> {{ professional.license_number }}</p>
+                    {% endif %}
+                    <p class="mb-0"><span class="text-secondary">Email:</span> {{ professional.email }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-search display-6 text-secondary d-block mb-3"></i>
+                    <p class="text-secondary mb-0">No se encontraron profesionales para los filtros aplicados.</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

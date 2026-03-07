@@ -417,3 +417,35 @@ def agenda_complete(request, event_id):
     event.save()
     messages.success(request, f"Evento '{event.title}' marcado como completado.")
     return redirect("dashboard:company:agenda_list")
+
+
+@company_required
+def directorio_profesionales(request):
+    """Directorio de profesionales visible para empresas."""
+    cp = _get_company_profile(request)
+    if not cp:
+        return redirect("dashboard:home")
+
+    professionals = User.objects.filter(
+        user_type='professional',
+        is_visible_in_directory=True,
+        is_active=True,
+    )
+
+    search = request.GET.get('q', '').strip()
+    if search:
+        professionals = professionals.filter(
+            Q(first_name__icontains=search) |
+            Q(last_name__icontains=search) |
+            Q(profession__icontains=search)
+        )
+
+    profession_filter = request.GET.get('profession', '').strip()
+    if profession_filter:
+        professionals = professionals.filter(profession__icontains=profession_filter)
+
+    return render(request, "company/directorio.html", {
+        "professionals": professionals,
+        "search": search,
+        "profession_filter": profession_filter,
+    })

@@ -96,6 +96,7 @@ Kinesiólogo y Especialista en Ergonomía
 - Etapa 3C — Commit 43 completado: CRUD básico de eventos de agenda (alta, edición y marcado como completado).
 - Etapa 3C — Commit 44 completado: management command `generate_cert_expiry_events` para auto-generar eventos por vencimientos próximos (`--days`, `--dry-run`).
 - Etapa 3C — Commit 45 completado: home refactorizada por tipo y panel de vencimientos/agenda para empresa.
+- Etapa 3D — Commit 46 completado: directorio básico de profesionales con flag de visibilidad y filtros.
 
 ---
 

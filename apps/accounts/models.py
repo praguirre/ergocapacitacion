@@ -229,6 +229,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # =========================================================================
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_visible_in_directory = models.BooleanField(
+        default=False,
+        verbose_name='Visible en directorio',
+        help_text='Si está activo, este profesional será visible en el directorio para empresas.',
+    )
     date_joined = models.DateTimeField(default=timezone.now)
     
     # =========================================================================
