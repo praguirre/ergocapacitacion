@@ -98,6 +98,7 @@ Kinesiólogo y Especialista en Ergonomía
 - Etapa 3C — Commit 45 completado: home refactorizada por tipo y panel de vencimientos/agenda para empresa.
 - Etapa 3D — Commit 46 completado: directorio básico de profesionales con flag de visibilidad y filtros.
 - Etapa 3D — Commit 47 completado: solicitudes de contacto empresa-profesional (envío, listado y respuesta).
+- Etapa 3D — Commit 48 completado: testing integral de Etapa 3 y validación de no-regresión de flujos company/professional/trainee.
 
 ---
 
