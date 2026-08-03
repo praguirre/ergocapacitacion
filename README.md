@@ -260,6 +260,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   agrupa las causas. El enlace usa el flujo público por slug para trabajadores;
   CF-2 queda cubierta con cero llamadas al motor y niveles intactos. La fase
   cierra con 261 pruebas, checks y migraciones limpios.
+- **03/08/2026 — Commit 6.1:** las tres bases HTML sirven Bootstrap 5.3.3,
+  Bootstrap Icons 1.11.3 y el bundle JavaScript desde `static/vendor/`. El QA
+  descubrió y eliminó dos CDN generados por `django_bootstrap5` que no figuraban
+  como URLs literales; las 33 pantallas cargan recursos locales, sin íconos
+  vacíos, overflow ni errores de consola.
 
 ### Registro de cambios documentales
 

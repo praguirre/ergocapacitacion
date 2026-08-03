@@ -276,7 +276,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 6.1 | Migrar CDN a `vendor/` local | ⬜ |
+| 6.1 | Migrar CDN a `vendor/` local | ✅ |
 | 6.2 | Extraer los 5 bloques `<script>` inline | ⬜ |
 | 6.3 | Reemplazar los 3 manejadores en línea | ⬜ |
 | 6.4 | Verificación visual de las 33 pantallas | ⬜ |
@@ -6130,9 +6130,9 @@ git push
 
 **[PENDIENTE]** El salto 5.3.0 → 5.3.3 es de parche y no introduce cambios incompatibles conocidos, pero **debe verificarse visualmente**. Icons 1.10.0/1.11.0 → 1.11.3 puede cambiar nombres de algunos íconos: revisar los `bi bi-*` usados.
 
-- [ ] Cero referencias a `cdn.jsdelivr.net`
-- [ ] Las 33 pantallas del destino se ven correctamente
-- [ ] **Ningún ícono aparece como cuadrado vacío**
+- [x] Cero referencias a `cdn.jsdelivr.net`
+- [x] Las 33 pantallas del destino se ven correctamente
+- [x] **Ningún ícono aparece como cuadrado vacío**
 
 ### 🔴 REGLA DE ORO · Git
 

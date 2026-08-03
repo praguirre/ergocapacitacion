@@ -1465,12 +1465,23 @@ Nada al origen. Al destino, la migración de sus dos plantillas base:
 <script src="{% static 'vendor/bootstrap/bootstrap.bundle-5.3.3.min.js' %}"></script>
 ```
 
-**[PENDIENTE]** El salto de Bootstrap 5.3.0 → 5.3.3 es de parche dentro de la misma minor y no introduce cambios incompatibles conocidos, pero **debe verificarse visualmente** en las pantallas del destino. El de Bootstrap Icons 1.10.0/1.11.0 → 1.11.3 puede cambiar nombres de algunos íconos: conviene una revisión de los `bi bi-*` usados.
+**[VERIFICADO — ejecución 6.1]** El salto a Bootstrap 5.3.3 y Bootstrap
+Icons 1.11.3 fue recorrido en las 33 pantallas del destino: recursos locales,
+cero íconos vacíos, cero overflow y cero errores de consola.
+
+**[HALLAZGO DE EJECUCIÓN — 6.1]** El inventario original contabilizaba seis
+referencias CDN literales en `base_dashboard.html` y `base_landing.html`, pero
+`base.html` contenía dos dependencias adicionales generadas en render por
+`{% bootstrap_css %}` y `{% bootstrap_javascript %}`. El total efectivo era
+ocho. Ambos tags se reemplazaron por `static/vendor/` y se agregó la fuente
+local de Bootstrap Icons, que faltaba en las pantallas de trabajadores.
 
 ### Qué se descarta
 
-- Las 6 referencias a `cdn.jsdelivr.net`.
-- La dependencia de `django_bootstrap5` para servir assets en `base.html` **se conserva**: `django_bootstrap5` se sigue usando para el renderizado de formularios en ambos proyectos, que es su función principal.
+- Las 8 referencias efectivas a `cdn.jsdelivr.net`: seis literales y dos
+  generadas por los tags de `django_bootstrap5` en `base.html`.
+- `django_bootstrap5` se conserva como dependencia para renderizar formularios;
+  deja de usarse únicamente como proveedor de assets en `base.html`.
 
 ### Impacto de la decisión
 

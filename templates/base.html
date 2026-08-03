@@ -6,9 +6,8 @@
   <title>{% block title %}ErgoCapacitación{% endblock %}</title>
 
   {% load static %}
-  {% load django_bootstrap5 %}
-  {% bootstrap_css %}
-
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap-5.3.3.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons-1.11.3.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
@@ -38,6 +37,6 @@
     {% block content %}{% endblock %}
   </main>
 
-  {% bootstrap_javascript %}
+  <script src="{% static 'vendor/bootstrap/bootstrap.bundle-5.3.3.min.js' %}"></script>
 </body>
 </html>

@@ -4217,7 +4217,7 @@ al motor de cálculo ni agregar imports del módulo en `apps.training`.
 | Fecha | 2026-08-03 12:00 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `6d93086` |
 | Fase | 5 |
 | Estado | ✅ Completado |
 
@@ -4314,3 +4314,110 @@ confirmó que el módulo `ergonomia` existe, está activo y la ruta responde 302
 ### Notas para el commit siguiente
 Fase 5 cerrada con seis commits, 261 pruebas OK, checks y migraciones limpios.
 No iniciar la Fase 6 sin instrucción explícita del usuario.
+
+---
+
+## Commit 6.1 — Migrar CDN a `vendor/` local
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 12:29 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 6 |
+| Estado | ✅ Completado con desvío documentado |
+
+### Qué se hizo
+Se consolidó el vendor local adelantado en 2.13 y se completó la migración de
+`base.html`: Bootstrap 5.3.3, Bootstrap Icons 1.11.3 y el bundle JavaScript se
+sirven desde `static/vendor/` en las tres bases. El recorrido real cubrió 33
+pantallas/estados del destino con fixtures SQLite descartables y sin
+contraseñas. Todas cargaron CSS, JS e íconos locales, sin íconos vacíos,
+overflow horizontal ni errores de consola.
+
+### Archivos modificados
+- `templates/base.html` — reemplazo de los dos tags que generaban CDN en
+  render y carga local de Bootstrap Icons.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia y desvío del commit.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — 6.1 y criterios marcados ✅.
+- `README.md` — registro ordenado del cambio.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — corrección
+  del inventario de seis a ocho dependencias CDN efectivas.
+
+### Verificaciones ejecutadas
+
+```text
+rg -n "cdn\.jsdelivr\.net|bootstrap_css|bootstrap_javascript" templates
+(sin salida)
+
+Auditoría visual en navegador sobre 33 pantallas:
+{
+  "count": 33,
+  "failures": [],
+  "errors": [],
+  "summary": [
+    {"screen":"01 Landing pública","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"02 Acceso trabajadores","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"03 Login profesional","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"04 Registro profesional","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"05 Login empresa","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"06 Registro empresa","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"07 Dashboard profesional","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"08 Perfil profesional","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"09 Menú capacitaciones","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"10 Selector modalidad","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"11 Links online","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"12 Compartir link","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"13 Solicitudes contacto","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"14 Historial presencial","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"15 Capacitación presencial","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"16 Quiz presencial","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"17 Dashboard empresa","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"18 Perfil empresa","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"19 Nómina","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"20 Nómina filtrada","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"21 Alta nómina","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"22 Ficha trabajador","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"23 Edición trabajador","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"24 Agenda","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"25 Agenda filtrada","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"26 Alta evento","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"27 Edición evento","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"28 Directorio","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"29 Capacitación trabajador","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"30 Resultado quiz","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"31 Directorio buscado","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"32 Solicitudes filtradas","css":true,"js":true,"icons":0,"overflow":false},
+    {"screen":"33 Acceso con retorno","css":true,"js":true,"icons":0,"overflow":false}
+  ]
+}
+
+.venv/bin/python manage.py test apps.dashboard apps.company apps.presencial apps.quiz apps.training apps.accounts --settings=config.test_settings
+Creating test database for alias 'default'...
+.........................................
+----------------------------------------------------------------------
+Ran 41 tests in 0.334s
+
+OK
+Destroying test database for alias 'default'...
+Found 41 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+El roadmap detectaba seis referencias CDN literales, pero omitía dos generadas
+dinámicamente por `django_bootstrap5` en `base.html`. También faltaba Bootstrap
+Icons en esa base: la capacitación y el resultado mostraban cinco íconos
+vacíos. Se migraron los tres recursos a vendor local. La dependencia Python
+permanece instalada para su uso legítimo en renderizado de formularios.
+
+### Notas para el commit siguiente
+Extraer los cinco bloques inline y pasar el contexto Django mediante `data-*`.
