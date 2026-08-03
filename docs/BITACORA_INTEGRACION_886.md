@@ -2531,7 +2531,7 @@ los campos históricos y generar/revisar íntegramente la migración 0002.
 | Fecha | 2026-08-03 01:22 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | pendiente hasta crear el commit |
+| Hash | `c737c49` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -2599,3 +2599,83 @@ la migración sigue siendo aditiva y el modelo objetivo existe desde 0001.
 ### Notas para el commit siguiente
 Ampliar `CLAVES_PROHIBIDAS` antes de incorporar relaciones con trabajadores,
 manteniendo CF-4 y `trace_include_sensitive_data=False`.
+
+---
+
+## Commit 3.2 — Ampliar `CLAVES_PROHIBIDAS` (CF-4)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 01:26 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se amplió de forma aditiva `CLAVES_PROHIBIDAS` con la superficie de datos
+personales que introduce la integración: trabajadores, usuarios, empresas,
+contactos e identificadores. Los serializadores documentan que la relación
+`Planilla1.trabajadores` nunca debe incorporarse a un payload dirigido al
+modelo. Se agregó una única prueba que verifica la eliminación recursiva tanto
+de claves como de valores personales, sin modificar las 16 pruebas existentes.
+
+### Archivos modificados
+- `apps/ergonomia_886/exportaciones/reports/llm.py` — ampliación aditiva del saneamiento CF-4.
+- `apps/ergonomia_886/exportaciones/serializers.py` — regla explícita sobre `Planilla1.trabajadores`.
+- `apps/ergonomia_886/exportaciones/tests/test_reports_llm.py` — única prueba de regresión nueva.
+- `README.md` — registro profesional del cambio.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal del commit 3.2.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.exportaciones --settings=config.test_settings -v 2
+Found 93 test(s).
+System check identified no issues (0 silenced).
+Ran 93 tests in 1.057s
+OK
+
+.venv/bin/python manage.py test --settings=config.test_settings
+Creating test database for alias 'default'...
+Found 197 test(s).
+System check identified no issues (0 silenced).
+Ran 197 tests in 1.586s
+OK
+Destroying test database for alias 'default'...
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+rg -n 'trace_include_sensitive_data' apps/ergonomia_886/exportaciones/reports/llm.py
+111:                trace_include_sensitive_data=False,
+
+git diff -- apps/ergonomia_886/exportaciones/tests/test_reports_llm.py
+@@ -2,6 +2,7 @@
+ +import json
+@@ -41,6 +42,59 @@ class SanitizacionTests(TestCase):
+ +    def test_cf4_la_superficie_nueva_de_datos_personales_sale_saneada(self):
+ +        ...
+# El diff sólo agrega el import requerido y el método nuevo; ninguna línea de
+# las 16 pruebas originales fue modificada.
+
+.venv/bin/python manage.py runserver 127.0.0.1:8032 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8032/
+GET / -> 200
+GET /evaluacion-ergonomica/protocolo/crear/ -> 302
+```
+
+### Desvíos respecto del roadmap
+Ninguno. El cambio se aplicó antes de introducir la relación con trabajadores,
+conservó literalmente las doce claves originales y mantuvo
+`trace_include_sensitive_data=False`.
+
+### Notas para el commit siguiente
+Implementar la propiedad mixta de evaluaciones sin ampliar el alcance de datos
+visible para profesionales ni empresas.

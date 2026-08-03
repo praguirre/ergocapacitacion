@@ -242,7 +242,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | Commit | Título | Estado |
 |---|---|:---:|
 | 3.1 | `Evaluacion.empresa` y alineación de longitudes | ✅ |
-| 3.2 | **Ampliar `CLAVES_PROHIBIDAS`** (CF-4) | ⬜ |
+| 3.2 | **Ampliar `CLAVES_PROHIBIDAS`** (CF-4) | ✅ |
 | 3.3 | Propiedad mixta por tipo de usuario | ⬜ |
 | 3.4 | Decoradores en todas las vistas del módulo | ⬜ |
 | 3.5 | Formulario de creación con selector de empresa (CF-5) | ⬜ |
@@ -4484,12 +4484,12 @@ git diff apps/ergonomia_886/exportaciones/tests/test_reports_llm.py
 # Sólo debe aparecer el metodo NUEVO. Ninguna linea existente modificada.
 ```
 
-- [ ] La prueba nueva pasa
-- [ ] **Las 16 pruebas originales de `test_reports_llm.py` no fueron modificadas**
-- [ ] `trace_include_sensitive_data=False` sigue presente
+- [x] La prueba nueva pasa
+- [x] **Las 16 pruebas originales de `test_reports_llm.py` no fueron modificadas**
+- [x] `trace_include_sensitive_data=False` sigue presente
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.2, con el diff del archivo de pruebas · Tabla de control: 3.2 ✅ · `README.md`
+- [x] Bitácora: entrada 3.2, con el diff del archivo de pruebas · Tabla de control: 3.2 ✅ · `README.md`
 
 ### Git
 

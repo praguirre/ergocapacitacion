@@ -182,6 +182,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   `CompanyProfile` mediante `PROTECT`. Los campos documentales permanecen como
   snapshot histórico y se ampliaron a 300/20/400 caracteres para copiar sin
   truncamiento razón social, CUIT y domicilio.
+- **03/08/2026 — Commit 3.2:** se amplió de forma únicamente aditiva la lista
+  `CLAVES_PROHIBIDAS` para cubrir trabajadores, empresas, usuarios y datos de
+  contacto introducidos por la integración. Una prueba de regresión verifica
+  que no sobrevivan claves ni valores personales, mientras conserva el contexto
+  mínimo y los datos técnicos requeridos por el informe (CF-4).
 
 ### Registro de cambios documentales
 

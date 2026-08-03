@@ -22,11 +22,24 @@ from .prompts import PROMPT_VERSION, SYSTEM_PROMPT, build_user_prompt
 logger = logging.getLogger(__name__)
 
 # Claves que NUNCA se envían al proveedor del modelo.
+#
+# ⚠️ CF-4: esta lista sólo puede AMPLIARSE, nunca reducirse. Se aplica de
+# forma recursiva sobre el payload en sanitize_payload().
 CLAVES_PROHIBIDAS = frozenset({
+    # Originales del proyecto ErgoApp SRT 886.
     "nombres_trabajadores", "cuit", "direccion", "ubicacion_sintoma",
     "salud_columna", "revisado_por", "evaluacion_id", "instancia_id",
     "medida_id", "foto_montaje", "certificado_calibracion",
     "evidencia_declarada",
+
+    # Superficie introducida por la integración en ErgoSolutions.
+    "trabajadores", "worker", "workers", "trabajador",
+    "cuil", "dni", "email", "employee_code", "legajo",
+    "empresa", "empresa_id", "company", "company_id",
+    "contacto_nombre", "contacto_telefono", "contacto_cargo",
+    "license_number", "matricula", "first_name", "last_name",
+    "full_name", "display_name", "usuario", "usuario_id",
+    "created_by", "assigned_professional",
 })
 
 # Tope de tamaño del payload. calc_data de VCE con muchos tramos puede crecer.

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -40,6 +41,59 @@ Requiere revisión y firma profesional.
 
 
 class SanitizacionTests(TestCase):
+
+    def test_cf4_la_superficie_nueva_de_datos_personales_sale_saneada(self):
+        """CF-4: las claves que la integración introdujo no salen al modelo."""
+        payload = {
+            "factor": "lmc",
+            "nivel_riesgo": "alto",
+            "contexto": {
+                "razon_social": "ACME S.A.",
+                "area_sector": "Depósito",
+                "puesto_trabajo": "Operario",
+                "provincia": "Buenos Aires",
+            },
+            "trabajadores": [
+                {
+                    "cuil": "20-11111111-1",
+                    "dni": "11111111",
+                    "email": "juan@acme.com",
+                    "employee_code": "L-001",
+                    "first_name": "Juan",
+                    "last_name": "Perez",
+                },
+            ],
+            "empresa_id": 42,
+            "company": {
+                "contacto_nombre": "Ana Gomez",
+                "contacto_telefono": "11-5555-5555",
+            },
+            "inputs": {"peso_kg": 25, "frecuencia_h": 4},
+        }
+
+        limpio = sanitize_payload(payload)
+        serializado = json.dumps(limpio, ensure_ascii=False)
+
+        for clave in (
+            "trabajadores", "cuil", "dni", "email", "employee_code",
+            "empresa_id", "company", "contacto_nombre", "contacto_telefono",
+            "first_name", "last_name",
+        ):
+            self.assertNotIn(clave, limpio, f"La clave {clave!r} no fue saneada")
+
+        for valor in (
+            "20-11111111-1", "11111111", "juan@acme.com", "L-001", "Juan",
+            "Perez", "Ana Gomez", "11-5555-5555",
+        ):
+            self.assertNotIn(
+                valor,
+                serializado,
+                f"El valor {valor!r} se filtro hacia el modelo",
+            )
+
+        self.assertEqual(limpio["contexto"]["razon_social"], "ACME S.A.")
+        self.assertEqual(limpio["contexto"]["puesto_trabajo"], "Operario")
+        self.assertEqual(limpio["inputs"]["peso_kg"], 25)
 
     def test_se_eliminan_todas_las_claves_prohibidas(self):
         sucio = {

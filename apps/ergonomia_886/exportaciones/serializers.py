@@ -19,6 +19,11 @@ from apps.ergonomia_886.planillas.models import (
 
 from . import vocabulario as voc
 
+# ⚠️ CF-4: no agregar la relación Planilla1.trabajadores a ningún payload que
+# vaya hacia el modelo de lenguaje. Los documentos del profesional imprimen
+# `nombres_trabajadores`, que es texto que él mismo escribió; la relación
+# expone CUIL, DNI y email de personas identificables.
+
 PLANILLA2_MODELOS = {
     "planilla2a": "apps.ergonomia_886.planillas.models.Planilla2A",
     "planilla2b": "apps.ergonomia_886.planillas.models.Planilla2B",
