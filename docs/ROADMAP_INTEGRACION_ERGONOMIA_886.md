@@ -257,7 +257,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 |---|---|:---:|
 | 4.1 | **Activar la tarjeta «Evaluaciones»** | ✅ |
 | 4.2 | Entrada de navegación en el navbar | ✅ |
-| 4.3 | Cuarta stat del dashboard con import diferido | ⬜ |
+| 4.3 | Cuarta stat del dashboard con import diferido | ✅ |
 | 4.4 | Ajustes de contraste al tema oscuro | ⬜ |
 | 4.5 | Loggers del módulo y verificación de CF-1 | ⬜ |
 
@@ -5519,11 +5519,11 @@ def _professional_dashboard(request):
 # y confirmar que /dashboard/ sigue cargando sin la stat.
 ```
 
-- [ ] La stat aparece con el módulo instalado
-- [ ] **Con el módulo desinstalado, el dashboard sigue funcionando**
+- [x] La stat aparece con el módulo instalado
+- [x] **Con el módulo desinstalado, el dashboard sigue funcionando**
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 4.3, con la prueba de desmontabilidad · Tabla de control: 4.3 ✅ · `README.md`
+- [x] Bitácora: entrada 4.3, con la prueba de desmontabilidad · Tabla de control: 4.3 ✅ · `README.md`
 
 ### Git
 

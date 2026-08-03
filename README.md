@@ -222,6 +222,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   «Evaluaciones» para profesionales y empresas. La entrada permanece activa en
   las pantallas HTML del módulo y el menú colapsable fue validado a 390 px sin
   desbordamiento horizontal.
+- **03/08/2026 — Commit 4.3:** el dashboard profesional muestra una cuarta
+  estadística con sus evaluaciones ergonómicas. El acceso al modelo es diferido
+  y tolerante al desmontaje: sin las cuatro apps 886 el dashboard responde 200
+  y omite la estadística.
 
 ### Registro de cambios documentales
 

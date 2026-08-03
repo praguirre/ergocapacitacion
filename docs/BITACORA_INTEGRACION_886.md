@@ -3321,7 +3321,7 @@ Agregar la entrada «Evaluaciones» al navbar compartido del backoffice.
 | Fecha | 2026-08-03 11:17 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `b5e34e1` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -3385,3 +3385,73 @@ activo y la ausencia de overflow con el HTML/CSS/JS efectivos.
 
 ### Notas para el commit siguiente
 Agregar la cuarta stat mediante un import diferido y tolerante al desmontaje.
+
+---
+
+## Commit 4.3 — Cuarta stat del dashboard con import diferido
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:31 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+El dashboard profesional cuenta las evaluaciones cuyo autor es el usuario
+autenticado y las presenta como cuarta stat. El modelo se importa dentro del
+helper y la estadística se omite cuando `planillas` no está instalada. Las
+cuatro columnas usan `col-md-3`. Dos regresiones prueban el conteo por propiedad
+y el dashboard HTTP 200 con las cuatro apps del módulo retiradas del setting.
+
+### Archivos modificados
+- `apps/dashboard/views.py` — helper desacoplado y cuarta estadística.
+- `templates/dashboard/home.html` — render condicional y grilla de cuatro columnas.
+- `apps/dashboard/tests_ergonomia_stats.py` — propiedad y desmontabilidad.
+- `README.md` — comportamiento opcional documentado.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 4.2 y evidencia literal 4.3.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.dashboard.tests_ergonomia_stats --settings=config.test_settings -v 2
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Found 2 test(s).
+test_dashboard_funciona_si_el_modulo_esta_desinstalado ... ok
+test_muestra_solo_las_evaluaciones_del_profesional ... ok
+Ran 2 tests in 0.031s
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 229 tests in 1.773s
+OK
+Destroying test database for alias 'default'...
+Found 229 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+.venv/bin/python manage.py migrate --check --settings=config.test_settings
+(sin salida)
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+El `except ImportError` del ejemplo no cubre el caso real en que el paquete
+permanece en disco pero se retira de `INSTALLED_APPS`: el import puede resolver
+y el modelo resultar inutilizable. Se agregó la comprobación explícita del
+setting y tolerancia a `RuntimeError`. La desmontabilidad se verificó con
+`override_settings`, evitando editar temporalmente el archivo de configuración.
+
+### Notas para el commit siguiente
+Revisar los 28 templates del módulo sobre el tema oscuro y ejecutar el recorrido
+visual y funcional completo previsto en 4.4.

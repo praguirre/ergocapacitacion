@@ -55,11 +55,32 @@ def _professional_dashboard(request):
         "capacitaciones_total": presencial_count,
         "links_generados": links_count,
         "trabajadores_capacitados": total_accesses,
+        "evaluaciones_ergonomicas": _contar_evaluaciones_ergonomicas(
+            request.user
+        ),
     }
 
     return render(request, "dashboard/home.html", {
         "stats": stats,
     })
+
+
+def _contar_evaluaciones_ergonomicas(user):
+    """Cuenta evaluaciones sin acoplar el dashboard al módulo 886.
+
+    Además del import diferido se consulta ``INSTALLED_APPS``: si el paquete
+    sigue presente en disco pero la app fue desmontada, importar el modelo no
+    es una prueba suficiente de que Django pueda utilizarlo.
+    """
+    if "apps.ergonomia_886.planillas" not in django_settings.INSTALLED_APPS:
+        return None
+
+    try:
+        from apps.ergonomia_886.planillas.models import Evaluacion
+    except (ImportError, RuntimeError):
+        return None
+
+    return Evaluacion.objects.filter(usuario=user).count()
 
 
 def _company_dashboard(request):
