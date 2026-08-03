@@ -2270,7 +2270,7 @@ declarativas, CF-1, CF-3 y CF-6 sin ejecutar lógica de negocio.
 | Fecha | 2026-08-03 01:07 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | pendiente hasta crear el commit |
+| Hash | `30e01d4` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -2347,6 +2347,179 @@ prohibido. Comentarios y documentación no producen falsos positivos.
 Aplicar el protocolo de migraciones completo, ejecutar la suite combinada y
 realizar la prueba de humo autenticada que cierra la Fase 2.
 
+## Commit 2.13 — Aplicar migraciones y prueba de humo
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 01:18 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | pendiente hasta crear el commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se revisaron y aplicaron las diez migraciones del módulo siguiendo el protocolo
+de seis pasos. La suite combinada quedó en 196/196. El humo autenticado usó un
+profesional existente, creó y ejercitó una evaluación dentro de una transacción
+y confirmó rollback total. Se verificaron las diez pantallas, CF-1, CF-5 y CF-6.
+
+DA-2.13 resolvió la contradicción por la que dos pruebas exigían desde esta fase
+el CSP calendarizado en Fase 6. Se portó el middleware bloqueante mínimo, se
+sirvió Bootstrap desde vendor local, se agregaron nonces a los cinco scripts
+inline y se reemplazaron los tres handlers HTML. La extracción y observación
+siguen perteneciendo a Fase 6.
+
+### Archivos modificados
+- `config/middleware.py`, `config/settings.py` — CSP mínimo y registro.
+- `templates/base_dashboard.html`, `templates/base_landing.html` — vendor local.
+- cinco templates preexistentes — nonce en scripts inline y listeners sin handlers HTML.
+- cinco templates del módulo — referencias `core:dashboard` adaptadas.
+- tests de `planillas`, `evaluaciones` y `exportaciones` — email obligatorio,
+  rutas anidadas, targets diferidos y semántica `get_username()` del destino.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — DA-2.13.
+- `README.md`, roadmap y bitácora — cierre documentado de Fase 2.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+.venv/bin/python manage.py showmigrations planillas evaluaciones exportaciones
+planillas
+ [ ] 0001_initial
+evaluaciones
+ [ ] 0001_initial
+ [ ] 0002_alter_empujeinicial_eval_altura_agarre_cm_and_more
+ [ ] 0003_transporte_eval_en_plano_horizontal_and_more
+ [ ] 0004_bipedestacion_eval_brazos_elevados_and_more
+ [ ] 0005_vibracionmb_eval_ax_mps2_vibracionmb_eval_ay_mps2_and_more
+ [ ] 0006_vibracionce_eval_calc_details_and_more
+ [ ] 0007_transporte_frecuencias_maximas
+exportaciones
+ [ ] 0001_initial
+ [ ] 0002_generatedreport
+
+# Base creada desde cero y criterio de aceptación
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Found 196 test(s).
+System check identified no issues (0 silenced).
+Ran 196 tests in 1.528s
+OK
+Destroying test database for alias 'default'...
+
+# Desglose exigido por la compuerta
+.venv/bin/python manage.py test apps.ergonomia_886 --settings=config.test_settings -v 1
+Ran 160 tests in 1.495s
+OK
+Found 160 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.accounts apps.certificates apps.company apps.dashboard apps.ergobot_ai apps.landing apps.presencial apps.quiz apps.training --settings=config.test_settings -v 1
+Ran 36 tests in 0.143s
+OK
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py migrate --noinput
+Operations to perform:
+  Apply all migrations: accounts, admin, auth, certificates, company, contenttypes, evaluaciones, exportaciones, planillas, presencial, quiz, sessions, training
+Running migrations:
+  Applying planillas.0001_initial... OK
+  Applying evaluaciones.0001_initial... OK
+  Applying evaluaciones.0002_alter_empujeinicial_eval_altura_agarre_cm_and_more... OK
+  Applying evaluaciones.0003_transporte_eval_en_plano_horizontal_and_more... OK
+  Applying evaluaciones.0004_bipedestacion_eval_brazos_elevados_and_more... OK
+  Applying evaluaciones.0005_vibracionmb_eval_ax_mps2_vibracionmb_eval_ay_mps2_and_more... OK
+  Applying evaluaciones.0006_vibracionce_eval_calc_details_and_more... OK
+  Applying evaluaciones.0007_transporte_frecuencias_maximas... OK
+  Applying exportaciones.0001_initial... OK
+  Applying exportaciones.0002_generatedreport... OK
+
+.venv/bin/python manage.py createcachetable
+Cache table 'ergosolutions_cache' already exists.
+
+.venv/bin/python manage.py showmigrations planillas evaluaciones exportaciones
+planillas
+ [X] 0001_initial
+evaluaciones
+ [X] 0001_initial
+ [X] 0002_alter_empujeinicial_eval_altura_agarre_cm_and_more
+ [X] 0003_transporte_eval_en_plano_horizontal_and_more
+ [X] 0004_bipedestacion_eval_brazos_elevados_and_more
+ [X] 0005_vibracionmb_eval_ax_mps2_vibracionmb_eval_ay_mps2_and_more
+ [X] 0006_vibracionce_eval_calc_details_and_more
+ [X] 0007_transporte_frecuencias_maximas
+exportaciones
+ [X] 0001_initial
+ [X] 0002_generatedreport
+
+Usuarios profesionales disponibles: 21
+Superusuarios activos: 1
+System check identified no issues (0 silenced).
+```
+
+### Prueba de humo autenticada
+
+```text
+1 Crear evaluación GET             200 OK
+1 Crear evaluación POST            302 OK
+  guardado transaccional id=1; rollback al finalizar
+2 Detalle                          200 OK
+3 Planilla 1                       200 OK
+  widget help_slug=planilla1 OK
+4 Planilla 2A                      200 OK
+5 Inicio factor LMC                302 OK
+5 Factor LMC GET                   200 OK
+5 Factor LMC calcular              302 OK
+  nivel calculado por motor=bajo
+6 Wizard 13 factores               200 OK
+7 Panel documentos                 200 OK
+8 Protocolo oficial                200 OK
+  PDF 12 páginas Carta; guardado en /private/tmp/ergonomia-886-smoke-2.13.pdf
+9 Detalle técnico LMC              200 OK
+10 Paquete ZIP                     200 OK
+  ZIP LEEME.txt + 2 PDF(s)
+CF-5 Planilla 2E en blanco         200 OK
+  CF-5 sin operaciones de superposición (ni marcas NO)
+CF-1 widget help_ai                200 OK
+CF-1 Ergobot docente SSE           200 OK
+  prefijos separados y ambos endpoints responden
+CSP bloqueante presente en la respuesta dinámica
+ROLLBACK OK: evaluación temporal no persistida
+
+Evaluaciones temporales persistidas: 0
+No changes detected
+System check identified no issues (0 silenced).
+```
+
+### Verificación visual CF-6
+El PDF generado tiene 12 páginas con MediaBox 612×792 (Carta). La numeración
+del roadmap usa índices de página: el índice 5 es la página visible 6 (Planilla
+2E) y el índice 8 es la visible 9 (Planilla 2H).
+
+| Evidencia | Resultado visual |
+|---|---|
+| Índice 5 · Planilla 2E | Escala de Borg íntegra, legible, valores 0–10 y firmas visibles |
+| Índice 8 · Planilla 2H | Curva de Fanger íntegra, ejes, zonas, fuente y leyenda visibles |
+| Documento completo | 12 páginas Carta, abre sin advertencias |
+
+SHA-256 del PDF oficial fuente:
+`bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4`.
+
+### Desvíos respecto del roadmap
+La primera suite limpia expuso 26 errores y un fallo: emails obligatorios,
+targets diferidos todavía planos, cinco URLs `core:dashboard` y las dos pruebas
+de CSP. Se corrigieron rutas/fixtures conservando casos y aserciones. DA-2.13
+adelanta el mínimo CSP porque la compuerta de 196 pruebas era incumplible de
+otro modo; la Fase 6 es declaradamente independiente.
+
+La referencia “página 5/8” es un índice cero-based de los mapas normativos. La
+inspección inicial de páginas visibles 5/8 mostró correctamente 2D/2G; se
+repitió sobre las páginas visibles 6/9 y allí se aprobaron Borg/Fanger.
+
 ### Notas para el commit siguiente
-Crear la base intermedia del módulo y adaptar los templates previstos sin
-romper la propagación de `help_slug`.
+Fase 2 cerrada. Iniciar 3.1 con la FK protegida a `CompanyProfile`, preservar
+los campos históricos y generar/revisar íntegramente la migración 0002.

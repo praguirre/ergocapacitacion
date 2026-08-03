@@ -173,6 +173,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   declarativas, los 13 artefactos normativos (CF-3), el PDF oficial y su
   SHA-256 (CF-6), y la ausencia de imports cruzados entre `help_ai` y
   `ergobot_ai` (CF-1).
+- **03/08/2026 — Commit 2.13:** se aplicaron las diez migraciones del módulo y
+  la suite combinada cerró con 196 pruebas OK. El humo autenticado transaccional
+  recorrió diez pantallas, calculó LMC, generó PDF/ZIP y verificó CF-1, CF-5 y
+  CF-6 sin persistir datos. DA-2.13 adelantó el mínimo CSP requerido por la
+  propia compuerta: vendor local, nonces, listeners y middleware bloqueante.
 
 ### Registro de cambios documentales
 

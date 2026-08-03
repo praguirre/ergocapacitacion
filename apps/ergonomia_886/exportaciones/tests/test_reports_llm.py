@@ -105,7 +105,7 @@ class PromptTests(TestCase):
 class CacheDeInformesTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("tester", password="x")
+        self.usuario = get_user_model().objects.create_user(email="tester@example.com", username="tester", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -136,7 +136,7 @@ class CacheDeInformesTests(TestCase):
     def test_el_segundo_pedido_no_vuelve_a_llamar_al_modelo(self):
         payload = serializers.build_factor_payload(self.risk_eval, "lmc")
         with patch(
-            "exportaciones.reports.llm.build_professional_report",
+            "apps.ergonomia_886.exportaciones.reports.llm.build_professional_report",
             side_effect=self._resultado_falso,
         ) as llamada:
             primero = get_or_create_report(
@@ -153,7 +153,7 @@ class CacheDeInformesTests(TestCase):
     def test_si_cambian_los_datos_el_informe_previo_queda_obsoleto(self):
         payload = serializers.build_factor_payload(self.risk_eval, "lmc")
         with patch(
-            "exportaciones.reports.llm.build_professional_report",
+            "apps.ergonomia_886.exportaciones.reports.llm.build_professional_report",
             side_effect=self._resultado_falso,
         ):
             primero = get_or_create_report(
@@ -173,7 +173,7 @@ class CacheDeInformesTests(TestCase):
     def test_el_payload_enviado_queda_persistido_como_evidencia(self):
         payload = serializers.build_factor_payload(self.risk_eval, "lmc")
         with patch(
-            "exportaciones.reports.llm.build_professional_report",
+            "apps.ergonomia_886.exportaciones.reports.llm.build_professional_report",
             side_effect=self._resultado_falso,
         ):
             informe = get_or_create_report(
@@ -222,8 +222,8 @@ class InformeEndpointTests(TestCase):
 
     def setUp(self):
         User = get_user_model()
-        self.duenio = User.objects.create_user("duenio", password="x")
-        self.intruso = User.objects.create_user("intruso", password="x")
+        self.duenio = User.objects.create_user(email="duenio@example.com", username="duenio", password="x")
+        self.intruso = User.objects.create_user(email="intruso@example.com", username="intruso", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.duenio, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -255,7 +255,7 @@ class InformeEndpointTests(TestCase):
 
     def test_factor_sin_datos_no_llama_al_modelo(self):
         self.client.force_login(self.duenio)
-        with patch("exportaciones.reports.llm.build_professional_report") as llamada:
+        with patch("apps.ergonomia_886.exportaciones.reports.llm.build_professional_report") as llamada:
             respuesta = self.client.post(self.url, follow=True)
         llamada.assert_not_called()
         self.assertEqual(respuesta.status_code, 200)
@@ -277,7 +277,7 @@ class InformeEndpointTests(TestCase):
             calc_data={"estado_resultado": "borrador"},
         )
         self.client.force_login(self.duenio)
-        with patch("exportaciones.reports.llm.build_professional_report") as llamada:
+        with patch("apps.ergonomia_886.exportaciones.reports.llm.build_professional_report") as llamada:
             respuesta = self.client.post(self.url, follow=True)
         llamada.assert_not_called()
         self.assertEqual(respuesta.status_code, 200)
@@ -289,7 +289,7 @@ class InformeEndpointTests(TestCase):
             calc_data={"estado_resultado": "calculado", "limite_base_kg": 14.0},
         )
         self.client.force_login(self.duenio)
-        with patch("exportaciones.reports.llm.build_professional_report",
+        with patch("apps.ergonomia_886.exportaciones.reports.llm.build_professional_report",
                    side_effect=self._resultado_falso):
             respuesta = self.client.post(self.url)
         self.assertEqual(respuesta.status_code, 200)

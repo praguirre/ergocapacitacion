@@ -10,6 +10,7 @@ class Planilla2RouteSmokeTests(TestCase):
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(
             username="planilla-route-user",
+            email="planilla-route-user@example.com",
             password="test-password",
         )
         cls.evaluacion = Evaluacion.objects.create(

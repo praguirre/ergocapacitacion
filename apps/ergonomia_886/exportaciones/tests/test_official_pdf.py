@@ -178,7 +178,7 @@ class MapasPlanilla2Tests(TestCase):
 class BuildersTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("builder", password="x")
+        self.usuario = get_user_model().objects.create_user(email="builder@example.com", username="builder", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME LOGÍSTICA S.A.",
             cuit="30-12345678-9", ciiu="5210",

@@ -12,7 +12,7 @@ from apps.ergonomia_886.exportaciones.reports.pdf import AVISO_LEGAL, build_fact
 class DetalleFactorPDFTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("pdf", password="x")
+        self.usuario = get_user_model().objects.create_user(email="pdf@example.com", username="pdf", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -81,7 +81,7 @@ class DetalleFactorPDFTests(TestCase):
 class RenderDelInformeTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("informe", password="x")
+        self.usuario = get_user_model().objects.create_user(email="informe@example.com", username="informe", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",

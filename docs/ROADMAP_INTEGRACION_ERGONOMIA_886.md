@@ -235,7 +235,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.10 | Plantilla base del módulo y adaptación de 10 templates | ✅ |
 | 2.11 | Extraer el widget de ayuda contextual | ✅ |
 | 2.12 | `checks.py` — validación de las 48 rutas declarativas | ✅ |
-| 2.13 | Aplicar migraciones y prueba de humo | ⬜ |
+| 2.13 | Aplicar migraciones y prueba de humo | ✅ |
 
 ### Fase 3 — Normalización de dominio · `ergocapacitacion`
 
@@ -4090,6 +4090,12 @@ Crear las tablas del módulo y verificar de punta a punta. **Es el criterio de a
 
 **Resultado esperado: ~196 pruebas OK** (160 del módulo + 36 del destino).
 
+> **DA-2.13 — ejecución.** Dos de esas 196 pruebas ya exigían CSP y frontend
+> sin CDN, aunque el código estaba diferido a la Fase 6. Para no relajar la
+> compuerta se adelantó el mínimo de seguridad descrito en la propuesta
+> técnica. La Fase 6 mantiene extracción, QA visual, Report-Only, observación
+> y activación definitiva.
+
 Si algo falla, el orden de diagnóstico es:
 
 | Síntoma | Causa probable | Commit a revisar |
@@ -4141,22 +4147,22 @@ Recorrido mínimo:
 
 **Verificación visual obligatoria del PDF — CF-6:**
 
-- [ ] **Página 8 (Planilla 2H): la curva de confort de Fanger está íntegra**
-- [ ] **Página 5 (Planilla 2E): la escala de Borg está íntegra**
-- [ ] Las 12 páginas son tamaño Carta y abren sin advertencias
+- [x] **Página 8 (Planilla 2H): la curva de confort de Fanger está íntegra**
+- [x] **Página 5 (Planilla 2E): la escala de Borg está íntegra**
+- [x] Las 12 páginas son tamaño Carta y abren sin advertencias
 
 **Verificación de CF-5:**
 
-- [ ] Una Planilla 2 **nunca guardada** se descarga **en blanco**, sin marcas «NO»
+- [x] Una Planilla 2 **nunca guardada** se descarga **en blanco**, sin marcas «NO»
 
 **Verificación de CF-1:**
 
-- [ ] El widget de ayuda responde en `/evaluacion-ergonomica/...`
-- [ ] **El chatbot Ergobot sigue respondiendo en `/capacitacion/`**
+- [x] El widget de ayuda responde en `/evaluacion-ergonomica/...`
+- [x] **El chatbot Ergobot sigue respondiendo en `/capacitacion/`**
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 2.13 con el total de pruebas, la tabla de la prueba de humo y las verificaciones de CF-1, CF-5 y CF-6
-- [ ] Tabla de control: 2.13 ✅ · `README.md`
+- [x] Bitácora: entrada 2.13 con el total de pruebas, la tabla de la prueba de humo y las verificaciones de CF-1, CF-5 y CF-6
+- [x] Tabla de control: 2.13 ✅ · `README.md`
 
 ### Git
 
@@ -6071,6 +6077,12 @@ git push
 
 **Objetivo:** endurecer la seguridad de todo ErgoSolutions con el middleware de CSP del módulo.
 **Característica:** **independiente.** Puede ejecutarse en cualquier momento, incluso antes de las Fases 3-5.
+
+> **Estado tras DA-2.13:** ya están adelantados el vendor local, los nonces,
+> los listeners y el middleware bloqueante mínimo porque la suite de Fase 2
+> los exigía. Los commits 6.1–6.3 verificarán/documentarán esa base y 6.2
+> mantiene su objetivo principal de extraer los scripts; 6.4–6.7 siguen
+> pendientes íntegros.
 
 ## Por qué esta fase va al final y no al principio
 

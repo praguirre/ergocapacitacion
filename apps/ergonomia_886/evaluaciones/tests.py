@@ -80,7 +80,7 @@ class FactorCatalogContractTests(SimpleTestCase):
                 form_class = import_string(definition.form_path)
                 model_class = import_string(definition.model_path)
                 view_class = import_string(
-                    f"evaluaciones.views.{definition.view_class}"
+                    f"apps.ergonomia_886.evaluaciones.views.{definition.view_class}"
                 )
 
                 self.assertIs(form_class._meta.model, model_class)
@@ -111,6 +111,8 @@ class FactorCatalogContractTests(SimpleTestCase):
                     self.assertTrue(
                         (
                             Path(settings.BASE_DIR)
+                            / "apps"
+                            / "ergonomia_886"
                             / "evaluaciones"
                             / "data"
                             / data_file
@@ -163,6 +165,7 @@ class QuantitativeEvaluationRegressionTests(TestCase):
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(
             username="regression-user",
+            email="regression-user@example.com",
             password="test-password",
         )
         cls.evaluacion = Evaluacion.objects.create(
@@ -356,7 +359,7 @@ class QuantitativeEvaluationRegressionTests(TestCase):
         secret_value = "MEDICION-SENSIBLE-NO-LOGUEAR"
         self.client.force_login(self.user)
 
-        with patch("evaluaciones.views.logger.warning") as warning:
+        with patch("apps.ergonomia_886.evaluaciones.views.logger.warning") as warning:
             response = self.client.post(
                 reverse(
                     "evaluaciones:lmc_form_by_eval",
@@ -714,7 +717,7 @@ class QuantitativeEvaluationRegressionTests(TestCase):
         lmc.refresh_from_db()
         self.assertEqual(
             lmc.calc_data["revisado_por"]["username"],
-            self.user.username,
+            self.user.get_username(),
         )
 
         second_review = self.client.post(
@@ -1074,7 +1077,7 @@ class QuantitativeEvaluationRegressionTests(TestCase):
         )
 
         with patch(
-            "evaluaciones.calculators._reba_lookup_tabla_a",
+            "apps.ergonomia_886.evaluaciones.calculators._reba_lookup_tabla_a",
             side_effect=KeyError("tabla corrupta"),
         ):
             result = calc_posturas_forzadas(instance)

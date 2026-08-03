@@ -1197,6 +1197,18 @@ En sentido inverso, reemplazar `ergobot_ai` por `help_ai` tampoco sirve: `ergobo
 > código, que es la prohibición de CF-1, sin penalizar comentarios ni tests
 > que documenten la condición.
 
+> **Decisión de Arquitectura DA-2.13 — ejecución 03/08/2026.** La compuerta de
+> Fase 2 exige las 196 pruebas en verde, pero dos pruebas de `help_ai` ya
+> exigían el CSP y la ausencia global de CDN que el plan ubicaba en Fase 6.
+> Como la Fase 6 se declara independiente y el criterio de fase no puede
+> relajarse, se adelanta el mínimo seguro: middleware CSP bloqueante portado
+> sin extensión, seis referencias CDN reemplazadas por `vendor/`, nonce en
+> los cinco scripts inline y tres handlers HTML reemplazados por listeners.
+> La Fase 6 conserva la extracción de scripts, QA visual de 63 pantallas,
+> modo Report-Only, observación y activación final. También se adaptan rutas
+> de paquete, targets de `patch`, URLs `core:` y fixtures al `CustomUser` real;
+> ninguna aserción se elimina ni se relaja.
+
 ---
 
 ## Área 6 — Agenda y seguimiento

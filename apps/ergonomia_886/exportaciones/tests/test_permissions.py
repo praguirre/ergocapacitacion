@@ -11,8 +11,8 @@ class PermisosTests(TestCase):
 
     def setUp(self):
         User = get_user_model()
-        self.duenio = User.objects.create_user("duenio", password="x")
-        self.intruso = User.objects.create_user("intruso", password="x")
+        self.duenio = User.objects.create_user(email="duenio@example.com", username="duenio", password="x")
+        self.intruso = User.objects.create_user(email="intruso@example.com", username="intruso", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.duenio,
             razon_social="ACME",
@@ -108,8 +108,8 @@ class DetalleEndpointTests(TestCase):
     def setUp(self):
         from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
         User = get_user_model()
-        self.duenio = User.objects.create_user("duenio_d", password="x")
-        self.intruso = User.objects.create_user("intruso_d", password="x")
+        self.duenio = User.objects.create_user(email="duenio_d@example.com", username="duenio_d", password="x")
+        self.intruso = User.objects.create_user(email="intruso_d@example.com", username="intruso_d", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.duenio, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -153,7 +153,7 @@ class BotonEnPaginaDeFactorTests(TestCase):
 
     def setUp(self):
         from apps.ergonomia_886.evaluaciones.models import LMC_Eval, RiskEvaluation
-        self.usuario = get_user_model().objects.create_user("boton", password="x")
+        self.usuario = get_user_model().objects.create_user(email="boton@example.com", username="boton", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -193,7 +193,7 @@ class BotonDeInformeTests(TestCase):
 
     def setUp(self):
         from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
-        self.usuario = get_user_model().objects.create_user("boton_i", password="x")
+        self.usuario = get_user_model().objects.create_user(email="boton_i@example.com", username="boton_i", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -244,8 +244,8 @@ class PaqueteZipTests(TestCase):
 
     def setUp(self):
         User = get_user_model()
-        self.duenio = User.objects.create_user("duenio_z", password="x")
-        self.intruso = User.objects.create_user("intruso_z", password="x")
+        self.duenio = User.objects.create_user(email="duenio_z@example.com", username="duenio_z", password="x")
+        self.intruso = User.objects.create_user(email="intruso_z@example.com", username="intruso_z", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.duenio, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",

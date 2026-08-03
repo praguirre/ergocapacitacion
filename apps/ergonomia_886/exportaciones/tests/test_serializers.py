@@ -36,7 +36,7 @@ class VocabularioTests(TestCase):
 class Planilla1PayloadTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("tester", password="x")
+        self.usuario = get_user_model().objects.create_user(email="tester@example.com", username="tester", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario,
             razon_social="ACME LOGÍSTICA S.A.",
@@ -102,7 +102,7 @@ class Planilla1PayloadTests(TestCase):
 class Planilla2PayloadTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("tester2", password="x")
+        self.usuario = get_user_model().objects.create_user(email="tester2@example.com", username="tester2", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -166,7 +166,7 @@ class OrdenDeMedidasTests(TestCase):
     def test_las_medidas_se_numeran_por_pk_ascendente(self):
         from apps.ergonomia_886.exportaciones import serializers
         from apps.ergonomia_886.planillas.models import MedidaEspecifica, Planilla3
-        usuario = get_user_model().objects.create_user("tester3", password="x")
+        usuario = get_user_model().objects.create_user(email="tester3@example.com", username="tester3", password="x")
         evaluacion = Evaluacion.objects.create(
             usuario=usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -182,7 +182,7 @@ class OrdenDeMedidasTests(TestCase):
 class Planilla4PayloadTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("tester4", password="x")
+        self.usuario = get_user_model().objects.create_user(email="tester4@example.com", username="tester4", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -219,7 +219,7 @@ class CoherenciaConEvaluacionesTests(TestCase):
 
     def setUp(self):
         from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
-        usuario = get_user_model().objects.create_user("tester-coherencia", password="x")
+        usuario = get_user_model().objects.create_user(email="tester-coherencia@example.com", username="tester-coherencia", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
@@ -253,7 +253,7 @@ class CoherenciaConEvaluacionesTests(TestCase):
 class FactorPayloadTests(TestCase):
 
     def setUp(self):
-        self.usuario = get_user_model().objects.create_user("factor", password="x")
+        self.usuario = get_user_model().objects.create_user(email="factor@example.com", username="factor", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",

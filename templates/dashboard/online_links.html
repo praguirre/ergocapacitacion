@@ -81,7 +81,8 @@
                         <input type="text" class="form-control bg-black text-light border-secondary"
                                value="{{ request.scheme }}://{{ request.get_host }}{{ link.get_absolute_url }}"
                                readonly id="link-{{ link.id }}">
-                        <button class="btn btn-outline-info" onclick="copyLink('{{ link.id }}')" title="Copiar">
+                        <button class="btn btn-outline-info js-copy-link"
+                                data-link-id="{{ link.id }}" title="Copiar">
                             <i class="bi bi-clipboard" id="icon-{{ link.id }}"></i>
                         </button>
                     </div>
@@ -116,7 +117,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 function copyLink(linkId) {
     const input = document.getElementById('link-' + linkId);
     const icon = document.getElementById('icon-' + linkId);
@@ -131,5 +132,9 @@ function copyLink(linkId) {
         setTimeout(() => { icon.className = 'bi bi-clipboard'; }, 2000);
     });
 }
+
+document.querySelectorAll('.js-copy-link').forEach((button) => {
+    button.addEventListener('click', () => copyLink(button.dataset.linkId));
+});
 </script>
 {% endblock %}

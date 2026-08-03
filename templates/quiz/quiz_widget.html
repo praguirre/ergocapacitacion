@@ -20,7 +20,7 @@
 
       {# Lógica del Frontend #}
       <script src="{% static 'js/quiz.js' %}"></script>
-      <script>
+      <script nonce="{{ request.csp_nonce }}">
         document.addEventListener("DOMContentLoaded", function() {
             initQuiz("{{ module.slug }}");
         });

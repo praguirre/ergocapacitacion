@@ -96,7 +96,7 @@
                                class="btn btn-outline-light">
                                 <i class="bi bi-arrow-left me-2"></i>Volver a la Capacitación
                             </a>
-                            <button class="btn btn-outline-secondary" onclick="location.reload()">
+                            <button class="btn btn-outline-secondary" id="repeat-quiz-btn">
                                 <i class="bi bi-arrow-repeat me-2"></i>Repetir Quiz
                             </button>
                         </div>
@@ -110,7 +110,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 (function() {
     const questions = {{ questions_json|safe }};
     const answers = {};
@@ -139,7 +139,7 @@
             const selected = answers[q.id] === c.id ? 'selected' : '';
             html += `
                 <button class="btn choice-btn p-3 text-light ${selected}"
-                        onclick="selectChoice(${q.id}, ${c.id}, this)">
+                        data-question-id="${q.id}" data-choice-id="${c.id}">
                     ${c.text}
                 </button>
             `;
@@ -147,6 +147,13 @@
 
         html += '</div></div></div>';
         questionArea.innerHTML = html;
+        questionArea.querySelectorAll('.choice-btn').forEach((button) => {
+            button.addEventListener('click', () => selectChoice(
+                Number(button.dataset.questionId),
+                Number(button.dataset.choiceId),
+                button,
+            ));
+        });
 
         prevBtn.disabled = index === 0;
 
@@ -169,6 +176,11 @@
         nextBtn.disabled = false;
         submitBtn.disabled = Object.keys(answers).length < questions.length;
     };
+
+    document.getElementById('repeat-quiz-btn').addEventListener(
+        'click',
+        () => location.reload(),
+    );
 
     prevBtn.addEventListener('click', () => {
         if (currentIndex > 0) { currentIndex--; renderQuestion(currentIndex); }

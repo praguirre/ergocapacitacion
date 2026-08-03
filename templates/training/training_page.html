@@ -56,7 +56,7 @@
   </div>
 
   <script src="{% static 'js/ergobot_chat.js' %}"></script>
-  <script>
+  <script nonce="{{ request.csp_nonce }}">
     const moduleSlug = "{{ module.slug }}";
     const log = document.getElementById("chatLog");
     const input = document.getElementById("chatInput");
