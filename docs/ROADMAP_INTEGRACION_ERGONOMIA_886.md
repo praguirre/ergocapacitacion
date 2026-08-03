@@ -266,7 +266,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | Commit | Título | Estado |
 |---|---|:---:|
 | 5.1 | Evidencia de vibración adjuntable (O-5, D-1) | ✅ |
-| 5.2 | Aclaración de firma en planillas oficiales (O-2, CF-5) | ⬜ |
+| 5.2 | Aclaración de firma en planillas oficiales (O-2, CF-5) | ✅ |
 | 5.3 | Trabajadores estructurados (O-3, CF-4, CF-5) | ⬜ |
 | 5.4 | Sincronización con la agenda (O-4, CF-2) | ⬜ |
 | 5.5 | Enlace desde la agenda hacia la Planilla 4 | ⬜ |
@@ -5774,10 +5774,10 @@ def test_cf5_un_profesional_sin_matricula_produce_aclaracion_vacia(self): ...
 def test_cf5_una_evaluacion_sin_empresa_deja_el_recuadro_del_empleador_vacio(self): ...
 ```
 
-- [ ] Los tres casos de CF-5 cubiertos por prueba
-- [ ] Las 24 pruebas de `test_official_pdf.py` siguen pasando
-- [ ] **Inspección visual: las aclaraciones no pisan las líneas de firma del formulario oficial**
-- [ ] **La curva de Fanger y la escala de Borg siguen íntegras (CF-6)**
+- [x] Los tres casos de CF-5 cubiertos por prueba
+- [x] Las 24 pruebas de `test_official_pdf.py` siguen pasando
+- [x] **Inspección visual: las aclaraciones no pisan las líneas de firma del formulario oficial**
+- [x] **La curva de Fanger y la escala de Borg siguen íntegras (CF-6)**
 
 ### 🔴 REGLA DE ORO · Git
 

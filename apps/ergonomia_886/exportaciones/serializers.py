@@ -40,6 +40,24 @@ PLANILLA2_MODELOS = {
 def build_cabecera(evaluacion: Evaluacion) -> Dict[str, Any]:
     """Datos que se repiten en el encabezado de varias planillas."""
     planilla1 = Planilla1.objects.filter(evaluacion=evaluacion).first()
+    empresa = evaluacion.empresa
+    contacto_nombre = getattr(empresa, "contacto_nombre", "") or ""
+    contacto_cargo = getattr(empresa, "contacto_cargo", "") or ""
+    firma_empleador = (
+        f"{contacto_nombre}\n{contacto_cargo}"
+        if contacto_nombre and contacto_cargo
+        else ""
+    )
+
+    profesional = evaluacion.usuario
+    nombre_profesional = getattr(profesional, "display_name", "") or ""
+    profesion = getattr(profesional, "profession", "") or ""
+    matricula = getattr(profesional, "license_number", "") or ""
+    firma_higiene = (
+        f"{nombre_profesional}\n{profesion} - Matrícula {matricula}"
+        if nombre_profesional and profesion and matricula
+        else ""
+    )
     return {
         "evaluacion_id": evaluacion.pk,
         "razon_social": evaluacion.razon_social or "",
@@ -51,6 +69,12 @@ def build_cabecera(evaluacion: Evaluacion) -> Dict[str, Any]:
         "area_sector": getattr(planilla1, "area_sector", "") or "",
         "puesto_trabajo": getattr(planilla1, "puesto_trabajo", "") or "",
         "nombres_trabajadores": getattr(planilla1, "nombres_trabajadores", "") or "",
+        "aclaraciones_firma": {
+            "empleador": firma_empleador,
+            "higiene_seguridad": firma_higiene,
+            # CF-5: el sistema no registra al responsable de Medicina Laboral.
+            "medicina_trabajo": "",
+        },
     }
 
 

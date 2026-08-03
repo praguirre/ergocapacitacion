@@ -18,6 +18,7 @@ from apps.ergonomia_886.exportaciones.official.builders import (
     build_planilla1_pages, build_planilla2_pages, build_planilla4_pages,
 )
 from django.contrib.auth import get_user_model
+from apps.company.models import CompanyProfile
 from apps.ergonomia_886.planillas.models import Evaluacion, FactorRiesgo, Planilla1
 
 
@@ -272,3 +273,66 @@ class BuildersTests(TestCase):
             MedidaEspecifica.objects.create(planilla3=planilla3, descripcion=f"M{i}")
         payload = serializers.build_planilla3_payload(self.evaluacion)
         self.assertEqual(len(build_planilla3_pages(payload)), 2)
+
+
+class AclaracionesFirmaCF5Tests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.usuario_empresa = User.objects.create_company(
+            email="firma-empresa@test.local", username="firma-empresa",
+            password="prueba",
+        )
+        self.empresa = CompanyProfile.objects.create(
+            user=self.usuario_empresa,
+            razon_social="ACME",
+            cuit="30-12345678-9",
+            contacto_nombre="Ana Empleadora",
+            contacto_cargo="Gerenta de Planta",
+            domicilio="Ruta 8",
+            provincia="Buenos Aires",
+        )
+        self.profesional = User.objects.create_professional(
+            email="firma-profesional@test.local",
+            username="firma-profesional",
+            password="prueba",
+            full_name="Patricia Profesional",
+            profession="Lic. en Higiene y Seguridad",
+            license_number="MN 12345",
+        )
+        self.evaluacion = Evaluacion.objects.create(
+            usuario=self.profesional,
+            empresa=self.empresa,
+            razon_social="ACME",
+            cuit="30-12345678-9",
+            direccion_establecimiento="Ruta 8",
+            provincia="Buenos Aires",
+        )
+        Planilla1.objects.create(evaluacion=self.evaluacion)
+
+    def _textos_planilla1(self):
+        payload = serializers.build_planilla1_payload(self.evaluacion)
+        return [op.text for op in build_planilla1_pages(payload)[0].ops]
+
+    def test_cf5_el_recuadro_de_medicina_sale_siempre_en_blanco(self):
+        payload = serializers.build_planilla1_payload(self.evaluacion)
+        self.assertEqual(
+            payload["aclaraciones_firma"]["medicina_trabajo"], ""
+        )
+        textos = self._textos_planilla1()
+        self.assertFalse(any("Medicina" in texto for texto in textos))
+
+    def test_cf5_un_profesional_sin_matricula_produce_aclaracion_vacia(self):
+        self.profesional.license_number = ""
+        self.profesional.save(update_fields=["license_number"])
+        payload = serializers.build_planilla1_payload(self.evaluacion)
+        self.assertEqual(
+            payload["aclaraciones_firma"]["higiene_seguridad"], ""
+        )
+        self.assertNotIn("Patricia Profesional", self._textos_planilla1())
+
+    def test_cf5_una_evaluacion_sin_empresa_deja_el_recuadro_del_empleador_vacio(self):
+        self.evaluacion.empresa = None
+        self.evaluacion.save(update_fields=["empresa"])
+        payload = serializers.build_planilla1_payload(self.evaluacion)
+        self.assertEqual(payload["aclaraciones_firma"]["empleador"], "")
+        self.assertNotIn("Ana Empleadora", self._textos_planilla1())

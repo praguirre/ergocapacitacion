@@ -3734,7 +3734,7 @@ Fase 4 cerrada. No iniciar Fase 5 sin instrucción explícita del usuario.
 | Fecha | 2026-08-03 11:39 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `47f5997` |
 | Fase | 5 |
 | Estado | ✅ Completado |
 
@@ -3836,3 +3836,99 @@ respondió 200 y la descarga quedó cubierta con base fresca por cinco pruebas.
 ### Notas para el commit siguiente
 Implementar las aclaraciones impresas de firma bajo CF-5 e inspeccionar
 visualmente el PDF oficial sin alterar el artefacto base.
+
+---
+
+## Commit 5.2 — Aclaración de firma en planillas oficiales (O-2, CF-5)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:48 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Las doce planillas oficiales imprimen sólo las aclaraciones del empleador y del
+responsable de Higiene y Seguridad cuando sus fuentes están completas. La
+empresa aporta contacto y cargo; el profesional aporta nombre, profesión y
+matrícula. Medicina del Trabajo permanece siempre vacía. Los textos se dibujan
+por superposición, sin trazo manuscrito y sin alterar el PDF oficial.
+
+### Archivos modificados
+- `apps/ergonomia_886/exportaciones/serializers.py` — fuentes y reglas CF-5.
+- `apps/ergonomia_886/exportaciones/official/builders.py` — coordenadas de las
+  aclaraciones en las doce páginas.
+- `apps/ergonomia_886/exportaciones/tests/test_official_pdf.py` — tres pruebas
+  obligatorias CF-5, adicionales a las 24 preexistentes.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.exportaciones.tests.test_official_pdf --settings=config.test_settings
+Creating test database for alias 'default'...
+...........................
+----------------------------------------------------------------------
+Ran 27 tests in 0.181s
+
+OK
+Destroying test database for alias 'default'...
+Found 27 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.exportaciones --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................................................................
+----------------------------------------------------------------------
+Ran 101 tests in 1.202s
+
+OK
+Destroying test database for alias 'default'...
+Found 101 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+..................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 242 tests in 2.331s
+
+OK
+Destroying test database for alias 'default'...
+Found 242 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+.venv/bin/python manage.py migrate --check --settings=config.settings
+(sin salida)
+
+shasum -a 256 apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4  apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+
+pdftoppm -png -r 100 /private/tmp/ergonomia886-pdf-qa/protocolo-firmas-5.2.pdf /private/tmp/ergonomia886-pdf-qa/final
+(sin salida; se generaron y revisaron las doce páginas PNG)
+```
+
+### Evidencia visual CF-5 / CF-6
+- Se revisaron las doce páginas renderizadas a PNG.
+- Las aclaraciones quedan encima de los rótulos y no pisan el espacio de firma.
+- El recuadro de Medicina no contiene ningún texto agregado.
+- La escala de Borg de la Planilla 2E está completa y legible.
+- La curva de Fanger de la Planilla 2H conserva imagen, ejes, zonas y leyenda.
+- En Planilla 4 se redujo el cuerpo a 5 pt para que profesión y matrícula no
+  invadan el recuadro de Medicina; el segundo render confirmó la corrección.
+
+### Desvíos respecto del roadmap
+Sin desvíos funcionales. La referencia «página 5 / página 8» usa índices base
+cero; en el PDF de doce páginas corresponden a las páginas físicas 6 (Borg) y
+9 (Fanger), que son las inspeccionadas.
+
+### Notas para el commit siguiente
+Agregar la relación opcional de Planilla 1 con la nómina y conservar el snapshot
+`nombres_trabajadores` como única fuente documental.

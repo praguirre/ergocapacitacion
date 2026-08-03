@@ -13,6 +13,51 @@ from .catalog import get_planilla_definition, load_page_map
 from .overlay import DrawOp, PageOps
 
 
+# Coordenadas medidas sobre los doce recuadros del PDF oficial. La línea base
+# queda inmediatamente encima de los rótulos de firma para reservar el espacio
+# superior al trazo manuscrito. Medicina se modela, pero CF-5 la deja vacía.
+_ACLARACIONES_FIRMA = {
+    0: ((180.0, 300.0, 420.0), 178.0),
+    1: ((119.0, 254.0, 371.0), 139.0),
+    2: ((119.0, 254.0, 371.0), 127.0),
+    3: ((119.0, 254.0, 371.0), 189.0),
+    4: ((119.0, 254.0, 371.0), 263.0),
+    5: ((119.0, 254.0, 371.0), 160.0),
+    6: ((119.0, 254.0, 371.0), 270.0),
+    7: ((119.0, 254.0, 371.0), 112.0),
+    8: ((119.0, 254.0, 371.0), 131.0),
+    9: ((181.0, 317.0, 435.0), 331.0),
+    10: ((112.0, 220.0, 322.0), 91.0),
+    11: ((98.0, 303.0, 411.0), 123.0),
+}
+
+
+def _aclaraciones_firma_ops(
+    page_index: int, payload: Dict[str, Any]
+) -> List[DrawOp]:
+    """Aclaraciones impresas; jamás genera un trazo de firma."""
+    posiciones, y = _ACLARACIONES_FIRMA[page_index]
+    aclaraciones = payload.get("aclaraciones_firma", {})
+    valores = (
+        aclaraciones.get("empleador", ""),
+        aclaraciones.get("higiene_seguridad", ""),
+        aclaraciones.get("medicina_trabajo", ""),
+    )
+    ops: List[DrawOp] = []
+    for x, valor in zip(posiciones, valores):
+        for linea, texto in enumerate(valor.splitlines()):
+            ops.append(DrawOp(
+                text=texto,
+                x=x,
+                y=y - linea * 6.5,
+                font="Helvetica",
+                size=5.0,
+                align="center",
+                max_width=112.0,
+            ))
+    return ops
+
+
 def _campo_op(mapa: Dict[str, Any], clave: str, valor: str) -> DrawOp | None:
     if not valor:
         return None
@@ -92,6 +137,7 @@ def build_planilla1_pages(payload: Dict[str, Any], *,
         pagina.add(centrado("nivel2", factor["nivel2"]))
         pagina.add(centrado("nivel3", factor["nivel3"]))
     pagina.extend(_pie_hoja(mapa, hoja, total_hojas))
+    pagina.extend(_aclaraciones_firma_ops(definition.page_index, payload))
     return [pagina]
 
 
@@ -118,6 +164,7 @@ def build_planilla2_pages(planilla_slug: str, payloads: Sequence[Dict[str, Any]]
         for item in mapa["items"]:
             pagina.add(_marca_checkbox(mapa, respuestas.get(item["campo"]), item["y"]))
         pagina.extend(_pie_hoja(mapa, hoja_inicial + desplazamiento, total_hojas))
+        pagina.extend(_aclaraciones_firma_ops(definition.page_index, payload))
         paginas.append(pagina)
     return paginas
 
@@ -205,6 +252,7 @@ def build_planilla3_pages(payload: Dict[str, Any], *,
             ))
 
         pagina.extend(_pie_hoja(mapa, hoja_inicial + indice_pagina, total_hojas))
+        pagina.extend(_aclaraciones_firma_ops(definition.page_index, payload))
         paginas.append(pagina)
 
     return paginas
@@ -263,6 +311,7 @@ def build_planilla4_pages(payload: Dict[str, Any], *,
                 ))
 
         pagina.extend(_pie_hoja(mapa, hoja_inicial + indice_pagina, total_hojas))
+        pagina.extend(_aclaraciones_firma_ops(definition.page_index, payload))
         paginas.append(pagina)
 
     return paginas

@@ -238,6 +238,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   calibración VCE se guardan fuera de `MEDIA_ROOT`, carecen de URL pública y
   sólo se descargan mediante autorización D-9. El ZIP incorpora la evidencia y
   el saneamiento CF-4 continúa excluyéndola; 239 pruebas pasan.
+- **03/08/2026 — Commit 5.2:** las doce planillas oficiales incorporan
+  aclaraciones impresas de empleador y profesional sólo cuando las fuentes
+  están completas. Medicina Laboral queda siempre vacía por CF-5; el render de
+  las doce páginas preserva Borg, Fanger y el SHA-256 oficial. Pasan 242 tests.
 
 ### Registro de cambios documentales
 
