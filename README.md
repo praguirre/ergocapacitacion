@@ -284,6 +284,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   emite Report-Only por defecto; la suite conserva la compuerta bloqueante de
   `help_ai`. Tres pruebas cubren headers, políticas y posición del middleware;
   `.env.example` documenta la variable sin tocar el `.env` real.
+- **03/08/2026 — Commit 6.6:** el período Report-Only recorrió las 63 pantallas
+  sin violaciones y confirmó nonces reales en los seis templates inline del
+  módulo. Los dos `iframe` de YouTube preexistentes se reemplazaron por enlaces
+  externos explícitos para no abrir orígenes remotos en la política; pasan las
+  261 pruebas y CF-1 conserva intactas sus aserciones de seguridad.
 
 ### Registro de cambios documentales
 

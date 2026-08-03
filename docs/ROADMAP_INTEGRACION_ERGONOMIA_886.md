@@ -281,7 +281,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 6.3 | Reemplazar los 3 manejadores en línea | ✅ |
 | 6.4 | Verificación visual de las 33 pantallas | ✅ |
 | 6.5 | Portar el middleware con modo `Report-Only` | ✅ |
-| 6.6 | Período de observación | ⬜ |
+| 6.6 | Período de observación | ✅ |
 | 6.7 | Activar el CSP en modo bloqueante | ⬜ |
 
 ## 0.10 Comandos de verificación de referencia
@@ -6375,8 +6375,15 @@ Con `CSP_REPORT_ONLY = True`, recorrer las 63 pantallas con la consola abierta y
 
 Cada violación se corrige. **No se relaja la política para acomodar una violación**: se corrige el código que la produce.
 
-- [ ] **Cero violaciones de CSP en las 63 pantallas**
-- [ ] Los 6 templates del módulo reciben un nonce real (no cadena vacía)
+- [x] **Cero violaciones de CSP en las 63 pantallas**
+- [x] Los 6 templates del módulo reciben un nonce real (no cadena vacía)
+
+> **Desvío de ejecución (03/08/2026):** Report-Only reveló que los dos
+> reproductores `iframe` preexistentes necesitaban habilitar un origen externo.
+> La compuerta de seguridad de `help_ai` prohíbe cualquier `https:` en la
+> política y CF-1 impide relajar su aserción. Se corrigió el código productor:
+> ambos videos conservan un enlace explícito a YouTube y ya no se embeben. La
+> política original permanece intacta.
 
 ### 🔴 REGLA DE ORO · Git
 

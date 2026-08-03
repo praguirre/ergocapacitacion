@@ -4776,7 +4776,7 @@ Report-Only sin modificar sus directivas.
 | Fecha | 2026-08-03 12:48 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `4bc5d4a` |
 | Fase | 6 |
 | Estado | ✅ Completado con desvío documentado |
 
@@ -4847,3 +4847,108 @@ modos. Ninguna aserción, patch, caso ni cuota de `help_ai` fue modificada.
 ### Notas para el commit siguiente
 Levantar la misma fixture visual con `CSP_REPORT_ONLY=True`, recorrer las 63
 pantallas y registrar/corregir cada violación sin relajar directivas.
+
+---
+
+## Commit 6.6 — Período de observación
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 12:55 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 6 |
+| Estado | ✅ Completado con desvío documentado |
+
+### Qué se hizo
+Se recorrieron las 63 pantallas con `CSP_REPORT_ONLY=True`, se inspeccionó la
+consola en cada navegación y se confirmó que los seis templates inline reciben
+un nonce real coincidente con el de la cabecera. El inventario detectó dos
+`iframe` de YouTube preexistentes: se reemplazaron por tarjetas con enlace
+externo explícito, eliminando la fuente incompatible sin ampliar la política.
+
+### Archivos modificados
+- `templates/training/training_page.html` — video accesible mediante enlace,
+  sin documento externo embebido.
+- `templates/presencial/capacitacion.html` — misma corrección en presencial.
+- documentación de trazabilidad y diseño del commit.
+
+### Verificaciones ejecutadas
+
+```text
+Auditoría final en navegador con Report-Only:
+{
+  "count": 63,
+  "failures": []
+}
+
+Tarjetas de video:
+{
+  "training": {"iframe": false, "link": true},
+  "presencial": {"iframe": false, "link": true},
+  "logs": []
+}
+
+.venv/bin/python manage.py shell --settings=config.phase6_qa_settings -c '<verificación de nonces>'
+51 objects imported automatically (use -v 2 for details).
+
+lmc/ status=200 inline_nonces=1 all_match=True
+empuje/inicial/ status=200 inline_nonces=2 all_match=True
+bipedestacion/ status=200 inline_nonces=2 all_match=True
+posturas-forzadas/ status=200 inline_nonces=2 all_match=True
+vibracion/mano-brazo/ status=200 inline_nonces=2 all_match=True
+vibracion/cuerpo-entero/ status=200 inline_nonces=2 all_match=True
+
+.venv/bin/python manage.py test config --settings=config.test_settings
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Found 3 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 261 tests in 2.611s
+
+OK
+Destroying test database for alias 'default'...
+Found 261 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+rg -n "<iframe|https://www.youtube.com/embed" templates apps/ergonomia_886 -g '*.html'
+(sin salida)
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+La matriz inicial no contaba como violación el `iframe` de YouTube porque la
+cabecera estaba en observación y el navegador podía cargarlo. Al ensayar la
+allowlist mínima `frame-src https://www.youtube.com`, la suite heredada falló
+literalmente con:
+
+```text
+FAIL: test_dynamic_responses_apply_restrictive_csp
+AssertionError: 'https:' unexpectedly found in "default-src 'self'; ...;
+frame-src https://www.youtube.com; ..."
+Ran 261 tests in 2.346s
+FAILED (failures=1)
+```
+
+Modificar esa aserción está expresamente prohibido por CF-1. Ganó la realidad:
+se descartó la allowlist, se corrigieron los dos templates que producían la
+incompatibilidad y se repitió completa la matriz con cero violaciones. El
+acceso al video se conserva como enlace `target="_blank" rel="noopener"`.
+
+### Notas para el commit siguiente
+Cambiar el default general a `CSP_REPORT_ONLY=False`, reiniciar la fixture y
+repetir las 63 pantallas bajo la cabecera bloqueante.

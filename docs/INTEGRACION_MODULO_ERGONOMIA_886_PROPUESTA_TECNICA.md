@@ -1653,6 +1653,14 @@ connect-src 'self'; object-src 'none'; base-uri 'self';
 frame-ancestors 'self'; form-action 'self'
 ```
 
+**Hallazgo de ejecución (03/08/2026).** El destino tenía dos reproductores
+YouTube embebidos que no figuraban en el inventario inicial. Autorizar
+`frame-src https:` habría contradicho la política restrictiva ya cubierta por
+las pruebas de `help_ai`. Para conservar CF-1 y no ampliar orígenes activos, se
+reemplazaron ambos `iframe` por tarjetas con enlace externo explícito. El video
+sigue accesible bajo una acción consciente del usuario y el CSP queda sin
+excepciones remotas.
+
 ### Decisión
 
 **Se adopta el middleware del origen, pero NO como prerrequisito de la integración: como una fase posterior e independiente, precedida por la remediación del frontend del destino (Área 9).**
