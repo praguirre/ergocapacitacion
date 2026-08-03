@@ -18,9 +18,9 @@ media/
 # OS / IDE
 .DS_Store
 .vscode/
-backup_*.json
 
-# ErgoSolutions - Planificación y Documentación Local
-PLAN_MAESTRO_COMMITS_FASES_3_4_5_6.md
+backup_contenido.json
+training_modules.json
+
+# ErgoSolutions - Instrucciones locales para asistentes
 AGENTS.md
-PLAN_MAESTRO_COMMITS_GENERAL_FASES_1_2.md

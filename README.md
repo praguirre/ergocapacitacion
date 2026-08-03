@@ -89,6 +89,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   `docs/BITACORA_INTEGRACION_886.md`. El estado de partida quedó verificado con
   160 pruebas del módulo y 32 de ErgoSolutions en `OK`, sin cambios de modelos
   pendientes de migración.
+- **02/08/2026 — Commit 0.1:** se consolidó el árbol documental pendiente:
+  cuatro documentos de la raíz quedaron verificados bajo `docs/`, se incorporó
+  el resto de la documentación técnica preparada y se actualizó `.gitignore`.
+  `manage.py check` no reportó issues y el smoke test de `GET /` respondió 200.
 
 ### Registro de cambios documentales
 

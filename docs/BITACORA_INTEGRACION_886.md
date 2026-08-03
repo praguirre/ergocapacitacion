@@ -26,7 +26,7 @@
 | Fecha | 2026-08-02 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `1001b13` |
 | Fase | 0 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -96,3 +96,61 @@ que usan bases efímeras, pasaron con los conteos esperados.
 El árbol sucio coincide con el inventario del commit 0.1 y se preservó sin
 alteraciones. La documentación no trackeada del repositorio origen también se
 mantiene intacta hasta su fase correspondiente.
+
+## Commit 0.1 — Consolidar el árbol de trabajo pendiente
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:29 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se verificó que los cuatro Markdown retirados de la raíz existen en `docs/` y
+se consolidó el árbol documental pendiente, incluida la actualización de
+`.gitignore`. También se completó un smoke test real del servidor Django.
+
+### Archivos modificados
+- `.gitignore` — actualización preexistente consolidada.
+- `DEPLOY_CLAUDE_RUNBOOK.md`, `ERGOSOLUTIONS_ARQUITECTURA_ROADMAP.md`, `MAPA_CONCEPTUAL_VISUAL.md` y `PLAN_EMAIL_PRODUCCION.md` — movimientos desde la raíz.
+- `docs/` — documentos técnicos y operativos centralizados, incluidos los cuatro movimientos verificados.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada del commit y hash del commit anterior.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.1 marcado como completado.
+- `README.md` — registro de la consolidación documental.
+
+### Verificaciones ejecutadas
+
+```text
+for f in DEPLOY_CLAUDE_RUNBOOK ERGOSOLUTIONS_ARQUITECTURA_ROADMAP MAPA_CONCEPTUAL_VISUAL PLAN_EMAIL_PRODUCCION; do test -f "docs/$f.md" && echo "OK  docs/$f.md" || echo "FALTA docs/$f.md"; done
+OK  docs/DEPLOY_CLAUDE_RUNBOOK.md
+OK  docs/ERGOSOLUTIONS_ARQUITECTURA_ROADMAP.md
+OK  docs/MAPA_CONCEPTUAL_VISUAL.md
+OK  docs/PLAN_EMAIL_PRODUCCION.md
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8001 --noreload
+Performing system checks...
+System check identified no issues (0 silenced).
+August 02, 2026 - 23:28:46
+Django version 5.2.10, using settings 'config.settings'
+Starting development server at http://127.0.0.1:8001/
+
+curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://127.0.0.1:8001/
+GET / -> HTTP 200
+
+git status --short
+<sin archivos sin agregar después de git add -A>
+```
+
+### Desvíos respecto del roadmap
+El puerto 8000 ya estaba ocupado, por lo que el smoke test se ejecutó en el
+puerto 8001. El contenido y el criterio de aceptación no cambiaron: el servidor
+arrancó sin issues y `GET /` devolvió HTTP 200.
+
+### Notas para el commit siguiente
+Ninguna.
