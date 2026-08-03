@@ -93,6 +93,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   cuatro documentos de la raíz quedaron verificados bajo `docs/`, se incorporó
   el resto de la documentación técnica preparada y se actualizó `.gitignore`.
   `manage.py check` no reportó issues y el smoke test de `GET /` respondió 200.
+- **02/08/2026 — Commit 0.2:** se corrigieron cinco nombres de URL inexistentes
+  en los decoradores de cuentas. Los accesos anónimos de profesionales,
+  empresas y trabajadores ahora resuelven al login correspondiente, cerrando
+  la causa raíz de la regresión N1.
 
 ### Registro de cambios documentales
 

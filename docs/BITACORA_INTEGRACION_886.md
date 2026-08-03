@@ -104,7 +104,7 @@ mantiene intacta hasta su fase correspondiente.
 | Fecha | 2026-08-02 23:29 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `0e364ac` |
 | Fase | 0 |
 | Estado | ✅ Completado |
 
@@ -151,6 +151,67 @@ git status --short
 El puerto 8000 ya estaba ocupado, por lo que el smoke test se ejecutó en el
 puerto 8001. El contenido y el criterio de aceptación no cambiaron: el servidor
 arrancó sin issues y `GET /` devolvió HTTP 200.
+
+### Notas para el commit siguiente
+Ninguna.
+
+## Commit 0.2 — Corregir nombres de URL rotos en los decoradores (N1)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:31 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se corrigieron los cinco nombres de URL inexistentes usados por los decoradores
+de cuentas. Cada tipo de usuario anónimo ahora es enviado al login real que le
+corresponde, eliminando la causa raíz de N1.
+
+### Archivos modificados
+- `apps/accounts/decorators.py` — cinco nombres de URL corregidos.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada y evidencia del commit.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.2 marcado como completado.
+- `README.md` — registro de la corrección N1, parte 1.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python -c "<script reverse() del roadmap>"
+accounts_professional:professional_login      -> /auth/login/
+accounts_company:company_login                -> /empresa/auth/login/
+trainee_landing                               -> /acceso/
+
+rg -n "reverse\\('professional_login'\\)|reverse\\('landing'\\)" apps/accounts/decorators.py
+<sin salida>
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps
+................................
+----------------------------------------------------------------------
+Ran 32 tests in 4.182s
+
+OK
+Destroying test database for alias 'default'...
+Found 32 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8002 --noreload
+Performing system checks...
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8002/
+
+curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://127.0.0.1:8002/
+GET / -> HTTP 200
+```
+
+### Desvíos respecto del roadmap
+Ninguno.
 
 ### Notas para el commit siguiente
 Ninguna.

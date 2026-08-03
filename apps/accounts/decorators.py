@@ -24,7 +24,7 @@ def professional_required(function=None, redirect_url=None, login_url=None):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                url = login_url or reverse('professional_login')
+                url = login_url or reverse('accounts_professional:professional_login')
                 return redirect(f"{url}?next={request.get_full_path()}")
 
             # Defensa extra (como propuso el senior)
@@ -51,7 +51,7 @@ def trainee_required(function=None, redirect_url=None, login_url=None):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                url = login_url or reverse('landing')
+                url = login_url or reverse('trainee_landing')
                 return redirect(f"{url}?next={request.get_full_path()}")
 
             # Defensa extra (como propuso el senior)
@@ -89,7 +89,7 @@ def backoffice_required(function=None, redirect_url=None, login_url=None):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                url = login_url or reverse('professional_login')
+                url = login_url or reverse('accounts_professional:professional_login')
                 return redirect(f"{url}?next={request.get_full_path()}")
 
             if not request.user.is_active or not request.user.is_backoffice_user:
@@ -119,7 +119,7 @@ def company_required(function=None, redirect_url=None, login_url=None):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                url = login_url or reverse('professional_login')
+                url = login_url or reverse('accounts_company:company_login')
                 return redirect(f"{url}?next={request.get_full_path()}")
 
             if not request.user.is_active or not request.user.is_company:
@@ -149,7 +149,7 @@ def subscription_required(tier='basic', redirect_url=None):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                return redirect('professional_login')
+                return redirect('accounts_professional:professional_login')
 
             if not request.user.is_active or not request.user.is_professional:
                 return HttpResponseForbidden("Solo para profesionales.")
