@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "planilla": "planilla1",
+  "page_index": 0,
+  "pagesize": [612.0, 792.0],
+  "calibrado": true,
+  "fuente_geometria": "Medición de operadores 're' del PDF oficial, 2026-07-31",
+  "default_font": ["Helvetica", 8.5],
+  "campos": {
+    "razon_social": {"x": 118.0, "y": 699.8, "max_width": 200.0},
+    "cuit": {"x": 375.0, "y": 699.8, "max_width": 75.0},
+    "ciiu": {"x": 520.0, "y": 699.8, "max_width": 43.0},
+    "direccion": {"x": 176.0, "y": 686.1, "max_width": 140.0},
+    "provincia": {"x": 402.0, "y": 686.1, "max_width": 156.0},
+    "area_sector": {"x": 158.0, "y": 665.8, "max_width": 158.0},
+    "nro_trabajadores": {"x": 470.0, "y": 665.8, "max_width": 80.0},
+    "puesto_trabajo": {"x": 130.0, "y": 652.5, "max_width": 186.0},
+    "procedimiento_si_no": {"x": 230.0, "y": 637.1, "max_width": 32.0},
+    "capacitacion_si_no": {"x": 425.0, "y": 637.1, "max_width": 32.0},
+    "nombres_trabajadores": {"x": 158.0, "y": 615.7, "max_width": 394.0, "wrap": true, "leading": 10.0, "max_lines": 2},
+    "manifestacion_si_no": {"x": 200.0, "y": 590.7, "max_width": 40.0},
+    "ubicacion_sintoma": {"x": 380.0, "y": 590.3, "max_width": 172.0},
+    "fecha": {"x": 505.0, "y": 110.4, "max_width": 55.0},
+    "hoja_nro": {"x": 510.0, "y": 97.0, "max_width": 50.0},
+    "tarea_1": {"x": 138.0, "y": 505.0, "max_width": 88.0, "wrap": true, "leading": 8.0, "max_lines": 4},
+    "tarea_2": {"x": 232.0, "y": 505.0, "max_width": 88.0, "wrap": true, "leading": 8.0, "max_lines": 4},
+    "tarea_3": {"x": 326.0, "y": 505.0, "max_width": 88.0, "wrap": true, "leading": 8.0, "max_lines": 4}
+  },
+  "matriz_factores": {
+    "orden": ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+    "fila_top_y": 463.1,
+    "fila_alto": 23.2,
+    "offset_baseline": -14.5,
+    "columnas": {
+      "tarea1": {"x0": 134.80, "x1": 229.08},
+      "tarea2": {"x0": 229.08, "x1": 323.36},
+      "tarea3": {"x0": 323.36, "x1": 417.64},
+      "tiempo": {"x0": 417.64, "x1": 472.07},
+      "nivel1": {"x0": 472.07, "x1": 502.98},
+      "nivel2": {"x0": 502.98, "x1": 533.45},
+      "nivel3": {"x0": 533.45, "x1": 563.48}
+    }
+  }
+}

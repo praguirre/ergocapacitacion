@@ -1,0 +1,313 @@
+{# templates/evaluaciones/estres_contacto_form.html #}
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Estrés de Contacto | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}estres_contacto{% endblock %}
+
+{# Encabezado del factor #}
+{% block factor_icon %}<i class="bi bi-hand-index-thumb me-2"></i>{% endblock %}
+{% block factor_title %}Estrés de Contacto{% endblock %}
+{% block factor_subtitle %}
+  Cribado por presión localizada en superficies/bordes, con matriz <em>frecuencia × agravantes</em> y reglas clínicas.
+{% endblock %}
+
+{# Cuerpo del formulario (este bloque lo renderiza el base dentro del <form>) #}
+{% block factor_form %}
+  {{ form.risk_evaluation }} {# hidden #}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div class="row g-3">
+
+    <!-- General -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>General</strong></div>
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-3">
+              <div class="form-check">
+                {{ form.aplicable }}
+                {{ form.aplicable.label_tag }}
+                {% if form.aplicable.errors %}
+                  <div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label mb-1">{{ form.observaciones.label }}</label>
+              {{ form.observaciones }}
+              {% if form.observaciones.help_text %}<div class="form-text">{{ form.observaciones.help_text }}</div>{% endif %}
+              {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Descripción y exposición -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Descripción de la exposición</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label">{{ form.segmento_afectado.label }}</label>
+              {{ form.segmento_afectado }}
+              {% if form.segmento_afectado.errors %}<div class="invalid-feedback d-block">{{ form.segmento_afectado.errors }}</div>{% endif %}
+              <div class="form-text">Seleccione el segmento corporal expuesto al contacto.</div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">{{ form.objeto_superficie.label }}</label>
+              {{ form.objeto_superficie }}
+              {% if form.objeto_superficie.errors %}<div class="invalid-feedback d-block">{{ form.objeto_superficie.errors }}</div>{% endif %}
+              <div class="form-text">Ej.: canto de mesa, borde de bandeja, mango de herramienta…</div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">{{ form.tipo_borde.label }}</label>
+              {{ form.tipo_borde }}
+              {% if form.tipo_borde.errors %}<div class="invalid-feedback d-block">{{ form.tipo_borde.errors }}</div>{% endif %}
+              <div class="form-text">Afilado (canto vivo), duro/recto o acolchado/redondeado.</div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">{{ form.duracion_continua_min.label }}</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-stopwatch"></i></span>
+                {{ form.duracion_continua_min }}
+              </div>
+              {% if form.duracion_continua_min.errors %}<div class="invalid-feedback d-block">{{ form.duracion_continua_min.errors }}</div>{% endif %}
+              <div class="form-text">Duración continua del contacto (min).</div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label">{{ form.frecuencia_exposicion.label }}</label>
+              {{ form.frecuencia_exposicion }}
+              {% if form.frecuencia_exposicion.errors %}<div class="invalid-feedback d-block">{{ form.frecuencia_exposicion.errors }}</div>{% endif %}
+              <div class="form-text">Bajo (&lt;30%), Moderado (30–60%), Alto (&gt;60%) del ciclo.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intensidad (opcional) -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Intensidad (opcional)</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            {% if form.fuerza_n %}
+              <div class="col-12 col-md-4">
+                <label class="form-label">{{ form.fuerza_n.label }} (N)</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-lightning-charge"></i></span>
+                  {{ form.fuerza_n }}
+                </div>
+                {% if form.fuerza_n.errors %}<div class="invalid-feedback d-block">{{ form.fuerza_n.errors }}</div>{% endif %}
+                <div class="form-text">Fuerza estimada/medida aplicada (N).</div>
+              </div>
+            {% endif %}
+
+            {% if form.area_cm2 %}
+              <div class="col-12 col-md-4">
+                <label class="form-label">{{ form.area_cm2.label }} (cm²)</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-bounding-box"></i></span>
+                  {{ form.area_cm2 }}
+                </div>
+                {% if form.area_cm2.errors %}<div class="invalid-feedback d-block">{{ form.area_cm2.errors }}</div>{% endif %}
+                <div class="form-text">Área de contacto efectivo (cm²).</div>
+              </div>
+            {% endif %}
+
+            {% if form.borg %}
+              <div class="col-12 col-md-4">
+                <label class="form-label">{{ form.borg.label }}</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-activity"></i></span>
+                  {{ form.borg }}
+                </div>
+                {% if form.borg.errors %}<div class="invalid-feedback d-block">{{ form.borg.errors }}</div>{% endif %}
+                <div class="form-text">Escala de Borg 0–10.</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flags críticos -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <strong>Flags críticos</strong> <span class="text-muted">(pueden forzar <em>Alto</em>)</span>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <div class="form-check">
+                {{ form.mano_como_martillo }} {{ form.mano_como_martillo.label_tag }}
+              </div>
+              {% if form.mano_como_martillo.errors %}<div class="invalid-feedback d-block">{{ form.mano_como_martillo.errors }}</div>{% endif %}
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="form-check">
+                {{ form.mango_inadecuado }} {{ form.mango_inadecuado.label_tag }}
+              </div>
+              {% if form.mango_inadecuado.errors %}<div class="invalid-feedback d-block">{{ form.mango_inadecuado.errors }}</div>{% endif %}
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="form-check">
+                {{ form.postura_forzada_asociada }} {{ form.postura_forzada_asociada.label_tag }}
+              </div>
+              {% if form.postura_forzada_asociada.errors %}<div class="invalid-feedback d-block">{{ form.postura_forzada_asociada.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Síntomas y Controles -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Síntomas y Controles</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ form.sintomas.label }}</label>
+              {{ form.sintomas }}
+              {% if form.sintomas.help_text %}<div class="form-text">{{ form.sintomas.help_text }}</div>{% endif %}
+              {% if form.sintomas.errors %}<div class="invalid-feedback d-block">{{ form.sintomas.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ form.controles.label }}</label>
+              {{ form.controles }}
+              {% if form.controles.help_text %}<div class="form-text">{{ form.controles.help_text }}</div>{% endif %}
+              {% if form.controles.errors %}<div class="invalid-feedback d-block">{{ form.controles.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avanzado (payload JSON opcional) -->
+    {% if form.input_json %}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <strong>Avanzado</strong> <span class="text-muted">(payload JSON opcional)</span>
+        </div>
+        <div class="card-body">
+          <label class="form-label">{{ form.input_json.label }}</label>
+          {{ form.input_json }}
+          {% if form.input_json.help_text %}<div class="form-text">{{ form.input_json.help_text }}</div>{% endif %}
+          {% if form.input_json.errors %}<div class="invalid-feedback d-block">{{ form.input_json.errors }}</div>{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {# Panel de resultados #}
+    {% if object and object.calc_data %}
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header"><strong>Resultado de la evaluación</strong></div>
+          <div class="card-body">
+
+            {% if object.calc_data.motivo_override %}
+              <div class="alert alert-warning d-flex align-items-start">
+                <i class="bi bi-exclamation-triangle me-2 mt-1"></i>
+                <div>
+                  <div class="fw-bold">Override por flag crítico</div>
+                  <div class="small">{{ object.calc_data.motivo_override }}</div>
+                  <ul class="mb-0 mt-2">
+                    <li>Flags: <code>{{ object.calc_data.flags|default:"—" }}</code></li>
+                    <li>Inputs clave: <code>{{ object.calc_data.input|default:"—" }}</code></li>
+                  </ul>
+                </div>
+              </div>
+            {% else %}
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <div class="p-3 border rounded h-100">
+                    <div class="text-muted small">Clasificación</div>
+                    <ul class="mb-0">
+                      <li>Base por matriz: <strong>{{ object.calc_data.base_por_matriz|default:"—" }}</strong></li>
+                      <li>Frecuencia (banda): <strong>{{ object.calc_data.freq_band|default:"—" }}</strong></li>
+                      <li>Duración (banda): <strong>{{ object.calc_data.dur_band|default:"—" }}</strong></li>
+                      <li>Agravantes: <strong>{{ object.calc_data.agravantes_bucket|default:"—" }}</strong> (conteo {{ object.calc_data.agravantes_contados|default:"—" }})</li>
+                      <li>Presión estimada: <strong>
+                        {% if object.calc_data.presion_kpa %}{{ object.calc_data.presion_kpa|floatformat:1 }} kPa{% else %}—{% endif %}
+                      </strong> ({{ object.calc_data.presion_band|default:"—" }})</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <div class="p-3 border rounded h-100">
+                    <div class="text-muted small">Entradas y factores</div>
+                    <ul class="mb-0">
+                      <li>Tipo de borde: {{ object.calc_data.input.borde_tipo|default:"—" }}</li>
+                      <li>Duración continua: {{ object.calc_data.input.duracion_continua_min|default:"—" }} min</li>
+                      <li>Frecuencia (%): {{ object.calc_data.input.frecuencia_pct|default:"—" }}</li>
+                      <li>Fuerza (N): {{ object.calc_data.input.fuerza_n|default:"—" }}</li>
+                      <li>Área (cm²): {{ object.calc_data.input.area_cm2|default:"—" }}</li>
+                      <li>Borg: {{ object.calc_data.input.borg|default:"—" }}</li>
+                      <li>Síntomas: <code>{{ object.calc_data.sintomas|default:"—" }}</code></li>
+                      <li>Controles: <code>{{ object.calc_data.controles|default:"—" }}</code></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {% if object.calc_data.indice_auxiliar %}
+                <div class="row g-3 mt-2">
+                  <div class="col-12">
+                    <div class="p-3 border rounded">
+                      <div class="text-muted small">Índice auxiliar (documental)</div>
+                      <ul class="mb-0">
+                        <li>Duración % estimado: {{ object.calc_data.indice_auxiliar.duracion_pct_estimado|default:"—" }}%</li>
+                        <li>Borg usado: {{ object.calc_data.indice_auxiliar.borg_usado|default:"—" }}</li>
+                        <li>Stress index: <strong>{{ object.calc_data.indice_auxiliar.stress_index|default:"—" }}</strong></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endif %}
+
+            <details class="mt-3">
+              <summary class="mb-2 text-muted">
+                <i class="bi bi-search me-2"></i>Ver trazabilidad (calc_data)
+              </summary>
+              <pre class="bg-light border rounded p-3" style="white-space:pre-wrap;">{{ object.calc_data }}</pre>
+            </details>
+
+            <div class="mt-2 small text-muted">
+              Fuente: <code>{{ object.calc_data.fuente|default:"estres_contacto_criterios.json" }}</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+
+
+  </div>
+{% endblock %}
+
+{# Botones de acción (si no se define, el base usa los suyos por defecto) #}
+{% block factor_actions %}
+  <button type="submit" name="action" value="save" class="btn btn-outline-secondary">
+    <i class="bi bi-save me-1"></i> Guardar
+  </button>
+  <button type="submit" name="action" value="save_and_calc" class="btn btn-primary">
+    <i class="bi bi-cpu me-1"></i> Guardar y calcular
+  </button>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Exportar documentación · {{ evaluacion.razon_social }}{% endblock %}
+{% block help_slug %}exportaciones{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div>
+    <h1 class="h3 mb-1">Exportar documentación</h1>
+    <p class="text-muted mb-0">{{ evaluacion.razon_social }} · Evaluación #{{ evaluacion.pk }}</p>
+  </div>
+  <a href="{% url 'planillas:detalle_evaluacion' evaluacion.pk %}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Volver a la evaluación
+  </a>
+</div>
+
+<section class="card shadow-sm mb-4">
+  <div class="card-header bg-primary text-white">
+    <h2 class="h5 mb-0"><i class="bi bi-file-earmark-pdf me-2"></i>Formato oficial SRT 886/15</h2>
+  </div>
+  <div class="card-body">
+    <p>Formularios oficiales de la Resolución, completados con los datos cargados.</p>
+    <a href="{% url 'exportaciones:protocolo_completo' evaluacion.pk %}"
+       class="btn btn-primary mb-4" rel="nofollow">
+      <i class="bi bi-download me-1"></i> Descargar protocolo completo
+    </a>
+
+    <div class="list-group mb-3">
+      {% for planilla in planillas %}
+        <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+          <span>{{ planilla.label }}</span>
+          {% url 'exportaciones:planilla_oficial' evaluacion.pk planilla.slug as url_planilla %}
+          {% include "exportaciones/_boton_export.html" with url=url_planilla etiqueta="PDF" icono="bi bi-download" disabled=False %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="alert alert-info mb-0">
+      <i class="bi bi-info-circle me-1"></i>
+      Las planillas no completadas se descargan en blanco, listas para llenar a mano.
+      Los recuadros de firma quedan vacíos para la firma de los responsables.
+      Tamaño de página: Carta.
+    </div>
+  </div>
+</section>
+
+<section class="card shadow-sm mb-4">
+  <div class="card-header">
+    <h2 class="h5 mb-0"><i class="bi bi-clipboard-data me-2"></i>Detalle técnico cuantitativo</h2>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">Todos los datos de entrada y la trazabilidad completa del cálculo.</p>
+    <button class="btn btn-outline-secondary" type="button" disabled>
+      <i class="bi bi-download me-1"></i> Descargar todos los factores
+    </button>
+    <span class="text-muted small ms-2">Disponible en la próxima fase.</span>
+  </div>
+</section>
+
+<section class="card shadow-sm">
+  <div class="card-header">
+    <h2 class="h5 mb-0"><i class="bi bi-robot me-2"></i>Informes profesionales</h2>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">Informes redactados a partir de los resultados determinísticos de cada factor.</p>
+    <button class="btn btn-outline-secondary" type="button" disabled>
+      <i class="bi bi-file-earmark-text me-1"></i> Generar informes
+    </button>
+    <span class="text-muted small ms-2">Disponible en una fase posterior.</span>
+  </div>
+</section>
+{% endblock %}

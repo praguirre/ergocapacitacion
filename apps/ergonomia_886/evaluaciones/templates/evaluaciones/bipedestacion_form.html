@@ -1,0 +1,220 @@
+{# templates/evaluaciones/bipedestacion_form.html #}
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Bipedestación — Evaluación | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}bipedestacion{% endblock %}
+
+{# Título visible en el header del base #}
+{% block factor_title %}
+  <i class="bi bi-person-walking me-2"></i>
+  Bipedestación — Evaluación
+{% endblock %}
+
+{# Si tu base lee icon_class y factor_subtitle desde el contexto,
+   podés setearlos en la vista (ver snippet abajo). #}
+
+{# Contenido específico del factor #}
+{% block factor_form %}
+  <div class="row g-3">
+
+    <!-- General -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>General</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-3">
+              <div class="form-check">
+                {{ form.aplicable }}
+                {{ form.aplicable.label_tag }}
+                {% if form.aplicable.errors %}<div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label mb-1">{{ form.observaciones.label }}</label>
+              {{ form.observaciones }}
+              {% if form.observaciones.help_text %}<div class="form-text">{{ form.observaciones.help_text }}</div>{% endif %}
+              {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Duración y Movilidad -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Duración y Movilidad</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.horas_de_pie_total.label }}</label>
+              {{ form.horas_de_pie_total }}
+              {% if form.horas_de_pie_total.help_text %}<div class="form-text">{{ form.horas_de_pie_total.help_text }}</div>{% endif %}
+              {% if form.horas_de_pie_total.errors %}<div class="invalid-feedback d-block">{{ form.horas_de_pie_total.errors }}</div>{% endif %}
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.tiempo_continuo_min.label }}</label>
+              {{ form.tiempo_continuo_min }}
+              {% if form.tiempo_continuo_min.errors %}<div class="invalid-feedback d-block">{{ form.tiempo_continuo_min.errors }}</div>{% endif %}
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.movilidad_tipo.label }}</label>
+              {{ form.movilidad_tipo }}
+              {% if form.movilidad_tipo.errors %}<div class="invalid-feedback d-block">{{ form.movilidad_tipo.errors }}</div>{% endif %}
+            </div>
+            <div class="col-12 col-md-3" id="campo-mov-mph">
+              <label class="form-label">{{ form.movilidad_m_por_h.label }}</label>
+              {{ form.movilidad_m_por_h }}
+              {% if form.movilidad_m_por_h.errors %}<div class="invalid-feedback d-block">{{ form.movilidad_m_por_h.errors }}</div>{% endif %}
+              <div class="form-text">
+                Si hay deambulación: metros por hora. La calculadora atenúa el riesgo únicamente cuando supera 100 m/h.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agravantes (ambiente / tarea) -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <strong>Agravantes</strong> <small class="text-muted">(marque todo lo que corresponda)</small>
+        </div>
+        <div class="card-body">
+
+          {# Primera fila: ambiente/carga #}
+          <div class="row g-3 mb-2">
+            <div class="col-6 col-md-3">
+              <div class="form-check">
+                {{ form.manipula_cargas_mayores_2kg }} {{ form.manipula_cargas_mayores_2kg.label_tag }}
+              </div>
+              {% if form.manipula_cargas_mayores_2kg.errors %}<div class="invalid-feedback d-block">{{ form.manipula_cargas_mayores_2kg.errors }}</div>{% endif %}
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="form-check">
+                {{ form.ambiente_caluroso }} {{ form.ambiente_caluroso.label_tag }}
+              </div>
+              {% if form.ambiente_caluroso.errors %}<div class="invalid-feedback d-block">{{ form.ambiente_caluroso.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+          {# Nueva grilla: piso / calzado / posturas sostenidas #}
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <div class="form-check">
+                {{ form.piso_duro }} {{ form.piso_duro.label_tag }}
+              </div>
+              {% if form.piso_duro.errors %}<div class="invalid-feedback d-block">{{ form.piso_duro.errors }}</div>{% endif %}
+
+              <div class="form-check">
+                {{ form.superficie_irregular }} {{ form.superficie_irregular.label_tag }}
+              </div>
+              {% if form.superficie_irregular.errors %}<div class="invalid-feedback d-block">{{ form.superficie_irregular.errors }}</div>{% endif %}
+
+              <div class="form-check">
+                {{ form.piso_resbaladizo }} {{ form.piso_resbaladizo.label_tag }}
+              </div>
+              {% if form.piso_resbaladizo.errors %}<div class="invalid-feedback d-block">{{ form.piso_resbaladizo.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="form-check">
+                {{ form.calzado_inadecuado }} {{ form.calzado_inadecuado.label_tag }}
+              </div>
+              {% if form.calzado_inadecuado.errors %}<div class="invalid-feedback d-block">{{ form.calzado_inadecuado.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 col-md-4">
+              <div class="form-check">
+                {{ form.tronco_inclinado }} {{ form.tronco_inclinado.label_tag }}
+              </div>
+              {% if form.tronco_inclinado.errors %}<div class="invalid-feedback d-block">{{ form.tronco_inclinado.errors }}</div>{% endif %}
+
+              <div class="form-check">
+                {{ form.brazos_elevados }} {{ form.brazos_elevados.label_tag }}
+              </div>
+              {% if form.brazos_elevados.errors %}<div class="invalid-feedback d-block">{{ form.brazos_elevados.errors }}</div>{% endif %}
+
+              <div class="form-check">
+                {{ form.cuello_giro_inclin }} {{ form.cuello_giro_inclin.label_tag }}
+              </div>
+              {% if form.cuello_giro_inclin.errors %}<div class="invalid-feedback d-block">{{ form.cuello_giro_inclin.errors }}</div>{% endif %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Síntomas -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Síntomas</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+
+            <div class="col-12 col-md-9">
+              <label class="form-label">{{ form.sintomas_json.label }}</label>
+              {{ form.sintomas_json }}
+              {% if form.sintomas_json.errors %}<div class="invalid-feedback d-block">{{ form.sintomas_json.errors }}</div>{% endif %}
+              <div class="form-text">
+                Lista JSON (p. ej. ["dolor_lumbar","calambres"]).
+              </div>
+            </div>
+
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.sintomas_frecuencia.label }}</label>
+              {{ form.sintomas_frecuencia }}
+              {% if form.sintomas_frecuencia.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ form.sintomas_frecuencia.errors }}
+                </div>
+              {% endif %}
+              {% if form.sintomas_frecuencia.help_text %}
+                <div class="form-text">{{ form.sintomas_frecuencia.help_text }}</div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles existentes -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Controles existentes</strong></div>
+        <div class="card-body">
+          <label class="form-label">{{ form.controles_existentes.label }}</label>
+          {{ form.controles_existentes }}
+          {% if form.controles_existentes.errors %}<div class="invalid-feedback d-block">{{ form.controles_existentes.errors }}</div>{% endif %}
+          <div class="form-text">Seleccione los controles implementados (alfombra antifatiga, banqueta/pausas, footrest, rotación de tareas, etc.).</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+
+{# Scripts propios del factor #}
+{% block extra_scripts %}
+{{ block.super }}
+<script nonce="{{ request.csp_nonce }}">
+  // Mostrar/ocultar "metros por hora" según tipo de movilidad
+  (function () {
+    const selectTipo = document.getElementById("id_movilidad_tipo");
+    const mphWrap = document.getElementById("campo-mov-mph");
+    function sync() {
+      if (!selectTipo || !mphWrap) return;
+      const v = selectTipo.value || "";
+      mphWrap.style.display = (v === "deambulacion") ? "" : "none";
+    }
+    if (selectTipo) {
+      selectTipo.addEventListener("change", sync);
+      sync();
+    }
+  })();
+</script>
+{% endblock %}

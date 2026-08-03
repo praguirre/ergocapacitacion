@@ -1,0 +1,250 @@
+{# templates/evaluaciones/lmc_form.html #}
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Levantamiento Manual de Cargas (LMC) | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}lmc{% endblock %}
+
+{% block content %}
+  {# Inyecto icono/subtítulo para que el base los use en el header #}
+  {% with icon_class="bi bi-box-seam" factor_subtitle="Evaluación según bandas de altura (V), alcance horizontal (H), duración (h) y frecuencia (lev/h), con revisión profesional de agravantes." %}
+    {{ block.super }}
+  {% endwith %}
+
+  {# --- Resumen enriquecido (opcional) --- #}
+  {% if object and object.calc_data %}
+    <div class="mt-4">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Resultado de la evaluación</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div class="p-3 border rounded h-100">
+                <div class="text-muted small">Resumen</div>
+                <ul class="mb-0">
+                  <li>Peso evaluado:
+                    <strong>
+                      {% if object.peso_kg is not None %}{{ object.peso_kg }} kg
+                      {% elif object.calc_data.peso_kg is not None %}{{ object.calc_data.peso_kg }} kg
+                      {% else %}—{% endif %}
+                    </strong>
+                  </li>
+                  <li>Categoría (lev/h): <strong>{{ object.calc_data.categoria|default:"—" }}</strong></li>
+                  <li>Límite base:
+                    <strong>
+                      {% if object.calc_data.limite_base_kg is not None %}{{ object.calc_data.limite_base_kg }} kg{% else %}—{% endif %}
+                    </strong>
+                  </li>
+                  <li>Límite ajustado:
+                    <strong>
+                      {% if object.calc_data.limite_ajustado_kg is not None %}{{ object.calc_data.limite_ajustado_kg }} kg{% else %}No se aplica{% endif %}
+                    </strong>
+                  </li>
+                  <li>Clasificación según tabla oficial:
+                    <strong>
+                      {% if object.calc_data.clasificacion_tabla == 'tolerable' %}Tolerable
+                      {% elif object.calc_data.clasificacion_tabla == 'no_tolerable' %}No tolerable
+                      {% else %}—{% endif %}
+                    </strong>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="p-3 border rounded h-100">
+                <div class="text-muted small">Factores usados</div>
+                <ul class="mb-0">
+                  {# v_band/h_band NO existen; la calculadora expone keys_usadas.v_key / h_key #}
+                  <li>
+                    V (altura): {{ object.get_v_altura_display|default:"—" }}
+                    {% if object.calc_data.keys_usadas and object.calc_data.keys_usadas.v_key %}
+                      <span class="text-muted">[key: {{ object.calc_data.keys_usadas.v_key }}]</span>
+                    {% endif %}
+                  </li>
+                  <li>
+                    H (alcance): {{ object.get_h_dist_display|default:"—" }}
+                    {% if object.calc_data.keys_usadas and object.calc_data.keys_usadas.h_key %}
+                      <span class="text-muted">[key: {{ object.calc_data.keys_usadas.h_key }}]</span>
+                    {% endif %}
+                  </li>
+                  <li>Duración (h): {{ object.duracion_h|default:"—" }}</li>
+                  <li>Frecuencia (lev/h): {{ object.frecuencia_h|default:"—" }}</li>
+                  {% if object.calc_data.agravantes_presentes %}
+                    <li>Agravantes presentes:
+                      <ul>
+                        {% for agravante in object.calc_data.agravantes_presentes %}
+                          <li>{{ agravante }}</li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {% if object.calc_data.recomendaciones %}
+            <div class="mt-3">
+              <div class="p-3 border rounded bg-light">
+                <div class="text-muted small mb-1">Recomendaciones</div>
+                <ul class="mb-0">
+                  {% for rec in object.calc_data.recomendaciones %}
+                    <li>{{ rec }}</li>
+                  {% empty %}
+                    <li>—</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if object.calc_data.requiere_revision_profesional %}
+            <div class="alert alert-warning mt-3 mb-0">
+              <strong>Resultado condicionado por agravantes.</strong>
+              La clasificación anterior utiliza exclusivamente el límite oficial
+              de la tabla. No se aplica ningún coeficiente automático. El
+              profesional debe considerar los agravantes informados y confirmar o
+              modificar la clasificación final desde el resumen de la evaluación.
+              {% if object.calc_data.agravantes_presentes %}
+                Agravantes presentes:
+                <strong>{{ object.calc_data.agravantes_presentes|join:", " }}</strong>.
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if object.calc_data.revision_profesional %}
+            <div class="alert alert-info mt-3 mb-0">
+              <strong>Revisión profesional registrada.</strong>
+              Clasificación final:
+              {{ object.calc_data.revision_profesional.clasificacion_final|title }}.
+              {% if object.calc_data.revision_profesional.justificacion %}
+                Justificación: {{ object.calc_data.revision_profesional.justificacion }}
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <div class="mt-2 small text-muted">
+            Fuente:
+            <code>{{ object.calc_data.fuente.archivo|default:"lmc_tablas.json" }}</code>
+            {% if object.calc_data.fuente.data_version %}
+              · versión {{ object.calc_data.fuente.data_version }}
+            {% endif %}
+            {% if object.calc_data.fuente.sha256 %}
+              · SHA-256 <code>{{ object.calc_data.fuente.sha256 }}</code>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+ 
+{% endblock %}
+
+{% block factor_title %}Levantamiento Manual de Cargas (LMC){% endblock %}
+
+{% block factor_form %}
+  {{ form.risk_evaluation.as_hidden }}
+
+  <div class="row g-3">
+
+    {# ---------- General ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>General</strong></div>
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-3">
+              <div class="form-check">
+                {{ form.aplicable }}
+                {{ form.aplicable.label_tag }}
+                {% if form.aplicable.errors %}<div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label mb-1">{{ form.observaciones.label }}</label>
+              {{ form.observaciones }}
+              {% if form.observaciones.help_text %}<div class="form-text">{{ form.observaciones.help_text }}</div>{% endif %}
+              {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Parámetros del levantamiento ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Parámetros del levantamiento</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.peso_kg.label }} (kg)</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-weight"></i></span>
+                {{ form.peso_kg }}
+              </div>
+              {% if form.peso_kg.errors %}<div class="invalid-feedback d-block">{{ form.peso_kg.errors }}</div>{% endif %}
+              <div class="form-text">Peso de la carga en kilogramos.</div>
+            </div>
+
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.duracion_h.label }} (h)</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                {{ form.duracion_h }}
+              </div>
+              {% if form.duracion_h.errors %}<div class="invalid-feedback d-block">{{ form.duracion_h.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.frecuencia_h.label }} (lev/h)</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-repeat"></i></span>
+                {{ form.frecuencia_h }}
+              </div>
+              {% if form.frecuencia_h.errors %}<div class="invalid-feedback d-block">{{ form.frecuencia_h.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.v_altura.label }} (V)</label>
+              {{ form.v_altura }}
+              {% if form.v_altura.errors %}<div class="invalid-feedback d-block">{{ form.v_altura.errors }}</div>{% endif %}
+              <div class="form-text">La banda vertical seleccionada se consulta directamente en la tabla aplicable.</div>
+            </div>
+
+            <div class="col-12 col-md-3">
+              <label class="form-label">{{ form.h_dist.label }} (H)</label>
+              {{ form.h_dist }}
+              {% if form.h_dist.errors %}<div class="invalid-feedback d-block">{{ form.h_dist.errors }}</div>{% endif %}
+              <div class="form-text">La banda horizontal seleccionada se consulta directamente en la tabla aplicable.</div>
+            </div>
+
+            <div class="col-12">
+              <hr class="my-2"/>
+              <div class="fw-semibold mb-1">Agravantes</div>
+              <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+                <div class="col mb-1"><div class="form-check">{{ form.giro_mayor_30 }} {{ form.giro_mayor_30.label_tag }}</div></div>
+                <div class="col mb-1"><div class="form-check">{{ form.una_mano }} {{ form.una_mano.label_tag }}</div></div>
+                <div class="col mb-1"><div class="form-check">{{ form.postura_agachada }} {{ form.postura_agachada.label_tag }}</div></div>
+                <div class="col mb-1"><div class="form-check">{{ form.carga_inestable }} {{ form.carga_inestable.label_tag }}</div></div>
+                <div class="col mb-1"><div class="form-check">{{ form.entorno_adverso }} {{ form.entorno_adverso.label_tag }}</div></div>
+                <div class="col mb-1"><div class="form-check">{{ form.turnos_largos }} {{ form.turnos_largos.label_tag }}</div></div>
+              </div>
+              <div class="alert alert-warning mt-3 mb-0 py-2">
+                Si seleccionás un agravante, la aplicación conservará el límite
+                base pero no emitirá una clasificación ajustada hasta que exista
+                una política de reducción aprobada y trazable.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+
+{# Acciones: uso las del base (guardar / guardar y calcular) #}

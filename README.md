@@ -133,6 +133,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **03/08/2026 — Commit 2.1:** se creó `apps/ergonomia_886` como paquete
   contenedor desmontable. Su docstring identifica las cuatro apps y deja
   vinculadas las condiciones CF-1 a CF-6 antes del trasplante.
+- **03/08/2026 — Commit 2.3:** se trasplantaron byte a byte `planillas`,
+  `evaluaciones`, `exportaciones` y `help_ai`, con 10 migraciones, 24
+  templates, 13 artefactos normativos y 12 mapas. El PDF oficial conserva el
+  SHA-256 `bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4`.
 
 ### Registro de cambios documentales
 

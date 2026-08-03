@@ -1,0 +1,161 @@
+{# templates/evaluaciones/repetitivos_ms_form.html #}
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Repetitivos MS | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}repetitivos_ms{% endblock %}
+
+{# Inyecto icono y subtítulo para que el base los use en el header #}
+{% block content %}
+  {% with icon_class="bi bi-arrow-repeat" factor_subtitle="Cribado de repetitividad (NAM), esfuerzo percibido (Borg), postura obligada y agravantes." %}
+    {{ block.super }}
+  {% endwith %}
+{% endblock %}
+
+{% block factor_title %}Movimientos Repetitivos de Miembros Superiores (NAM){% endblock %}
+
+{# Form específico del factor: va dentro del bloque que consume el base #}
+{% block factor_form %}
+
+  {# Hidden fields (incluye risk_evaluation, etc.) #}
+  {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  <div class="row g-3">
+
+    {# ---------- General ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>General</strong></div>
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-3">
+              {% if form.aplicable %}
+                <div class="form-check">
+                  {{ form.aplicable }}
+                  {{ form.aplicable.label_tag }}
+                  {% if form.aplicable.errors %}<div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.horas_dia %}
+                <label class="form-label">{{ form.horas_dia.label }} (h/día)</label>
+                {{ form.horas_dia }}
+                {% if form.horas_dia.errors %}<div class="invalid-feedback d-block">{{ form.horas_dia.errors }}</div>{% endif %}
+                <div class="form-text">Tiempo total dedicado a la tarea repetitiva.</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12">
+              {% if form.observaciones %}
+                <label class="form-label">{{ form.observaciones.label }}</label>
+                {{ form.observaciones }}
+                {% if form.observaciones.help_text %}<div class="form-text">{{ form.observaciones.help_text }}</div>{% endif %}
+                {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Repetitividad y esfuerzo ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Repetitividad y esfuerzo</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              {% if form.nam_x_valor %}
+                <label class="form-label">{{ form.nam_x_valor.label }} (0–10)</label>
+                {{ form.nam_x_valor }}
+                {% if form.nam_x_valor.errors %}<div class="invalid-feedback d-block">{{ form.nam_x_valor.errors }}</div>{% endif %}
+                <div class="form-text">Índice NAM (repetitividad). X.</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-4">
+              {% if form.borg_y_valor %}
+                <label class="form-label">{{ form.borg_y_valor.label }}</label>
+                {{ form.borg_y_valor }}
+                {% if form.borg_y_valor.errors %}<div class="invalid-feedback d-block">{{ form.borg_y_valor.errors }}</div>{% endif %}
+                <div class="form-text">Borg CR-10 (esfuerzo percibido). Y.</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-4">
+              {% if form.monotarea %}
+                <div class="form-check mt-4">
+                  {{ form.monotarea }}
+                  {{ form.monotarea.label_tag }}
+                  {% if form.monotarea.errors %}<div class="invalid-feedback d-block">{{ form.monotarea.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Factores agravantes ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Factores agravantes</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-3">
+              {% if form.posturas_obligadas %}
+                <div class="form-check">
+                  {{ form.posturas_obligadas }}
+                  {{ form.posturas_obligadas.label_tag }}
+                  {% if form.posturas_obligadas.errors %}<div class="invalid-feedback d-block">{{ form.posturas_obligadas.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.estres_contacto %}
+                <div class="form-check">
+                  {{ form.estres_contacto }}
+                  {{ form.estres_contacto.label_tag }}
+                  {% if form.estres_contacto.errors %}<div class="invalid-feedback d-block">{{ form.estres_contacto.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.bajas_temperaturas %}
+                <div class="form-check">
+                  {{ form.bajas_temperaturas }}
+                  {{ form.bajas_temperaturas.label_tag }}
+                  {% if form.bajas_temperaturas.errors %}<div class="invalid-feedback d-block">{{ form.bajas_temperaturas.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.vibraciones_mb %}
+                <div class="form-check">
+                  {{ form.vibraciones_mb }}
+                  {{ form.vibraciones_mb.label_tag }}
+                  {% if form.vibraciones_mb.errors %}<div class="invalid-feedback d-block">{{ form.vibraciones_mb.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="alert alert-warning mt-3 mb-0 py-2">
+            Si existe al menos un agravante, la Resolución 295/03 exige juicio
+            profesional para reducir la exposición por debajo del Límite de
+            Acción. El motor conserva el nivel NAM base y marca el resultado
+            como condicionado; no aplica un escalado numérico inventado.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

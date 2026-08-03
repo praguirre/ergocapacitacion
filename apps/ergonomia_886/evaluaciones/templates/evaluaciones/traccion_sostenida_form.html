@@ -1,0 +1,179 @@
+{# templates/evaluaciones/traccion_sostenida_form.html #}
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Tracción sostenida | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}traccion_sostenida{% endblock %}
+
+{# Cabecera del factor (icono + subtítulo) #}
+{% block content %}
+  {% with icon_class="bi bi-arrow-left-right" factor_subtitle="Desplazamiento continuo: compara la fuerza sostenida (N) con el límite según población, altura de agarre, distancia y frecuencia (SRT 886/15)." %}
+    {{ block.super }}
+  {% endwith %}
+{% endblock %}
+
+{# Título que se muestra junto al icono #}
+{% block factor_title %}Tracción Sostenida (Desplazamiento continuo){% endblock %}
+
+{# Cuerpo del formulario: el base ya maneja <form>, CSRF y botones #}
+{% block factor_form %}
+  <div class="row g-3">
+
+    {# ---------- General ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>General</strong></div>
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-3">
+              {% if form.aplicable %}
+                <div class="form-check">
+                  {{ form.aplicable }}
+                  {{ form.aplicable.label_tag }}
+                  {% if form.aplicable.errors %}<div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            {# Población se movió a "Geometría de agarre y exposición" #}
+
+            <div class="col-12">
+              {% if form.observaciones %}
+                <label class="form-label">{{ form.observaciones.label }}</label>
+                {{ form.observaciones }}
+                {% if form.observaciones.help_text %}<div class="form-text">{{ form.observaciones.help_text }}</div>{% endif %}
+                {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "evaluaciones/_force_scope_checklist.html" %}
+
+    {# ---------- Geometría / Exposición ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>Geometría de agarre y exposición</strong>
+          <small class="text-muted">Altura del asidero, distancia a recorrer y frecuencia de ciclos.</small>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+
+            {# --- Población / Altura / Distancia / Frecuencia (4 columnas) --- #}
+            <div class="col-12 col-md-3">
+              {% if form.poblacion %}
+                <label class="form-label">{{ form.poblacion.label }}</label>
+                {{ form.poblacion }}
+                {% if form.poblacion.help_text %}<div class="form-text">{{ form.poblacion.help_text }}</div>{% endif %}
+                {% if form.poblacion.errors %}<div class="invalid-feedback d-block">{{ form.poblacion.errors }}</div>{% endif %}
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.altura_agarre_cm %}
+                <label class="form-label">{{ form.altura_agarre_cm.label }}</label>
+                {{ form.altura_agarre_cm }}
+                {% if form.altura_agarre_cm.help_text %}<div class="form-text">{{ form.altura_agarre_cm.help_text }}</div>{% endif %}
+                {% if form.altura_agarre_cm.errors %}<div class="invalid-feedback d-block">{{ form.altura_agarre_cm.errors }}</div>{% endif %}
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.distancia_m %}
+                <label class="form-label">{{ form.distancia_m.label }}</label>
+                {{ form.distancia_m }}
+                {% if form.distancia_m.help_text %}<div class="form-text">{{ form.distancia_m.help_text }}</div>{% endif %}
+                {% if form.distancia_m.errors %}<div class="invalid-feedback d-block">{{ form.distancia_m.errors }}</div>{% endif %}
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.frecuencia_opcion %}
+                <label class="form-label">{{ form.frecuencia_opcion.label }}</label>
+                {{ form.frecuencia_opcion }}
+                {% if form.frecuencia_opcion.help_text %}<div class="form-text">{{ form.frecuencia_opcion.help_text }}</div>{% endif %}
+                {% if form.frecuencia_opcion.errors %}<div class="invalid-feedback d-block">{{ form.frecuencia_opcion.errors }}</div>{% endif %}
+              {% elif form.frecuencia %}
+                <label class="form-label">{{ form.frecuencia.label }}</label>
+                {{ form.frecuencia }}
+                {% if form.frecuencia.help_text %}<div class="form-text">{{ form.frecuencia.help_text }}</div>{% endif %}
+                {% if form.frecuencia.errors %}<div class="invalid-feedback d-block">{{ form.frecuencia.errors }}</div>{% endif %}
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Fuerza sostenida ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Fuerza sostenida</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-3">
+              {% if form.fuerza_n %}
+                <label class="form-label">{{ form.fuerza_n.label }} (N)</label>
+                {{ form.fuerza_n }}
+                {% if form.fuerza_n.errors %}<div class="invalid-feedback d-block">{{ form.fuerza_n.errors }}</div>{% endif %}
+                <div class="form-text">Si no hay medición, puede estimarse y documentarlo en Observaciones.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Parámetros avanzados (JSON opcional) ---------- #}
+    {% if form.input_json %}
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Parámetros avanzados</strong>
+            <small class="text-muted">Se guardan en <code>calc_data["input"]</code>.</small>
+          </div>
+          <div class="card-body">
+            <label class="form-label">{{ form.input_json.label }}</label>
+            {{ form.input_json }}
+            {% if form.input_json.help_text %}<div class="form-text">{{ form.input_json.help_text }}</div>{% endif %}
+            {% if form.input_json.errors %}<div class="invalid-feedback d-block">{{ form.input_json.errors }}</div>{% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+  {# --- Resumen enriquecido (opcional) --- #}
+  {% if object and object.calc_data %}
+    <div class="mt-4">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Resumen</strong></div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li>Fuerza sostenida:
+              <strong>{% if object.calc_data.fuerza_medida_N is not None %}{{ object.calc_data.fuerza_medida_N }} N{% else %}—{% endif %}</strong>
+            </li>
+            <li>Límite aplicable:
+              <strong>{% if object.calc_data.limite_N is not None %}{{ object.calc_data.limite_N }} N{% else %}—{% endif %}</strong>
+            </li>
+            <li>Población / Altura / Distancia / Frecuencia:
+              <strong>
+                {{ object.calc_data.poblacion|default:"—" }} /
+                {{ object.calc_data.altura_agarre_cm|default:"—" }} cm /
+                {{ object.calc_data.distancia_m|default:"—" }} m /
+                {{ object.calc_data.frecuencia|default:"—" }}
+              </strong>
+              {% if object.calc_data.frecuencia_key_usada %}
+                <span class="text-muted">(cat: {{ object.calc_data.frecuencia_key_usada }})</span>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

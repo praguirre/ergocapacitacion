@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "data_version": "1.1.0",
+    "artifact_effective_date": "2026-07-31",
+    "source": "Resolución SRT 3345/2015 - Tabla 3, con un ajuste interno declarado en meta_info",
+    "source_url": "https://www.argentina.gob.ar/normativa/nacional/252684/texto",
+    "source_artifact_url": "https://www.argentina.gob.ar/normativa/252684_res3345-29-09-2015-4_JPG/archivo",
+    "provenance_status": "transcribed_with_internal_adjustment_professionally_approved",
+    "source_validation": {
+      "status": "official_table_verified_single_internal_correction_pending",
+      "validated_at": "2026-07-31",
+      "note": "La imagen oficial muestra 1460 N en 60 m/una vez cada 8 h/agarre alto/mujer. El sistema usa 140 N por probable error tipográfico, pero no se localizó una fe de erratas oficial que autorice sustituirlo."
+    },
+    "professional_approval": {
+      "status": "approved",
+      "approved_by": "Lic. Pablo R. Aguirre — MN 10.027",
+      "approved_at": "2026-08-02",
+      "scope": "Aceptación expresa del valor 140 N para la celda 60 m / una vez cada 8 h / agarre alto / mujer, en reemplazo del valor 1460 N publicado en la imagen oficial de la Res. SRT 3345/2015, Anexo II, Tabla 3, por resultar este último inconsistente con la serie y no conservador."
+    }
+  },
+  "meta_info": {
+    "normativa": "Resolución SRT 3345/2015 - Tabla 3",
+    "titulo": "Límites máximos de fuerzas iniciales para TIRAR con dos manos",
+    "logica": "Distancia -> Frecuencia -> Altura -> Sexo",
+    "advertencias": [
+      "Las alturas bajas de los agarres se desaconsejan.",
+      "Para población mixta o desconocida, utilizar siempre los límites FEMENINOS (f).",
+      "El valor de 60m/8h/Alta/Mujer se ha corregido según criterio técnico estándar (140N)."
+    ]
+  },
+  "limites_N": {
+    "2": {
+      "10_min": { "alta": {"m": 140, "f": 130}, "media": {"m": 190, "f": 140}, "baja": {"m": 220, "f": 150} },
+      "5_min": { "alta": {"m": 160, "f": 160}, "media": {"m": 220, "f": 160}, "baja": {"m": 250, "f": 170} },
+      "1_min": { "alta": {"m": 180, "f": 170}, "media": {"m": 250, "f": 180}, "baja": {"m": 280, "f": 190} },
+      "1_cada_5_min": { "alta": {"m": 190, "f": 190}, "media": {"m": 270, "f": 210}, "baja": {"m": 300, "f": 220} },
+      "1_cada_8_h": { "alta": {"m": 230, "f": 220}, "media": {"m": 320, "f": 230}, "baja": {"m": 360, "f": 240} }
+    },
+    "8": {
+      "4_min": { "alta": {"m": 110, "f": 110}, "media": {"m": 150, "f": 140}, "baja": {"m": 180, "f": 150} },
+      "1_min": { "alta": {"m": 160, "f": 160}, "media": {"m": 230, "f": 160}, "baja": {"m": 260, "f": 170} },
+      "1_cada_5_min": { "alta": {"m": 170, "f": 170}, "media": {"m": 240, "f": 190}, "baja": {"m": 270, "f": 200} },
+      "1_cada_8_h": { "alta": {"m": 210, "f": 200}, "media": {"m": 290, "f": 210}, "baja": {"m": 330, "f": 220} }
+    },
+    "15": {
+      "2_5_min": { "alta": {"m": 130, "f": 100}, "media": {"m": 180, "f": 100}, "baja": {"m": 200, "f": 110} },
+      "1_min": { "alta": {"m": 150, "f": 130}, "media": {"m": 210, "f": 140}, "baja": {"m": 240, "f": 150} },
+      "1_cada_5_min": { "alta": {"m": 160, "f": 150}, "media": {"m": 230, "f": 160}, "baja": {"m": 260, "f": 170} },
+      "1_cada_8_h": { "alta": {"m": 200, "f": 170}, "media": {"m": 280, "f": 180}, "baja": {"m": 310, "f": 190} }
+    },
+    "30": {
+      "1_min": { "alta": {"m": 120, "f": 120}, "media": {"m": 160, "f": 130}, "baja": {"m": 180, "f": 130} },
+      "1_cada_5_min": { "alta": {"m": 150, "f": 140}, "media": {"m": 210, "f": 150}, "baja": {"m": 240, "f": 150} },
+      "1_cada_8_h": { "alta": {"m": 190, "f": 170}, "media": {"m": 260, "f": 180}, "baja": {"m": 300, "f": 190} }
+    },
+    "45": {
+      "1_min": { "alta": {"m": 100, "f": 100}, "media": {"m": 140, "f": 130}, "baja": {"m": 160, "f": 130} },
+      "1_cada_5_min": { "alta": {"m": 130, "f": 140}, "media": {"m": 180, "f": 150}, "baja": {"m": 210, "f": 150} },
+      "1_cada_8_h": { "alta": {"m": 160, "f": 160}, "media": {"m": 230, "f": 180}, "baja": {"m": 260, "f": 190} }
+    },
+    "60": {
+      "1_cada_2_min": { "alta": {"m": 100, "f": 100}, "media": {"m": 130, "f": 120}, "baja": {"m": 150, "f": 130} },
+      "1_cada_5_min": { "alta": {"m": 110, "f": 110}, "media": {"m": 160, "f": 130}, "baja": {"m": 180, "f": 140} },
+      "1_cada_8_h": { "alta": {"m": 140, "f": 140}, "media": {"m": 190, "f": 160}, "baja": {"m": 220, "f": 170} }
+    }
+  },
+  "frecuencias_validas_por_distancia": {
+    "2": ["10_min", "5_min", "1_min", "1_cada_5_min", "1_cada_8_h"],
+    "8": ["4_min", "1_min", "1_cada_5_min", "1_cada_8_h"],
+    "15": ["2_5_min", "1_min", "1_cada_5_min", "1_cada_8_h"],
+    "30": ["1_min", "1_cada_5_min", "1_cada_8_h"],
+    "45": ["1_min", "1_cada_5_min", "1_cada_8_h"],
+    "60": ["1_cada_2_min", "1_cada_5_min", "1_cada_8_h"]
+  }
+}

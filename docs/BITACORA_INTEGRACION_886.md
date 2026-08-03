@@ -1333,7 +1333,7 @@ la ejecución vuelve al repositorio destino para la Fase 2.
 | Fecha | 2026-08-03 00:20 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `329f379` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -1390,3 +1390,165 @@ suite —que crea y migra su propia base efímera— cerraron correctamente.
 ### Notas para el commit siguiente
 El commit 2.2 vuelve excepcionalmente al origen para actualizar las 48 cadenas
 de importación antes de mover los archivos.
+
+## Commit 2.2 — Actualizar las 48 rutas declarativas ANTES de mover (B2)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:23 |
+| Repositorio | ergonomia_srt |
+| Rama | `feature/preparacion-integracion` |
+| Hash | `dea4f57` |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se reapuntaron antes del trasplante las 48 rutas declarativas resueltas con
+`import_string()` y las dos apariciones del recurso de datos. El origen queda
+intencionalmente no ejecutable porque el paquete `apps` solo existe en el
+destino, tal como prevé el roadmap.
+
+### Archivos modificados
+- `evaluaciones/catalog.py` — 13 formularios y 13 modelos.
+- `evaluaciones/calculators.py` — dos apariciones del recurso de datos.
+- `exportaciones/official/catalog.py` — 12 modelos oficiales.
+- `exportaciones/serializers.py` — 9 modelos de Planilla 2.
+- `README.md` del origen — punto de no retorno documentado.
+- bitácora y roadmap del destino — trazabilidad y avance 2.2.
+
+### Verificaciones ejecutadas
+
+```text
+catalog.py forms  : 13
+catalog.py models : 13
+official/catalog  : 12
+serializers       : 9
+calculators data  : 2
+
+rg -n '"evaluaciones\.(forms|models|data)|"planillas\.models\.' --glob '*.py' --glob '!venv/**' .
+<sin salida>
+
+./venv/bin/python manage.py test --settings=ergonomia_srt.test_settings
+Creating test database for alias 'default'...
+Destroying test database for alias 'default'...
+Found 160 test(s).
+Traceback (most recent call last):
+  File "evaluaciones/views.py", line 658, in _install_catalog_view_classes
+    "form_class": import_string(definition.form_path),
+  File "django/utils/module_loading.py", line 15, in cached_import
+    module = import_module(module_path)
+ModuleNotFoundError: No module named 'apps'
+```
+
+### Desvíos respecto del roadmap
+Ninguno. La suite falla exactamente por la causa esperada. `check`,
+`makemigrations` y un smoke del origen atraviesan el mismo URLconf y quedan
+deliberadamente bloqueados hasta completar el trasplante en el destino.
+
+### Notas para el commit siguiente
+Copiar las cuatro apps desde este estado exacto; no ejecutar nuevas pruebas en
+el origen independiente.
+
+## Commit 2.3 — Copiar las 4 apps con migraciones y templates
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:26 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se copiaron byte a byte las cuatro apps completas, se retiraron únicamente
+cachés compilados arrastrados y se compararon los árboles contra el origen.
+`core` no se copió. Los artefactos de CF-3 y CF-6 permanecen idénticos.
+
+### Archivos modificados
+- `apps/ergonomia_886/{planillas,evaluaciones,exportaciones,help_ai}/` — 4 apps completas.
+- `README.md` — inventario y SHA oficial registrados.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y rótulo del inventario corregidos.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal 2.3.
+
+### Verificaciones ejecutadas
+
+```text
+=== planillas
+  identico
+=== evaluaciones
+  identico
+=== exportaciones
+  identico
+=== help_ai
+  identico
+
+=== PDF oficial de la SRT (CF-6) ===
+bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4  /Users/praguirre/ergonomia_srt/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4  apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+251599 bytes
+
+=== 13 artefactos normativos (CF-3) ===
+identicos
+=== 12 mapas de calibracion (CF-6) ===
+identicos
+
+python_cuatro_apps_total=71
+python_sin_directorios_migrations=58
+migraciones_numeradas=10
+templates_html=24
+artefactos_json=13
+mapas_json=12
+pdf_oficial=1
+pycache=0
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+# Descubrimiento amplio en el estado intermedio
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 44 tests in 0.179s
+FAILED (errors=8)
+ModuleNotFoundError: No module named 'planillas'
+ModuleNotFoundError: No module named 'exportaciones'
+ModuleNotFoundError: No module named 'evaluaciones'
+RuntimeError: Model class apps.ergonomia_886.planillas.models.Evaluacion
+doesn't declare an explicit app_label and isn't in INSTALLED_APPS.
+
+# Suite preexistente aislada por sus nueve labels
+.venv/bin/python manage.py test apps.accounts apps.certificates apps.company apps.dashboard apps.ergobot_ai apps.landing apps.presencial apps.quiz apps.training --settings=config.test_settings
+----------------------------------------------------------------------
+Ran 36 tests in 0.150s
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8018 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8018/
+GET / -> 200
+```
+
+### Desvíos respecto del roadmap
+El inventario rotulaba 71 archivos Python «sin migraciones». El desglose real
+de la propuesta —10 + 20 + 28 + 13— sí suma 71, pero incluye diez migraciones
+numeradas y cuatro `migrations/__init__.py`; excluyendo esos directorios quedan
+58. Se corrigió el rótulo del roadmap, sin alterar la propuesta ya correcta.
+
+Además, `test apps` descubre por filesystem las apps copiadas aunque todavía
+no estén registradas y arroja ocho errores de importación esperables antes de
+2.4, 2.5 y 2.8. Las 36 pruebas preexistentes, ejecutadas por sus nueve labels,
+continúan verdes y el destino responde HTTP 200.
+
+`git diff --cached --check` informa espacios finales heredados en varios
+archivos del origen. No se normalizaron en este commit porque 2.3 exige una
+copia idéntica y los cuatro `diff -r` son la verificación de aceptación; su
+limpieza sería un cambio separado, ajeno al trasplante byte a byte.
+
+### Notas para el commit siguiente
+Actualizar únicamente los cuatro `AppConfig.name`; no registrar todavía las
+apps en settings.

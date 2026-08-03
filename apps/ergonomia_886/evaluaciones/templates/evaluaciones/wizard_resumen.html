@@ -1,0 +1,202 @@
+<!-- evaluaciones/templates/evaluaciones/wizard_resumen.html -->
+
+{% extends "base.html" %}
+{% block title %}Resumen de evaluación | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}wizard_resumen{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3"><i class="bi bi-collection me-2"></i>Resumen de la evaluación</h1>
+
+{% if resumen_global.required_count %}
+  <div class="card border-primary mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between gap-3">
+        <div>
+          <div class="fw-semibold">Avance de factores requeridos</div>
+          <div class="text-muted">
+            Vigentes: {{ resumen_global.completed_count }}/{{ resumen_global.required_count }}
+            · Revisados: {{ resumen_global.reviewed_count }}/{{ resumen_global.required_count }}
+          </div>
+        </div>
+        <div class="text-end">
+          <div class="small text-muted">Resultado</div>
+          {% if resumen_global.resultado_final %}
+            <span class="badge bg-primary">Final: {{ resumen_global.resultado_final|title }}</span>
+          {% elif resumen_global.resultado_preliminar %}
+            <span class="badge bg-warning text-dark">Preliminar: {{ resumen_global.resultado_preliminar|title }}</span>
+          {% else %}
+            <span class="badge bg-secondary">Sin resultado vigente</span>
+          {% endif %}
+        </div>
+      </div>
+      {% if resumen_global.blocking_labels %}
+        <div class="alert alert-warning mt-3 mb-2">
+          <strong>Bloquean el cierre:</strong>
+          {{ resumen_global.blocking_labels|join:", " }}.
+        </div>
+      {% endif %}
+      {% if resumen_global.pending_review_labels %}
+        <div class="alert alert-info mt-3 mb-2">
+          <strong>Pendientes de revisión profesional:</strong>
+          {{ resumen_global.pending_review_labels|join:", " }}.
+        </div>
+      {% endif %}
+      <div class="small text-muted mt-2">{{ resumen_global.regla_global }}</div>
+    </div>
+  </div>
+{% else %}
+  <div class="alert alert-info">
+    Todavía no hay factores marcados como requeridos. Se incorporan al ingresar
+    desde <strong>Realizar Evaluación</strong> en cada Planilla 2.
+  </div>
+{% endif %}
+
+{% if factores %}
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th style="width:36px;"></th>
+          <th>Factor</th>
+          <th>Estado</th>
+          <th>Nivel</th>
+          <th style="width:320px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in factores %}
+          {% with inst=f.instance %}
+          <tr class="{% if f.required and not f.completed %}table-warning{% endif %}">
+            <td>{% if f.icon %}<i class="{{ f.icon }}"></i>{% endif %}</td>
+            <td class="fw-semibold">
+              {{ f.label }}
+              {% if f.required %}<span class="badge bg-primary ms-1">Requerido</span>{% endif %}
+            </td>
+            <td>
+              {% if f.operational_state == 'sin_iniciar' %}
+                <span class="badge bg-secondary">Sin iniciar</span>
+              {% elif f.operational_state == 'desactualizado' %}
+                <span class="badge bg-warning text-dark">Requiere recálculo</span>
+              {% elif f.operational_state == 'borrador' %}
+                <span class="badge bg-secondary">Borrador</span>
+              {% elif f.operational_state == 'no_aplicable' %}
+                <span class="badge bg-info text-dark">No aplicable</span>
+              {% elif f.operational_state == 'revisado' %}
+                <span class="badge bg-primary">Revisado</span>
+                {% if f.reviewed_by.username %}
+                  <div class="small text-muted">{{ f.reviewed_by.username }}</div>
+                {% endif %}
+              {% elif f.operational_state == 'calculado' %}
+                <span class="badge bg-success">Calculado</span>
+              {% else %}
+                <span class="badge bg-secondary">Pendiente</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if f.result_state == 'desactualizado' %}
+                <span class="badge bg-warning text-dark">Recalcular</span>
+              {% elif f.result_state == 'borrador' %}
+                <span class="badge bg-secondary">Borrador</span>
+              {% elif f.result_state == 'calculado' %}
+                <span class="badge
+                  {% if inst.nivel_riesgo == 'alto' %} bg-danger
+                  {% elif inst.nivel_riesgo == 'medio' %} bg-warning text-dark
+                  {% elif inst.nivel_riesgo == 'bajo' %} bg-success
+                  {% else %} bg-secondary {% endif %}">
+                  {{ inst.get_nivel_riesgo_display|default:inst.nivel_riesgo }}
+                </span>
+                {% if f.requires_professional_review %}
+                  <div class="small text-muted mt-1">
+                    Tabla oficial: {{ f.calculated_level|title }}.
+                    {% if f.professional_review.modificada %}
+                      Clasificación final modificada profesionalmente.
+                    {% else %}
+                      Resultado condicionado por agravantes.
+                    {% endif %}
+                  </div>
+                  {% if f.aggravants_present %}
+                    <div class="small text-muted">
+                      Agravantes: {{ f.aggravants_present|join:", " }}.
+                    </div>
+                  {% endif %}
+                {% endif %}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              {% if f.edit_url %}
+                <a href="{{ f.edit_url }}" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-pencil-square me-1"></i> Editar
+                </a>
+              {% endif %}
+              {% if f.required and f.completed and f.requires_professional_review %}
+                <form method="post" class="d-flex flex-column gap-1 mt-2">
+                  {% csrf_token %}
+                  <input type="hidden" name="factor_slug" value="{{ f.slug }}">
+                  <label class="visually-hidden" for="manual-level-{{ f.slug }}">
+                    Clasificación profesional final
+                  </label>
+                  <select
+                    id="manual-level-{{ f.slug }}"
+                    name="manual_level"
+                    class="form-select form-select-sm"
+                    required
+                  >
+                    <option value="bajo" {% if inst.nivel_riesgo == 'bajo' %}selected{% endif %}>Tolerable (Bajo)</option>
+                    <option value="medio" {% if inst.nivel_riesgo == 'medio' %}selected{% endif %}>Moderado (Medio)</option>
+                    <option value="alto" {% if inst.nivel_riesgo == 'alto' %}selected{% endif %}>No tolerable (Alto)</option>
+                  </select>
+                  <label class="visually-hidden" for="review-justification-{{ f.slug }}">
+                    Justificación profesional
+                  </label>
+                  <input
+                    id="review-justification-{{ f.slug }}"
+                    type="text"
+                    name="review_justification"
+                    maxlength="2000"
+                    class="form-control form-control-sm"
+                    value="{{ f.professional_review.justificacion|default:'' }}"
+                    placeholder="Justificación obligatoria si cambia la clasificación"
+                  >
+                  <button type="submit" name="action" value="review_factor" class="btn btn-sm btn-outline-success">
+                    <i class="bi bi-check2-circle me-1"></i>
+                    {% if f.operational_state == 'revisado' %}Actualizar revisión{% else %}Confirmar revisión{% endif %}
+                  </button>
+                </form>
+              {% elif f.required and f.completed and f.operational_state != 'revisado' %}
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="factor_slug" value="{{ f.slug }}">
+                  <button type="submit" name="action" value="review_factor" class="btn btn-sm btn-outline-success">
+                    <i class="bi bi-check2-circle me-1"></i> Revisar
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endwith %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex gap-2 justify-content-end mt-3">
+    <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Volver
+    </a>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" name="action" value="generate_pdf" class="btn btn-primary">
+        <i class="bi bi-filetype-pdf me-1"></i> Generar PDF
+      </button>
+    </form>
+    <a href="{% url 'exportaciones:panel' evaluacion.evaluacion_id %}"
+       class="btn btn-outline-primary">
+      <i class="bi bi-file-earmark-pdf me-1"></i> Descargar protocolo oficial
+    </a>
+  </div>
+{% else %}
+  <div class="alert alert-info">No se recibieron factores en el contexto.</div>
+{% endif %}
+{% endblock %}

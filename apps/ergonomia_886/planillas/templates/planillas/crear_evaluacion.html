@@ -1,0 +1,22 @@
+<!-- planillas/templates/planillas/crear_evaluacion.html -->
+{% extends 'base.html' %}
+{% block help_slug %}crear{% endblock %}
+{% load django_bootstrap5 %}
+
+{% block title %}Crear Nueva Evaluación{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Iniciar Nueva Evaluación Ergonómica</h2>
+            <p class="text-muted">Complete los datos del establecimiento para comenzar.</p>
+            <form method="post" class="card p-4">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button type="submit" class="btn btn-primary mt-3">Crear y Continuar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

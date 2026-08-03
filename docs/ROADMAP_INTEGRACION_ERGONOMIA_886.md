@@ -224,8 +224,8 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | Commit | Título | Estado |
 |---|---|:---:|
 | 2.1 | Crear el paquete contenedor `apps/ergonomia_886/` | ✅ |
-| 2.2 | Actualizar las 48 rutas declarativas **antes de mover** (B2) | ⬜ |
-| 2.3 | Copiar las 4 apps con migraciones y templates | ⬜ |
+| 2.2 | Actualizar las 48 rutas declarativas **antes de mover** (B2) | ✅ |
+| 2.3 | Copiar las 4 apps con migraciones y templates | ✅ |
 | 2.4 | Actualizar `name` en los 4 `apps.py` | ⬜ |
 | 2.5 | Reescribir los 102 imports absolutos (B2) | ⬜ |
 | 2.6 | Corregir la ruta de los documentos de ayuda (B6) | ⬜ |
@@ -2723,12 +2723,18 @@ find apps/ergonomia_886 -path "*/migrations/0*.py" | sort
 
 | Elemento | Cantidad |
 |---|---:|
-| Archivos `.py` (sin migraciones) | 71 |
+| Archivos `.py` de las 4 apps (incluida su infraestructura de migraciones) | 71 |
 | Migraciones | **10** (1 + 7 + 2) |
 | Templates HTML | **24** (6 + 16 + 2) |
 | Artefactos normativos JSON | **13** + `README.md` |
 | Mapas de calibración | **12** |
 | PDF oficial | **1**, 251.599 bytes |
+
+> **Hallazgo de ejecución — 03/08/2026.** El total 71 coincide con el Anexo
+> A.1 de la propuesta (10 + 20 + 28 + 13), pero el rótulo original «sin
+> migraciones» era incorrecto: esos 71 incluyen diez migraciones numeradas y
+> cuatro `migrations/__init__.py`. Excluyendo los directorios `migrations/`
+> quedan 58 archivos Python; el paquete contenedor agrega un archivo más.
 
 - [ ] Los cuatro `diff -r` no muestran diferencias
 - [ ] **El SHA-256 del PDF coincide con `bc0d0753…59f4`**

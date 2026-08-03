@@ -1,0 +1,24 @@
+{
+  "schema_version":"1.1.0","planilla":"planilla3","page_index":10,
+  "pagesize":[612.0,792.0],"calibrado":true,"default_font":["Helvetica",7.5],
+  "campos":{
+    "razon_social":{"x":92.0,"y":721.8,"max_width":285.0},
+    "nombres_trabajadores":{"x":400.0,"y":704.0,"max_width":125.0,"wrap":true,"leading":8.0,"max_lines":3},
+    "direccion":{"x":160.0,"y":711.8,"max_width":217.0},
+    "area_sector":{"x":145.0,"y":701.7,"max_width":232.0},
+    "puesto_trabajo":{"x":105.0,"y":691.6,"max_width":272.0},
+    "tarea_analizada":{"x":100.0,"y":681.5,"max_width":277.0},
+    "observaciones_generales":{"x":90.0,"y":120.3,"max_width":430.0,"wrap":true,"leading":9.0,"max_lines":3},
+    "hoja_nro":{"x":440.0,"y":36.9,"max_width":55.0}
+  },
+  "checkbox":{"marca":"X","font":["Helvetica-Bold",9.0],"columnas":{"si":336.35,"no":370.66}},
+  "medidas_generales":[
+    {"campo":"general_informado_riesgo","campo_fecha":"fecha_informado_riesgo","y":617.2},
+    {"campo":"general_capacitado_sintomas","campo_fecha":"fecha_capacitado_sintomas","y":583.5},
+    {"campo":"general_capacitado_medidas","campo_fecha":"fecha_capacitado_medidas","y":549.9}
+  ],
+  "observaciones_col":{"x0":387.67,"x1":527.64},
+  "descripcion_col":{"x0":44.54,"x1":319.05},
+  "numero_col":{"x0":28.05,"x1":44.54},
+  "medidas_especificas":{"primera_fila_y":518.0,"alto_fila":13.5,"filas_por_pagina":29,"offset_baseline":-9.5,"font":["Helvetica",6.5]}
+}

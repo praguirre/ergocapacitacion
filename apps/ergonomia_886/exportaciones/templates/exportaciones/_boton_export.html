@@ -1,0 +1,23 @@
+{% comment %}
+Botón de descarga por GET, reutilizable.
+Parámetros esperados en el contexto de inclusión:
+  url        · destino de la descarga
+  etiqueta   · texto visible
+  icono      · clase de Bootstrap Icons
+  disabled   · booleano
+  motivo     · título accesible cuando está deshabilitado
+{% endcomment %}
+{% if disabled %}
+  <button type="button"
+          class="btn btn-sm btn-outline-secondary"
+          disabled
+          title="{{ motivo|default:'No disponible' }}">
+    <i class="{{ icono|default:'bi bi-download' }}"></i> {{ etiqueta }}
+  </button>
+{% else %}
+  <a href="{{ url }}"
+     class="btn btn-sm btn-outline-primary"
+     rel="nofollow">
+    <i class="{{ icono|default:'bi bi-download' }}"></i> {{ etiqueta }}
+  </a>
+{% endif %}

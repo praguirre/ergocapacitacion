@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "data_version": "1.1.0",
+    "artifact_effective_date": "2026-07-31",
+    "source": "Resolución SRT 886/2015, Planilla 2I, extendida mediante una matriz cuantitativa interna",
+    "source_url": "https://www.argentina.gob.ar/sites/default/files/res_srt_886_15-formulario.pdf",
+    "provenance_status": "internal_method_professionally_approved",
+    "source_validation": {
+      "status": "official_screen_verified_quantitative_extension_unsupported",
+      "validated_at": "2026-07-31",
+      "note": "La Planilla 2I respalda el cribado cualitativo, pero no prescribe umbrales de 100/150 kPa, bandas 30/60 %, cortes de 5/15 min ni la matriz de escalamiento implementada."
+    },
+    "professional_approval": {
+      "status": "approved",
+      "approved_by": "Lic. Pablo R. Aguirre — MN 10.027",
+      "approved_at": "2026-08-02",
+      "scope": "Adopción de la matriz cuantitativa de estrés de contacto (100/150 kPa, 30/60 %, 5/15 min y matriz frecuencia×agravantes) como extensión del criterio cualitativo de la Planilla 2I."
+    }
+  },
+  "pressure_kpa_thresholds": {
+    "low_max": 100.0,
+    "mid_max": 150.0
+  },
+  "frecuencia_pct_bands": {
+    "low_max": 30,
+    "mid_max": 60
+  },
+  "duracion_continua_min_bands": {
+    "low_max": 5,
+    "mid_max": 15
+  },
+  "duracion_pct_estimate": {
+    "bajo": 20,
+    "medio": 45,
+    "alto": 80
+  },
+  "matrix": {
+    "bajo":  { "0": "bajo",  "1": "bajo",  "2p": "medio" },
+    "medio": { "0": "bajo",  "1": "medio", "2p": "alto"  },
+    "alto":  { "0": "medio", "1": "alto",  "2p": "alto"  }
+  },
+  "immediate_high_flags": ["mano_martillo", "mango_inadecuado", "postura_forzada"],
+  "pressure_escalation": {
+    "medium_add": 0,
+    "high_add": 1
+  },
+  "symptom_escalation": {
+    "any_to_at_least": "medio",
+    "severe_keys": ["adormecimiento", "marcas"],
+    "severe_to": "alto"
+  },
+  "controls_mitigation": {
+    "min_count": 3,
+    "minus": 1,
+    "block_if_high": true
+  },
+  "notas": "Matriz adaptada de OSHA/WorkSafeBC + reglas SRT 886/15 Planilla 2I. Presión kPa calculada como (N/cm^2)*10. Ajustar bandas y escalados según evidencias locales."
+}

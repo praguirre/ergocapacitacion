@@ -1,0 +1,57 @@
+<div class="col-12">
+  <div class="card shadow-sm border-primary">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Condiciones de alcance del método</strong>
+      <small class="text-muted">Las cuatro deben confirmarse para calcular.</small>
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        {% for field in form %}
+          {% if field.name == "alcance_una_persona" or field.name == "alcance_de_pie" or field.name == "alcance_ambas_manos" or field.name == "alcance_objeto_frente" %}
+            <div class="col-12 col-md-6">
+              <div class="form-check">
+                {{ field }}
+                <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              </div>
+              {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors }}</div>{% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="form-text mt-2">
+        Si alguna condición no se cumple, documente la exclusión y utilice un método alternativo apropiado.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script nonce="{{ request.csp_nonce }}">
+  (() => {
+    const distance = document.getElementById("id_distancia_m");
+    const frequency = document.getElementById("id_frecuencia_opcion");
+    if (!distance || !frequency) return;
+
+    let validByDistance = {};
+    try {
+      validByDistance = JSON.parse(frequency.dataset.validByDistance || "{}");
+    } catch (_error) {
+      return;
+    }
+
+    const syncOptions = (resetInvalid) => {
+      const valid = new Set(validByDistance[distance.value] || []);
+      for (const option of frequency.options) {
+        if (!option.value) continue;
+        const permitted = valid.has(option.value);
+        option.hidden = !permitted;
+        option.disabled = !permitted && !option.selected;
+      }
+      if (resetInvalid && frequency.value && !valid.has(frequency.value)) {
+        frequency.value = "";
+      }
+    };
+
+    distance.addEventListener("change", () => syncOptions(true));
+    syncOptions(false);
+  })();
+</script>

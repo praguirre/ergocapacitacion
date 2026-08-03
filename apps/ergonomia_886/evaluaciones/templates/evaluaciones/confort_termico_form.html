@@ -1,0 +1,96 @@
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Confort térmico — Evaluación | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}confort_termico{% endblock %}
+
+{% block factor_icon %}<i class="bi bi-thermometer-half me-2"></i>{% endblock %}
+{% block factor_title %}Confort térmico — Evaluación{% endblock %}
+{% block factor_subtitle %}Cribado por curvas de Fanger (To °C vs HR %). Determina zona y nivel (bajo/medio/alto).{% endblock %}
+
+{% block factor_form %}
+  {{ form.risk_evaluation }}
+
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>General</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-3">
+              <div class="form-check">
+                {{ form.aplicable }}
+                {{ form.aplicable.label_tag }}
+                {% if form.aplicable.errors %}<div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label mb-1">{{ form.observaciones.label }}</label>
+              {{ form.observaciones }}
+              {% if form.observaciones.help_text %}<div class="form-text">{{ form.observaciones.help_text }}</div>{% endif %}
+              {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Medición ambiental</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ form.temperatura_operativa_c.label }} (°C)</label>
+              {{ form.temperatura_operativa_c }}
+              {% if form.temperatura_operativa_c.errors %}<div class="invalid-feedback d-block">{{ form.temperatura_operativa_c.errors }}</div>{% endif %}
+              <div class="form-text">Rango sugerido: 15–40 °C. Use <em>temperatura operativa</em> (no sólo aire).</div>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ form.humedad_relativa_pct.label }} (%)</label>
+              {{ form.humedad_relativa_pct }}
+              {% if form.humedad_relativa_pct.errors %}<div class="invalid-feedback d-block">{{ form.humedad_relativa_pct.errors }}</div>{% endif %}
+              <div class="form-text">Rango sugerido: 0–90 % HR.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block result_panel %}
+  {% if object and object.calc_data %}
+    <div class="mt-4">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Resultado de la evaluación</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <div class="p-3 border rounded">
+                <div class="text-muted small">Zona estimada</div>
+                <div class="fw-bold fs-5">{{ object.calc_data.zona|default:"—" }}</div>
+                <div class="text-muted small mt-2">To (°C) y HR (%) usados</div>
+                <div>
+                  To: {{ object.calc_data.clamped.temp_c|default:object.calc_data.input.temp_c|default:"—" }},
+                  HR: {{ object.calc_data.clamped.hr_pct|default:object.calc_data.input.hr_pct|default:"—" }}
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-8">
+              <div class="p-3 border rounded h-100">
+                <div class="text-muted small">Recomendaciones</div>
+                {% if object.calc_data.recomendaciones %}
+                  <ul class="mb-0">
+                    {% for rec in object.calc_data.recomendaciones %}<li>{{ rec }}</li>{% endfor %}
+                  </ul>
+                {% else %}
+                  <em class="text-muted">No hay recomendaciones cargadas.</em>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,433 @@
+{% extends "evaluaciones/factor_form_base.html" %}
+{% load static %}
+
+{% block title %}Vibración Cuerpo Entero{% endblock %}
+{% block help_slug %}vibracion_cuerpo_entero{% endblock %}
+{% block factor_title %}Vibración Cuerpo Entero (VCE){% endblock %}
+
+{% block factor_form %}
+
+  {# Hidden required (tu form lo trae como HiddenInput) #}
+  {{ form.risk_evaluation }}
+
+  <div class="alert alert-info shadow-sm">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <strong>Instrucciones VCE:</strong>
+    Cargue los datos generales y luego agregue los tramos de exposición (ej: asfalto → tierra).
+    El sistema integrará la dosis total.
+  </div>
+
+  {# Errores generales del form principal #}
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  {# 1) CONTEXTO Y MONTAJE #}
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-header bg-light fw-bold">1. Contexto y Montaje</div>
+    <div class="card-body">
+      <div class="row g-3">
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">{{ form.postura.label }}</label>
+          {{ form.postura }}
+          {% if form.postura.errors %}<div class="text-danger small">{{ form.postura.errors }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label fw-bold">{{ form.ubicacion_sensor.label }}</label>
+          {{ form.ubicacion_sensor }}
+          {% if form.ubicacion_sensor.errors %}<div class="text-danger small">{{ form.ubicacion_sensor.errors }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">{{ form.salud_columna.label }}</label>
+          {{ form.salud_columna }}
+          {% if form.salud_columna.errors %}<div class="text-danger small">{{ form.salud_columna.errors }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">{{ form.foto_montaje.label }}</label>
+          {{ form.foto_montaje }}
+          {% if form.foto_montaje.errors %}<div class="text-danger small">{{ form.foto_montaje.errors }}</div>{% endif %}
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">{{ form.certificado_calibracion.label }}</label>
+          {{ form.certificado_calibracion }}
+          {% if form.certificado_calibracion.errors %}<div class="text-danger small">{{ form.certificado_calibracion.errors }}</div>{% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {# (Opcional) LEGACY / MODO SIMPLE, si tu form todavía lo incluye #}
+  {% if form.metodo or form.espectro_json or form.a_wx or form.a_wy or form.a_wz or form.duracion_h %}
+  <div class="accordion mb-4" id="vceLegacyAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingLegacy">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLegacy" aria-expanded="false" aria-controls="collapseLegacy">
+          Modo Legacy / Carga Simple (opcional)
+        </button>
+      </h2>
+      <div id="collapseLegacy" class="accordion-collapse collapse" aria-labelledby="headingLegacy" data-bs-parent="#vceLegacyAccordion">
+        <div class="accordion-body">
+          <div class="row g-3">
+
+            {% if form.metodo %}
+            <div class="col-md-4">
+              <label class="form-label fw-bold">{{ form.metodo.label }}</label>
+              {{ form.metodo }}
+              {% if form.metodo.errors %}<div class="text-danger small">{{ form.metodo.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if form.duracion_h %}
+            <div class="col-md-4">
+              <label class="form-label fw-bold">{{ form.duracion_h.label }}</label>
+              {{ form.duracion_h }}
+              {% if form.duracion_h.errors %}<div class="text-danger small">{{ form.duracion_h.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if form.factor_cresta_gt6 %}
+            <div class="col-md-4">
+              <label class="form-label fw-bold d-block">{{ form.factor_cresta_gt6.label }}</label>
+              <div class="form-check">
+                {{ form.factor_cresta_gt6 }}
+                <label class="form-check-label">Sí</label>
+              </div>
+              {% if form.factor_cresta_gt6.errors %}<div class="text-danger small">{{ form.factor_cresta_gt6.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if form.a_wx or form.a_wy or form.a_wz %}
+            <div class="col-12"><hr class="my-2"></div>
+
+            {% if form.a_wx %}
+            <div class="col-md-4">
+              <label class="form-label fw-bold">{{ form.a_wx.label }}</label>
+              {{ form.a_wx }}
+              {% if form.a_wx.errors %}<div class="text-danger small">{{ form.a_wx.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if form.a_wy %}
+            <div class="col-md-4">
+              <label class="form-label fw-bold">{{ form.a_wy.label }}</label>
+              {{ form.a_wy }}
+              {% if form.a_wy.errors %}<div class="text-danger small">{{ form.a_wy.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+            {% if form.a_wz %}
+            <div class="col-md-4">
+              <label class="form-label fw-bold">{{ form.a_wz.label }}</label>
+              {{ form.a_wz }}
+              {% if form.a_wz.errors %}<div class="text-danger small">{{ form.a_wz.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {% if form.espectro_json %}
+            <div class="col-12">
+              <label class="form-label fw-bold">{{ form.espectro_json.label }}</label>
+              {{ form.espectro_json }}
+              {% if form.espectro_json.help_text %}<div class="form-text">{{ form.espectro_json.help_text }}</div>{% endif %}
+              {% if form.espectro_json.errors %}<div class="text-danger small">{{ form.espectro_json.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {# 2) FORMSET TRAMOS #}
+  <h5 class="mb-3 text-primary">
+    <i class="bi bi-layers-half me-2"></i>Tramos de Medición
+  </h5>
+
+  {{ segmentos.management_form }}
+
+  {% if segmentos.non_form_errors %}
+    <div class="alert alert-danger">{{ segmentos.non_form_errors }}</div>
+  {% endif %}
+
+  <div id="segmentos-container">
+    {% for form_seg in segmentos.forms %}
+      <div class="card mb-3 border-start border-4 border-primary shadow-sm segmento-card">
+        <div class="card-body">
+
+          {# IMPORTANTÍSIMO: hidden_fields incluye el FK + id + etc #}
+          {% for hidden in form_seg.hidden_fields %}
+            {{ hidden }}
+          {% endfor %}
+
+          {% if form_seg.non_field_errors %}
+            <div class="alert alert-danger py-2 mb-2">{{ form_seg.non_field_errors }}</div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between mb-2">
+            <h6 class="fw-bold text-secondary">Datos del Tramo</h6>
+            {% if segmentos.can_delete %}
+              <div class="form-check text-danger">
+                {{ form_seg.DELETE }}
+                <label class="form-check-label"><small>Eliminar Tramo</small></label>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="row g-2 align-items-end">
+
+            <div class="col-md-4">
+              <label class="form-label small text-muted">{{ form_seg.vehiculo_maquina.label }}</label>
+              {{ form_seg.vehiculo_maquina }}
+              {% if form_seg.vehiculo_maquina.errors %}<div class="text-danger small">{{ form_seg.vehiculo_maquina.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">{{ form_seg.tipo_asiento.label }}</label>
+              {{ form_seg.tipo_asiento }}
+              {% if form_seg.tipo_asiento.errors %}<div class="text-danger small">{{ form_seg.tipo_asiento.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">{{ form_seg.superficie_terreno.label }}</label>
+              {{ form_seg.superficie_terreno }}
+              {% if form_seg.superficie_terreno.errors %}<div class="text-danger small">{{ form_seg.superficie_terreno.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label small text-muted">{{ form_seg.tiempo_horas.label }}</label>
+              {{ form_seg.tiempo_horas }}
+              {% if form_seg.tiempo_horas.errors %}<div class="text-danger small">{{ form_seg.tiempo_horas.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 mt-2"><hr class="my-1 text-muted"></div>
+
+            <div class="col-md-2">
+              <label class="form-label small text-muted">{{ form_seg.velocidad_promedio.label }}</label>
+              {{ form_seg.velocidad_promedio }}
+              {% if form_seg.velocidad_promedio.errors %}<div class="text-danger small">{{ form_seg.velocidad_promedio.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label small text-muted">{{ form_seg.estado_neumaticos.label }}</label>
+              {{ form_seg.estado_neumaticos }}
+              {% if form_seg.estado_neumaticos.errors %}<div class="text-danger small">{{ form_seg.estado_neumaticos.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12 mt-2"><hr class="my-1 text-muted"></div>
+
+            <div class="col-md-3">
+              <label class="form-label fw-bold text-dark small">{{ form_seg.aw_x.label }}</label>
+              <div class="input-group input-group-sm">
+                {{ form_seg.aw_x }} <span class="input-group-text">m/s²</span>
+              </div>
+              {% if form_seg.aw_x.errors %}<div class="text-danger small">{{ form_seg.aw_x.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label fw-bold text-dark small">{{ form_seg.aw_y.label }}</label>
+              <div class="input-group input-group-sm">
+                {{ form_seg.aw_y }} <span class="input-group-text">m/s²</span>
+              </div>
+              {% if form_seg.aw_y.errors %}<div class="text-danger small">{{ form_seg.aw_y.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label fw-bold text-dark small">{{ form_seg.aw_z.label }}</label>
+              <div class="input-group input-group-sm">
+                {{ form_seg.aw_z }} <span class="input-group-text">m/s²</span>
+              </div>
+              {% if form_seg.aw_z.errors %}<div class="text-danger small">{{ form_seg.aw_z.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted" title="Si > 6, el método RMS puede subestimar">Factores de cresta (opcional)</label>
+              <div class="row g-1">
+                <div class="col-4">{{ form_seg.cf_x }}</div>
+                <div class="col-4">{{ form_seg.cf_y }}</div>
+                <div class="col-4">{{ form_seg.cf_z }}</div>
+              </div>
+              {% if form_seg.cf_x.errors or form_seg.cf_y.errors or form_seg.cf_z.errors %}
+                <div class="text-danger small">{{ form_seg.cf_x.errors }}{{ form_seg.cf_y.errors }}{{ form_seg.cf_z.errors }}</div>
+              {% endif %}
+              <div class="form-text">CF X / CF Y / CF Z</div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label small text-muted">{{ form_seg.pico_espectral_hz.label }}</label>
+              {{ form_seg.pico_espectral_hz }}
+              {% if form_seg.pico_espectral_hz.errors %}<div class="text-danger small">{{ form_seg.pico_espectral_hz.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <small class="text-muted fst-italic">
+                * Ingrese valores ponderados (Wd/Wk) del equipo. El sistema aplicará factor 1.4 automáticamente en X e Y.
+              </small>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="d-grid gap-2 col-md-6 mx-auto mb-4">
+    <button type="button" id="add-segment-btn" class="btn btn-outline-primary">
+      <i class="bi bi-plus-circle me-1"></i> Agregar Otro Tramo
+    </button>
+  </div>
+
+  {# 3) CAMPOS COMUNES PADRE #}
+  <div class="card mb-4 border-0 shadow-sm">
+    <div class="card-header bg-light fw-bold">Observaciones</div>
+    <div class="card-body">
+
+      <div class="form-check mb-3">
+        {{ form.aplicable }}
+        <label class="form-check-label">{{ form.aplicable.label }}</label>
+        {% if form.aplicable.errors %}<div class="text-danger small">{{ form.aplicable.errors }}</div>{% endif %}
+      </div>
+
+      <label class="form-label">{{ form.observaciones.label }}</label>
+      {{ form.observaciones }}
+      {% if form.observaciones.errors %}<div class="text-danger small">{{ form.observaciones.errors }}</div>{% endif %}
+
+      {% if form.input_json %}
+        <div class="mt-3">
+          <label class="form-label">{{ form.input_json.label }}</label>
+          {{ form.input_json }}
+          <div class="form-text">{{ form.input_json.help_text }}</div>
+          {% if form.input_json.errors %}<div class="text-danger small">{{ form.input_json.errors }}</div>{% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  {# TEMPLATE VACÍO PARA JS #}
+  <div id="empty-form-template" class="d-none">
+    <div class="card mb-3 border-start border-4 border-primary shadow-sm segmento-card">
+      <div class="card-body">
+
+        {% for hidden in segmentos.empty_form.hidden_fields %}
+          {{ hidden }}
+        {% endfor %}
+
+        <div class="d-flex justify-content-between mb-2">
+          <h6 class="fw-bold text-secondary">Nuevo Tramo</h6>
+          {% if segmentos.can_delete %}
+            <div class="form-check text-danger d-none">
+              {{ segmentos.empty_form.DELETE }}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label small text-muted">Vehículo / Máquina</label>
+            {{ segmentos.empty_form.vehiculo_maquina }}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small text-muted">Tipo Asiento</label>
+            {{ segmentos.empty_form.tipo_asiento }}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small text-muted">Terreno</label>
+            {{ segmentos.empty_form.superficie_terreno }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small text-muted">Tiempo (Horas)</label>
+            {{ segmentos.empty_form.tiempo_horas }}
+          </div>
+
+          <div class="col-12 mt-2"><hr class="my-1 text-muted"></div>
+
+          <div class="col-md-2">
+            <label class="form-label small text-muted">Velocidad (km/h)</label>
+            {{ segmentos.empty_form.velocidad_promedio }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small text-muted">Neumáticos</label>
+            {{ segmentos.empty_form.estado_neumaticos }}
+          </div>
+
+          <div class="col-12 mt-2"><hr class="my-1 text-muted"></div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-bold text-dark small">Eje X (RMS)</label>
+            <div class="input-group input-group-sm">
+              {{ segmentos.empty_form.aw_x }} <span class="input-group-text">m/s²</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold text-dark small">Eje Y (RMS)</label>
+            <div class="input-group input-group-sm">
+              {{ segmentos.empty_form.aw_y }} <span class="input-group-text">m/s²</span>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold text-dark small">Eje Z (RMS)</label>
+            <div class="input-group input-group-sm">
+              {{ segmentos.empty_form.aw_z }} <span class="input-group-text">m/s²</span>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small text-muted">CF X / CF Y / CF Z</label>
+            <div class="row g-1">
+              <div class="col-4">{{ segmentos.empty_form.cf_x }}</div>
+              <div class="col-4">{{ segmentos.empty_form.cf_y }}</div>
+              <div class="col-4">{{ segmentos.empty_form.cf_z }}</div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small text-muted">Pico Espectral (Hz)</label>
+            {{ segmentos.empty_form.pico_espectral_hz }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script nonce="{{ request.csp_nonce }}">
+  document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("segmentos-container");
+    const addBtn = document.getElementById("add-segment-btn");
+
+    const prefix = "{{ segmentos.prefix }}";
+    const totalFormsInput = document.querySelector(`input[name="${prefix}-TOTAL_FORMS"]`);
+    const templateHtml = document.getElementById("empty-form-template").innerHTML.trim();
+
+    if (!totalFormsInput) {
+      console.error("No se encontró TOTAL_FORMS para el formset. Prefix:", prefix);
+      return;
+    }
+
+    addBtn.addEventListener("click", function () {
+      const formIdx = parseInt(totalFormsInput.value, 10);
+      const newHtml = templateHtml.replace(/__prefix__/g, formIdx);
+
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = newHtml;
+
+      const card = tempDiv.firstElementChild;
+      container.appendChild(card);
+
+      totalFormsInput.value = formIdx + 1;
+    });
+  });
+</script>
+{% endblock %}

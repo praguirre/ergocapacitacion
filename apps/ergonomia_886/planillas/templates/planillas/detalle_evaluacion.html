@@ -1,0 +1,170 @@
+<!-- planillas/templates/planillas/detalle_evaluacion.html -->
+{% extends 'base.html' %}
+{% block help_slug %}dashboard{% endblock %}
+{% load static %}
+{% block title %}Detalle de Evaluación: {{ evaluacion.razon_social }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-2">Protocolo de Ergonomía</h1>
+    <h3 class="text-muted mb-4">{{ evaluacion.razon_social }} – CUIT: {{ evaluacion.cuit }}</h3>
+
+    <div class="list-group">
+
+        {# ───── Planilla 1 ───── #}
+        <a href="{% url 'planillas:planilla1' evaluacion.id %}"
+           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            Planilla 1: Identificación de Factores de Riesgo
+            {% if has_planilla1 %}
+                <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle"></i> Completa</span>
+            {% else %}
+                <span class="badge bg-warning text-dark rounded-pill"><i class="bi bi-pencil-square"></i> Pendiente</span>
+            {% endif %}
+        </a>
+
+        {# ───── Planilla 2 (sub-planillas) ───── #}
+        <div class="list-group-item">
+            <h5 class="mb-3">Planilla 2: Evaluación Inicial de Factores de Riesgo</h5>
+            <div class="list-group">
+                <a href="{% url 'planillas:planilla2a' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2A: Levantamiento y/o Descenso {% if has_planilla2a %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2b' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2B: Empuje y Arrastre {% if has_planilla2b %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2c' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2C: Transporte Manual {% if has_planilla2c %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2d' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2D: Bipedestación {% if has_planilla2d %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2e' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2E: Movimientos Repetitivos {% if has_planilla2e %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2f' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2F: Posturas Forzadas {% if has_planilla2f %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2g' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2G: Vibraciones {% if has_planilla2g %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2h' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2H: Confort Térmico {% if has_planilla2h %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+                <a href="{% url 'planillas:planilla2i' evaluacion.id %}" class="list-group-item list-group-item-action ps-4">
+                    2I: Estrés de Contacto {% if has_planilla2i %}<span class="badge bg-success float-end">✓</span>{% endif %}
+                </a>
+            </div>
+        </div>
+
+        {# ───── Planilla 3 ───── #}
+        <a href="{% url 'planillas:planilla3' evaluacion.id %}"
+           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            Planilla 3: Identificación de Medidas Correctivas y Preventivas
+            {% if has_planilla3 %}
+                <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle"></i> Completa</span>
+            {% else %}
+                <span class="badge bg-warning text-dark rounded-pill"><i class="bi bi-pencil-square"></i> Pendiente</span>
+            {% endif %}
+        </a>
+
+        {# ───── Planilla 4 (Matriz de Seguimiento) ───── #}
+        {% with planilla3=evaluacion.planilla3 %}
+            {% if planilla3 and planilla3.medidas.exists %}
+                <a href="{% url 'planillas:planilla4' evaluacion.id %}"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    Planilla 4: Matriz de Seguimiento
+                    {% if has_planilla4 %}
+                        <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle"></i> Completa</span>
+                    {% else %}
+                        <span class="badge bg-primary rounded-pill"><i class="bi bi-pencil-square"></i> Completar</span>
+                    {% endif %}
+                </a>
+            {% else %}
+                <a href="#"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center disabled"
+                   tabindex="-1" aria-disabled="true">
+                    Planilla 4: Matriz de Seguimiento
+                    <span class="badge bg-secondary rounded-pill">Complete Planilla 3 para habilitar</span>
+                </a>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    {# ───── Resumen de la evaluación (factores) ───── #}
+    <div class="card mt-4">
+      <div class="card-body">
+        <h2 class="h4 mb-3"><i class="bi bi-collection me-2"></i>Resumen de la evaluación</h2>
+
+        {# Este bloque replica wizard_resumen.html, con compatibilidad label/nombre #}
+        {% if factores %}
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th style="width:36px;"></th>
+                  <th>Factor</th>
+                  <th>Estado</th>
+                  <th>Nivel</th>
+                  <th style="width:140px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for f in factores %}
+                  {% with inst=f.instance %}
+                  <tr>
+                    <td>{% if f.icon %}<i class="{{ f.icon }}"></i>{% endif %}</td>
+                    <td class="fw-semibold">{{ f.label|default:f.nombre }}</td>
+
+                    <td>
+                      {% if not inst %}
+                        <span class="badge bg-secondary">Pendiente</span>
+                      {% elif inst.aplicable is not none and not inst.aplicable %}
+                        <span class="badge bg-info text-dark">No aplicable</span>
+                      {% else %}
+                        <span class="badge bg-success">Completo</span>
+                      {% endif %}
+                    </td>
+
+                    <td>
+                      {% if inst and inst.nivel_riesgo %}
+                        <span class="badge
+                          {% if inst.nivel_riesgo == 'alto' %} bg-danger
+                          {% elif inst.nivel_riesgo == 'medio' %} bg-warning text-dark
+                          {% elif inst.nivel_riesgo == 'bajo' %} bg-success
+                          {% else %} bg-secondary {% endif %}">
+                          {{ inst.get_nivel_riesgo_display|default:inst.nivel_riesgo }}
+                        </span>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </td>
+
+                    <td class="text-end">
+                      {% if f.edit_url %}
+                        <a href="{{ f.edit_url }}" class="btn btn-sm btn-outline-primary">
+                          <i class="bi bi-pencil-square me-1"></i> Editar
+                        </a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endwith %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info">No se recibieron factores en el contexto.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'exportaciones:panel' evaluacion.id %}" class="btn btn-primary">
+            <i class="bi bi-file-earmark-arrow-down me-1"></i> Exportar documentación
+        </a>
+        <a href="{% url 'core:dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

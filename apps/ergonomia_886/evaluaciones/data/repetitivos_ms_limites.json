@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "schema_version": "1.1.0",
+    "data_version": "1.1.0",
+    "artifact_effective_date": "2026-07-30",
+    "normative_source": "Resolución MTEySS 295/2003, Anexo I, Nivel de Actividad Manual",
+    "source": "Resolución MTEySS 295/2003, Anexo I, Nivel de Actividad Manual",
+    "source_url": "https://www.argentina.gob.ar/normativa/nacional/90396/texto",
+    "provenance_status": "transcribed_official_source_professional_approval_not_recorded",
+    "professional_approval": {
+      "status": "not_recorded",
+      "approved_by": null,
+      "approved_at": null
+    }
+  },
+  "rango_nam": [0, 10],
+  "rango_fpn": [0, 10],
+  "lineas": {
+    "vlu": [ { "x": 0, "y": 7.0 }, { "x": 10, "y": 0.0 } ],
+    "la":  [ { "x": 0, "y": 4.8 }, { "x": 10, "y": 0.0 } ]
+  },
+  "agravantes": {
+    "rule": "professional_review_required",
+    "automatic_level_change": false,
+    "basis": "La Resolución 295/2003 exige juicio profesional para reducir la exposición por debajo del LA cuando existe uno o más agravantes, pero no prescribe un desplazamiento numérico ni un nivel automático."
+  },
+  "notas": "VLU (roja) y LA (verde punteada) del gráfico NAM-FPN."
+}

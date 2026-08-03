@@ -1,0 +1,70 @@
+<!-- planillas/templates/planillas/planilla1_form.html -->
+
+{% extends 'base.html' %}
+{% block help_slug %}planilla1{% endblock %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ titulo_planilla }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">{{ titulo_planilla }}</h2>
+    <h4 class="text-muted mb-4">{{ evaluacion.razon_social }}</h4>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Datos Generales del Puesto</h5>
+                {% bootstrap_form form %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Matriz de Factores de Riesgo</h5>
+                {{ formset.management_form }}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Factor de Riesgo</th>
+                                <th class="text-center">Presente</th>
+                                <th>Tiempo Exposición</th>
+                                <th>Riesgo Tarea 1</th>
+                                <th>Riesgo Tarea 2</th>
+                                <th>Riesgo Tarea 3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for factor_form in formset %}
+                            <tr>
+                                <td>
+                                    {# --- LÍNEA CORREGIDA --- #}
+                                    {# Añadimos el campo ID oculto. ES FUNDAMENTAL para que el formset sepa qué objeto actualizar. #}
+                                    {{ factor_form.id }} 
+                                    
+                                    {{ factor_form.instance.get_tipo_factor_display }}
+                                    {{ factor_form.tipo_factor }}
+                                </td>
+                                <td class="text-center">{% bootstrap_field factor_form.presente show_label=False %}</td>
+                                <td>{% bootstrap_field factor_form.tiempo_exposicion show_label=False %}</td>
+                                <td>{% bootstrap_field factor_form.riesgo_tarea1 show_label=False %}</td>
+                                <td>{% bootstrap_field factor_form.riesgo_tarea2 show_label=False %}</td>
+                                <td>{% bootstrap_field factor_form.riesgo_tarea3 show_label=False %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Guardar Planilla 1</button>
+            <a href="{% url 'planillas:detalle_evaluacion' evaluacion.id %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

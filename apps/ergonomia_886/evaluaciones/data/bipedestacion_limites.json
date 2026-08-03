@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "data_version": "1.1.0",
+    "artifact_effective_date": "2026-07-31",
+    "source": "Criterio interno de cribado para bipedestación con referencias conceptuales a ISO 11226 y NIOSH",
+    "source_url": null,
+    "provenance_status": "internal_method_professionally_approved",
+    "source_validation": {
+      "status": "insufficient_for_approval",
+      "validated_at": "2026-07-31",
+      "note": "Los documentos describen el algoritmo, pero no aportan una fuente primaria que prescriba la matriz 3x3, el corte de 100 m/h, el factor 0,7 ni las reducciones por controles."
+    },
+    "professional_approval": {
+      "status": "approved",
+      "approved_by": "Lic. Pablo R. Aguirre — MN 10.027",
+      "approved_at": "2026-08-02",
+      "scope": "Adopción del método de cribado interno de bipedestación (matriz 3×3, cortes 2/4 h, atenuación 0,7 y umbral >100 m/h) como método reconocido adaptado al riesgo, conforme a la Res. SRT 886/2015."
+    }
+  },
+  "categorias_duracion_min": [
+    { "id": "lt_2h", "min_min": 0, "max_min": 120, "label": "< 2 h" },
+    { "id": "2a4h", "min_min": 120, "max_min": 240, "label": "2 a < 4 h" },
+    { "id": "ge_4h", "min_min": 240, "max_min": null, "label": "≥ 4 h" }
+  ],
+  "matriz": [
+    ["bajo",  "bajo",  "medio"],
+    ["bajo",  "medio", "alto" ],
+    ["medio", "alto",  "alto" ]
+  ],
+
+  "agravantes_buckets": [0, 1],
+
+  "movilidad": {
+    "deambulacion_threshold_mph": 100,
+    "factor_reduccion": 0.7
+  },
+  "controles_reduccion": {
+    "alfombra": 1,
+    "banqueta": 1,
+    "footrest": 1,
+    "rotacion": 1
+  },
+  "recomendaciones_control_order": ["alfombra", "banqueta", "footrest", "rotacion"],
+  "total_horas_al_menos_medio": 4,
+  "notas": "Cribado v1 basado en ISO 11226/NIOSH: intervalos de duración semiabiertos [min,max); deambulación mayor a 100 m/h atenúa; controles reducen. Síntomas con frecuencia diaria/semanal fuerzan 'alto'."
+}

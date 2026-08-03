@@ -1,0 +1,459 @@
+{# templates/evaluaciones/vibracion_mano_brazo_form.html #}
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Vibración Mano-Brazo | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}vibracion_mano_brazo{% endblock %}
+
+{% block header_icon %}<i class="bi bi-hand-index-thumb me-2"></i>{% endblock %}
+{% block header_title %}Vibración mano-brazo{% endblock %}
+{% block header_subtitle %}
+  Evaluación según ISO 5349 / Res. SRT 295/03. Exposición simple o múltiple.
+{% endblock %}
+
+{% block non_field_errors %}
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger mb-3">{{ form.non_field_errors }}</div>
+  {% endif %}
+{% endblock %}
+
+{% block factor_form %}
+  {{ form.risk_evaluation }}
+
+  <div class="row g-3">
+
+    {# ---------- Tipo de exposición ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>Tipo de exposición</strong>
+          <small class="text-muted">Seleccione “Exposición Simple” o “Exposición Múltiple”.</small>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="id_tipo_exposicion">{{ form.tipo_exposicion.label|default:"Tipo" }}</label>
+              {{ form.tipo_exposicion }}
+              {% if form.tipo_exposicion.errors %}<div class="invalid-feedback d-block">{{ form.tipo_exposicion.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Datos de entrada ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Datos de entrada</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+
+            {# SIMPLE #}
+            <div class="col-12 col-lg-6" id="block-simple">
+              <div class="border rounded p-3 h-100">
+                <div class="mb-2 fw-semibold">Exposición Simple</div>
+
+                <div class="row g-3">
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="id_a_k_m_s2">a<sub>k</sub> (m/s²)</label>
+                    {{ form.a_k_m_s2 }}
+                    {% if form.a_k_m_s2.errors %}<div class="invalid-feedback d-block">{{ form.a_k_m_s2.errors }}</div>{% endif %}
+                    <div class="form-text">Valor único (legacy). Si ingresás por ejes, el sistema usa el mayor.</div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="id_duracion_h">{{ form.duracion_h.label|default:"Duración (h)" }}</label>
+                    {{ form.duracion_h }}
+                    {% if form.duracion_h.errors %}<div class="invalid-feedback d-block">{{ form.duracion_h.errors }}</div>{% endif %}
+                    <div class="form-text">Tiempo de uso diario real (gatillo/ contacto).</div>
+                  </div>
+                </div>
+
+                <details class="mt-3">
+                  <summary class="text-muted">
+                    <i class="bi bi-diagram-3 me-1"></i> Ingreso por ejes (recomendado / criterio “eje dominante”)
+                  </summary>
+                  <div class="row g-3 mt-2">
+                    <div class="col-12 col-md-4">
+                      <label class="form-label" for="id_ax_mps2">a<sub>x</sub> (m/s²)</label>
+                      {{ form.ax_mps2 }}
+                      {% if form.ax_mps2.errors %}<div class="invalid-feedback d-block">{{ form.ax_mps2.errors }}</div>{% endif %}
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label" for="id_ay_mps2">a<sub>y</sub> (m/s²)</label>
+                      {{ form.ay_mps2 }}
+                      {% if form.ay_mps2.errors %}<div class="invalid-feedback d-block">{{ form.ay_mps2.errors }}</div>{% endif %}
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label" for="id_az_mps2">a<sub>z</sub> (m/s²)</label>
+                      {{ form.az_mps2 }}
+                      {% if form.az_mps2.errors %}<div class="invalid-feedback d-block">{{ form.az_mps2.errors }}</div>{% endif %}
+                    </div>
+                  </div>
+                  <div class="form-text mt-2">
+                    Si completás X/Y/Z, el sistema toma el <strong>mayor</strong> como <strong>eje dominante</strong>.
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            {# MÚLTIPLE #}
+            <div class="col-12 col-lg-6" id="block-multiple">
+              <div class="border rounded p-3 h-100">
+                <div class="mb-2 fw-semibold">Exposición Múltiple</div>
+
+                <div class="form-check form-switch mb-2">
+                  <input class="form-check-input" type="checkbox" id="builder-mode-axes">
+                  <label class="form-check-label" for="builder-mode-axes">
+                    Cargar por ejes (ax/ay/az) en lugar de a<sub>wi</sub>
+                  </label>
+                </div>
+
+                <div class="row g-2 align-items-end">
+                  <div class="col-12 col-md-5" id="col-aw">
+                    <label for="builder_aw" class="form-label">a<sub>wi</sub> (m/s²)</label>
+                    <input type="number" step="0.01" min="0" id="builder_aw" class="form-control" placeholder="p. ej. 4.2">
+                  </div>
+
+                  <div class="col-12 col-md-8 d-none" id="col-axes">
+                    <label class="form-label mb-1">Ejes (m/s²)</label>
+                    <div class="row g-2">
+                      <div class="col-4">
+                        <input type="number" step="0.01" min="0" id="builder_ax" class="form-control" placeholder="ax">
+                      </div>
+                      <div class="col-4">
+                        <input type="number" step="0.01" min="0" id="builder_ay" class="form-control" placeholder="ay">
+                      </div>
+                      <div class="col-4">
+                        <input type="number" step="0.01" min="0" id="builder_az" class="form-control" placeholder="az">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-5">
+                    <label for="builder_ti" class="form-label">T<sub>i</sub> (h)</label>
+                    <input type="number" step="0.01" min="0" id="builder_ti" class="form-control" placeholder="p. ej. 1.5">
+                  </div>
+
+                  <div class="col-12 col-md-2 d-grid">
+                    <button type="button" id="btn-add-item" class="btn btn-outline-primary">
+                      <i class="bi bi-plus-circle me-1"></i> Agregar
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-responsive mt-3">
+                  <table class="table table-sm align-middle mb-2" id="items-table">
+                    <thead>
+                      <tr>
+                        <th style="width:55%">Aceleración (m/s²)</th>
+                        <th style="width:25%">T<sub>i</sub> (h)</th>
+                        <th class="text-end" style="width:20%">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+
+                <div class="d-flex gap-2 mb-3">
+                  <button type="button" id="btn-sync-json" class="btn btn-secondary btn-sm">
+                    <i class="bi bi-arrow-down-square me-1"></i> Volcar al JSON
+                  </button>
+                  <button type="button" id="btn-clear-items" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash me-1"></i> Vaciar
+                  </button>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label" for="id_items_json">{{ form.items_json.label }}</label>
+                  {{ form.items_json }}
+                  {% if form.items_json.help_text %}<div class="form-text">{{ form.items_json.help_text }}</div>{% endif %}
+                  {% if form.items_json.errors %}<div class="invalid-feedback d-block">{{ form.items_json.errors }}</div>{% endif %}
+                  <div class="form-text">
+                    Se sincroniza automáticamente al agregar/quitar ítems y también al enviar el formulario.
+                  </div>
+                </div>
+
+                <details class="mt-2">
+                  <summary class="mb-2 text-muted">
+                    <i class="bi bi-info-circle me-1"></i> Ver <code>exposiciones_json</code> (solo lectura; se completa al guardar)
+                  </summary>
+                  {{ form.exposiciones_json }}
+                  {% if form.exposiciones_json.errors %}<div class="invalid-feedback d-block">{{ form.exposiciones_json.errors }}</div>{% endif %}
+                </details>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Aplicabilidad y observaciones ---------- #}
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header"><strong>Aplicabilidad y notas</strong></div>
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-3">
+              <div class="form-check">
+                {{ form.aplicable }} {{ form.aplicable.label_tag }}
+                {% if form.aplicable.errors %}<div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>{% endif %}
+              </div>
+            </div>
+            <div class="col-12 col-md-9">
+              <label class="form-label" for="id_observaciones">{{ form.observaciones.label }}</label>
+              {{ form.observaciones }}
+              {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ---------- Parámetros avanzados ---------- #}
+    {% if form.input_json %}
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Parámetros avanzados</strong>
+            <small class="text-muted">Se guardan en <code>calc_data["input"]</code> para trazabilidad.</small>
+          </div>
+          <div class="card-body">
+            <label class="form-label" for="id_input_json">{{ form.input_json.label }}</label>
+            {{ form.input_json }}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script nonce="{{ request.csp_nonce }}">
+(function () {
+  // ----------------------------
+  // Toggle bloques según tipo_exposicion
+  // ----------------------------
+  const selTipo = document.getElementById("id_tipo_exposicion");
+  const blockSimple = document.getElementById("block-simple");
+  const blockMultiple = document.getElementById("block-multiple");
+
+  function toggleBlocks() {
+    const v = (selTipo?.value || "").toLowerCase();
+    const isMultiple = v === "multiple";
+
+    if (blockSimple) {
+      blockSimple.style.display = isMultiple ? "none" : "";
+      blockSimple.classList.toggle("col-lg-12", !isMultiple);
+      blockSimple.classList.toggle("col-lg-6", isMultiple);
+    }
+    if (blockMultiple) {
+      blockMultiple.style.display = isMultiple ? "" : "none";
+      blockMultiple.classList.toggle("col-lg-12", isMultiple);
+      blockMultiple.classList.toggle("col-lg-6", !isMultiple);
+    }
+  }
+  if (selTipo) {
+    selTipo.addEventListener("change", toggleBlocks);
+    toggleBlocks();
+  }
+
+  // ----------------------------
+  // Builder múltiple
+  // ----------------------------
+  const items = [];
+
+  const chkAxes = document.getElementById("builder-mode-axes");
+  const colAw = document.getElementById("col-aw");
+  const colAxes = document.getElementById("col-axes");
+
+  const inputAw = document.getElementById("builder_aw");
+  const inputAx = document.getElementById("builder_ax");
+  const inputAy = document.getElementById("builder_ay");
+  const inputAz = document.getElementById("builder_az");
+  const inputTi = document.getElementById("builder_ti");
+
+  const btnAdd = document.getElementById("btn-add-item");
+  const btnSync = document.getElementById("btn-sync-json");
+  const btnClear = document.getElementById("btn-clear-items");
+  const tblBody = document.querySelector("#items-table tbody");
+
+  const taItems = document.getElementById("id_items_json");
+  const taExpo = document.getElementById("id_exposiciones_json");
+
+  function syncToTextareas() {
+    const payload = JSON.stringify(items);
+    if (taItems) taItems.value = payload;
+    if (taExpo) taExpo.value = payload; // mantener consistencia visual (solo lectura)
+  }
+
+  function renderTable() {
+    if (!tblBody) return;
+    tblBody.innerHTML = "";
+
+    items.forEach((it, idx) => {
+      const tr = document.createElement("tr");
+
+      let accelText = "";
+      if (it.awi_mps2 !== undefined) {
+        accelText = `a_wi=${it.awi_mps2}`;
+      } else {
+        accelText = `ax=${it.ax_mps2} | ay=${it.ay_mps2} | az=${it.az_mps2}`;
+      }
+
+      tr.innerHTML = `
+        <td>${accelText}</td>
+        <td>${it.Ti_h}</td>
+        <td class="text-end">
+          <button type="button" class="btn btn-sm btn-outline-danger" data-idx="${idx}">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </td>`;
+      tblBody.appendChild(tr);
+    });
+
+    tblBody.querySelectorAll("button[data-idx]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const i = parseInt(e.currentTarget.getAttribute("data-idx"));
+        if (!isNaN(i)) {
+          items.splice(i, 1);
+          renderTable();
+          syncToTextareas(); // ✅ autosync
+        }
+      });
+    });
+  }
+
+  function toggleAxesMode(force) {
+    const on = (typeof force === "boolean") ? force : !!chkAxes?.checked;
+
+    // Evitar mezclar modos si ya hay ítems
+    if (items.length > 0) {
+      const ok = window.confirm("Cambiar el modo (a_wi ↔ ejes) vaciará la lista actual. ¿Continuar?");
+      if (!ok) {
+        if (chkAxes) chkAxes.checked = !on;
+        return;
+      }
+      items.length = 0;
+      renderTable();
+      syncToTextareas();
+    }
+
+    if (colAw) colAw.classList.toggle("d-none", on);
+    if (colAxes) colAxes.classList.toggle("d-none", !on);
+  }
+
+  if (chkAxes) {
+    chkAxes.addEventListener("change", () => toggleAxesMode());
+    toggleAxesMode(!!chkAxes.checked);
+  }
+
+  if (btnAdd) {
+    btnAdd.addEventListener("click", () => {
+      const ti = parseFloat(inputTi?.value || "");
+      if (isNaN(ti) || ti <= 0) return;
+
+      const axesMode = !!chkAxes?.checked;
+
+      if (!axesMode) {
+        const aw = parseFloat(inputAw?.value || "");
+        if (isNaN(aw) || aw < 0) return;
+
+        items.push({ awi_mps2: +aw.toFixed(3), Ti_h: +ti.toFixed(3) });
+
+        if (inputAw) inputAw.value = "";
+        if (inputTi) inputTi.value = "";
+
+        renderTable();
+        syncToTextareas(); // ✅ autosync
+        return;
+      }
+
+      const ax = parseFloat(inputAx?.value || "");
+      const ay = parseFloat(inputAy?.value || "");
+      const az = parseFloat(inputAz?.value || "");
+      if ([ax, ay, az].some(v => isNaN(v) || v < 0)) return;
+
+      items.push({
+        ax_mps2: +ax.toFixed(3),
+        ay_mps2: +ay.toFixed(3),
+        az_mps2: +az.toFixed(3),
+        Ti_h: +ti.toFixed(3)
+      });
+
+      if (inputAx) inputAx.value = "";
+      if (inputAy) inputAy.value = "";
+      if (inputAz) inputAz.value = "";
+      if (inputTi) inputTi.value = "";
+
+      renderTable();
+      syncToTextareas(); // ✅ autosync
+    });
+  }
+
+  if (btnSync) btnSync.addEventListener("click", syncToTextareas);
+  if (btnClear) btnClear.addEventListener("click", () => {
+    items.length = 0;
+    renderTable();
+    syncToTextareas();
+  });
+
+  // ----------------------------
+  // Inicialización: si hay JSON previo, cargarlo al builder
+  // Prioridad: items_json, si no existe => exposiciones_json
+  // ----------------------------
+  const seed = (taItems && taItems.value.trim())
+    ? taItems.value.trim()
+    : (taExpo && taExpo.value.trim() ? taExpo.value.trim() : "");
+
+  try {
+    if (seed) {
+      const parsed = JSON.parse(seed);
+      if (Array.isArray(parsed)) {
+        let seenAxes = false;
+        parsed.forEach(p => {
+          if (p && typeof p === "object") {
+            const hasAxes = (p.ax_mps2 !== undefined || p.ay_mps2 !== undefined || p.az_mps2 !== undefined);
+            if (hasAxes) {
+              const ax = parseFloat(p.ax_mps2);
+              const ay = parseFloat(p.ay_mps2);
+              const az = parseFloat(p.az_mps2);
+              const ti = parseFloat(p.Ti_h);
+              if (![ax, ay, az, ti].some(v => isNaN(v))) {
+                items.push({ ax_mps2: ax, ay_mps2: ay, az_mps2: az, Ti_h: ti });
+                seenAxes = true;
+              }
+            } else {
+              const aw = parseFloat(p.awi_mps2);
+              const ti = parseFloat(p.Ti_h);
+              if (![aw, ti].some(v => isNaN(v))) {
+                items.push({ awi_mps2: aw, Ti_h: ti });
+              }
+            }
+          }
+        });
+
+        if (chkAxes) {
+          chkAxes.checked = !!seenAxes;
+          // no queremos confirm al iniciar, así que forzamos el modo sin limpiar
+          if (colAw) colAw.classList.toggle("d-none", chkAxes.checked);
+          if (colAxes) colAxes.classList.toggle("d-none", !chkAxes.checked);
+        }
+
+        renderTable();
+        syncToTextareas(); // ✅ deja ambos textareas consistentes
+      }
+    }
+  } catch (_) { /* ignore */ }
+
+  // ✅ Seguro: al enviar el formulario, sincronizar sí o sí
+  const formEl = document.querySelector("form");
+  if (formEl) {
+    formEl.addEventListener("submit", () => {
+      syncToTextareas();
+    });
+  }
+})();
+</script>
+{% endblock %}

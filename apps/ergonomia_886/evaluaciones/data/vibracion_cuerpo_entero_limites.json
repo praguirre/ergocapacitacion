@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "data_version": "1.1.0",
+    "artifact_effective_date": "2026-07-31",
+    "source": "Directiva 2002/44/CE, artículo 3.2, método A(8) complementario; Resolución MTEySS 295/2003 para ponderación y advertencia de factor de cresta",
+    "source_url": "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32002L0044",
+    "provenance_status": "recognized_international_complementary_method_professionally_adopted",
+    "source_references": [
+      "https://www.argentina.gob.ar/normativa/nacional/resoluci%C3%B3n-295-2003-90396/texto"
+    ],
+    "source_validation": {
+      "status": "parameters_verified_professional_adoption_pending",
+      "validated_at": "2026-07-31",
+      "note": "La Directiva 2002/44/CE fija A(8) de acción 0,5 m/s² y límite 1,15 m/s². La Resolución 295/2003 cita 0,5 m/s² como recomendación UE y exige precaución con factor de cresta mayor a 6; 1,15 m/s² no es su límite primario por curvas."
+    },
+    "professional_approval": {
+      "status": "approved",
+      "approved_by": "Lic. Pablo R. Aguirre — MN 10.027",
+      "approved_at": "2026-08-02",
+      "scope": "Adopción expresa del método A(8) de la Directiva 2002/44/CE (valores 0,5 y 1,15 m/s²) como método internacional complementario reconocido, no como límite primario de la Res. MTEySS 295/2003."
+    }
+  },
+  "accion_A8": 0.5,
+  "limite_A8": 1.15,
+  "crest_factor_threshold": 6.0,
+  "crest_factor_behavior": "warning_only",
+  "notas": "Criterio A(8) para VCE: acción 0.5 m/s², límite 1.15 m/s². Si el factor de cresta es mayor a 6 se genera una advertencia técnica, sin alterar automáticamente la clasificación A(8)."
+}

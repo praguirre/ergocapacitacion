@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "data_version": "1.0.0",
+    "artifact_effective_date": "2026-07-30",
+    "normativa": "Resolución SRT 3345/2015 - Tabla 1",
+    "source": "Resolución SRT 3345/2015 - Tabla 1",
+    "source_url": "https://www.argentina.gob.ar/normativa/nacional/252684/texto",
+    "provenance_status": "transcribed_official_source_professional_approval_not_recorded",
+    "professional_approval": {
+      "status": "not_recorded",
+      "approved_by": null,
+      "approved_at": null
+    },
+    "descripcion": "Límites máximos de fuerza inicial (N) para empuje con dos manos"
+  },
+  "limites_N": {
+    "2": {
+      "10_min": { "alta": {"m": 200, "f": 140}, "media": {"m": 210, "f": 140}, "baja": {"m": 190, "f": 110} },
+      "5_min": { "alta": {"m": 220, "f": 150}, "media": {"m": 240, "f": 150}, "baja": {"m": 220, "f": 120} },
+      "1_min": { "alta": {"m": 250, "f": 170}, "media": {"m": 260, "f": 170}, "baja": {"m": 240, "f": 140} },
+      "1_cada_5_min": { "alta": {"m": 260, "f": 200}, "media": {"m": 280, "f": 200}, "baja": {"m": 250, "f": 160} },
+      "1_cada_8_h": { "alta": {"m": 310, "f": 220}, "media": {"m": 340, "f": 220}, "baja": {"m": 310, "f": 180} }
+    },
+    "8": {
+      "4_min": { "alta": {"m": 140, "f": 150}, "media": {"m": 160, "f": 140}, "baja": {"m": 130, "f": 110} },
+      "1_min": { "alta": {"m": 210, "f": 160}, "media": {"m": 230, "f": 160}, "baja": {"m": 200, "f": 140} },
+      "1_cada_5_min": { "alta": {"m": 220, "f": 180}, "media": {"m": 250, "f": 190}, "baja": {"m": 210, "f": 160} },
+      "1_cada_8_h": { "alta": {"m": 260, "f": 200}, "media": {"m": 300, "f": 210}, "baja": {"m": 260, "f": 170} }
+    },
+    "15": {
+      "2_5_min": { "alta": {"m": 160, "f": 120}, "media": {"m": 180, "f": 110}, "baja": {"m": 150, "f": 90} },
+      "1_min": { "alta": {"m": 190, "f": 140}, "media": {"m": 220, "f": 140}, "baja": {"m": 190, "f": 120} },
+      "1_cada_5_min": { "alta": {"m": 200, "f": 150}, "media": {"m": 230, "f": 160}, "baja": {"m": 200, "f": 130} },
+      "1_cada_8_h": { "alta": {"m": 250, "f": 170}, "media": {"m": 280, "f": 170}, "baja": {"m": 240, "f": 150} }
+    },
+    "30": {
+      "1_min": { "alta": {"m": 150, "f": 120}, "media": {"m": 170, "f": 120}, "baja": {"m": 140, "f": 110} },
+      "1_cada_5_min": { "alta": {"m": 190, "f": 140}, "media": {"m": 220, "f": 150}, "baja": {"m": 190, "f": 120} },
+      "1_cada_8_h": { "alta": {"m": 240, "f": 170}, "media": {"m": 270, "f": 180}, "baja": {"m": 230, "f": 150} }
+    },
+    "45": {
+      "1_min": { "alta": {"m": 130, "f": 120}, "media": {"m": 140, "f": 120}, "baja": {"m": 120, "f": 110} },
+      "1_cada_5_min": { "alta": {"m": 160, "f": 140}, "media": {"m": 190, "f": 150}, "baja": {"m": 160, "f": 120} },
+      "1_cada_8_h": { "alta": {"m": 200, "f": 170}, "media": {"m": 230, "f": 180}, "baja": {"m": 200, "f": 150} }
+    },
+    "60": {
+      "1_cada_2_min": { "alta": {"m": 120, "f": 120}, "media": {"m": 140, "f": 120}, "baja": {"m": 120, "f": 100} },
+      "1_cada_5_min": { "alta": {"m": 140, "f": 130}, "media": {"m": 160, "f": 130}, "baja": {"m": 140, "f": 110} },
+      "1_cada_8_h": { "alta": {"m": 180, "f": 150}, "media": {"m": 200, "f": 160}, "baja": {"m": 170, "f": 130} }
+    }
+  }
+}

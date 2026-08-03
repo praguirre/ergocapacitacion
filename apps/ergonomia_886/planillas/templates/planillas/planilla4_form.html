@@ -1,0 +1,58 @@
+<!-- planillas/templates/planillas/planilla4_form.html -->
+
+{% extends "base.html" %}
+{% block help_slug %}planilla4{% endblock %}
+{% load django_bootstrap5 %}
+
+{% block title %}Planilla 4: Matriz de Seguimiento{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-2">Planilla 4: Matriz de Seguimiento de Medidas Preventivas</h2>
+    <p><strong>Razón Social:</strong> {{ evaluacion.razon_social }}</p>
+    <p><strong>CUIT:</strong> {{ evaluacion.cuit }}</p>
+    <p><strong>Establecimiento:</strong> {{ evaluacion.direccion_establecimiento }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>N° M.C.P</th>
+                        <th>Medida a Implementar</th>
+                        <th>Fecha de Evaluación</th>
+                        <th>Nivel de Riesgo</th>
+                        <th>Fecha Impl. Medida Administrativa</th>
+                        <th>Fecha Impl. Medida de Ingeniería</th>
+                        <th>Fecha de Cierre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in formset %}
+                        {{ form.id }} {# Campo oculto necesario para el formset #}
+                        <tr>
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td>
+                                {{ form.instance.medida_especifica.descripcion }}
+                            </td>
+                            <td>{% bootstrap_field form.fecha_evaluacion show_label=False %}</td>
+                            <td>{% bootstrap_field form.nivel_riesgo show_label=False %}</td>
+                            <td>{% bootstrap_field form.fecha_impl_admin show_label=False %}</td>
+                            <td>{% bootstrap_field form.fecha_impl_ing show_label=False %}</td>
+                            <td>{% bootstrap_field form.fecha_cierre show_label=False %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">Guardar Seguimiento</button>
+            <a href="{% url 'planillas:detalle_evaluacion' evaluacion.id %}" class="btn btn-secondary">Volver al Detalle</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

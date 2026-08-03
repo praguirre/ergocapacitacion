@@ -1,0 +1,152 @@
+<!-- evaluaciones/templates/evaluaciones/factor_form_base.html -->
+
+{% extends "base.html" %}
+
+{# ——— Slots/blocks que cada hijo puede sobrescribir ——— #}
+{% block title %}{{ block.super }}{% endblock %}
+{% block help_slug %}{{ help_slug|default:"factor" }}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h1 class="h3 mb-0">
+      {% block header_icon %}
+        {% block factor_icon %}
+          {% if icon_class %}<i class="{{ icon_class }} me-2"></i>{% endif %}
+        {% endblock %}
+      {% endblock %}
+      {% block header_title %}
+        {% block factor_title %}Evaluación de factor{% endblock %}
+      {% endblock %}
+    </h1>
+    <small class="text-muted">
+      {% block header_subtitle %}
+        {% block factor_subtitle %}{{ factor_subtitle }}{% endblock %}
+      {% endblock %}
+    </small>
+  </div>
+
+  {% block status_badge %}
+    {% if object and object.calc_data.estado_resultado == 'desactualizado' %}
+      <span class="badge bg-warning text-dark fs-6">
+        Resultado desactualizado — recalcular
+      </span>
+    {% elif object and object.calc_data.estado_resultado == 'borrador' %}
+      <span class="badge bg-secondary fs-6">Borrador sin calcular</span>
+    {% elif object and object.calc_data.estado_resultado == 'calculado' %}
+      <span class="badge
+        {% if object.nivel_riesgo == 'alto' %} bg-danger
+        {% elif object.nivel_riesgo == 'medio' %} bg-warning text-dark
+        {% elif object.nivel_riesgo == 'bajo' %} bg-success
+        {% else %} bg-secondary {% endif %} fs-6">
+        Nivel: {{ object.get_nivel_riesgo_display|default:object.nivel_riesgo }}
+      </span>
+    {% endif %}
+  {% endblock %}
+</div>
+
+{# ——— CORRECCIÓN APLICADA AQUÍ: enctype="multipart/form-data" ——— #}
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
+
+  {# —— Contenido específico del factor (cada hijo lo define) —— #}
+  {% block factor_form %}{% endblock %}
+
+  <div class="mt-3 d-flex gap-2 justify-content-end">
+    {% block factor_actions %}
+      {% block action_buttons %}
+        <button type="submit" name="action" value="save" class="btn btn-outline-secondary">
+          <i class="bi bi-save me-1"></i> Guardar
+        </button>
+        <button type="submit" name="action" value="save_and_calc" class="btn btn-primary">
+          <i class="bi bi-cpu me-1"></i> Guardar y calcular
+        </button>
+      {% endblock %}
+    {% endblock %}
+  </div>
+
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+</form>
+
+{# Acciones fuera del form: en Fase 3 se suma un POST independiente. #}
+{% block factor_export_actions %}
+  {% if export_evaluacion_id and export_factor_slug %}
+    <div class="d-flex flex-wrap gap-2 justify-content-end align-items-center mt-3 pt-3 border-top">
+      <span class="text-muted small me-auto">
+        <i class="bi bi-file-earmark-text me-1"></i>
+        Documentación de esta evaluación
+      </span>
+
+      {% url 'exportaciones:factor_detalle' export_evaluacion_id export_factor_slug as url_detalle %}
+      {% if object.pk %}
+        <a href="{{ url_detalle }}" class="btn btn-outline-secondary" rel="nofollow">
+          <i class="bi bi-download me-1"></i> Detalle técnico
+        </a>
+      {% else %}
+        <button type="button" class="btn btn-outline-secondary" disabled
+                title="Guardá la evaluación para poder descargar el detalle.">
+          <i class="bi bi-download me-1"></i> Detalle técnico
+        </button>
+      {% endif %}
+
+      {# --- Informe profesional: POST, sólo con resultado vigente --- #}
+      {% if export_estado_resultado == 'calculado' %}
+        <form method="post"
+              action="{% url 'exportaciones:informe_factor' export_evaluacion_id export_factor_slug %}"
+              class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-primary">
+            <i class="bi bi-robot me-1"></i> Generar informe profesional
+          </button>
+        </form>
+      {% else %}
+        <button type="button" class="btn btn-outline-secondary" disabled
+                title="{% if export_estado_resultado == 'desactualizado' %}El resultado está desactualizado: volvé a calcular antes de generar el informe.{% else %}Calculá la evaluación antes de generar el informe.{% endif %}">
+          <i class="bi bi-robot me-1"></i> Generar informe profesional
+        </button>
+        <small class="text-muted">
+          {% if export_estado_resultado == 'desactualizado' %}
+            Recalculá para habilitar el informe.
+          {% else %}
+            Usá «Guardar y calcular» para habilitar el informe.
+          {% endif %}
+        </small>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block result_panel %}{% endblock %}
+
+{% if object and object.calc_data %}
+  <div class="mt-4">
+    <details>
+      <summary class="mb-2 text-muted">
+        <i class="bi bi-search me-2"></i>Ver trazabilidad (calc_data)
+      </summary>
+      <pre class="bg-light border rounded p-3" style="white-space:pre-wrap;">{{ object.calc_data|default:"{}" }}</pre>
+    </details>
+  </div>
+{% endif %}
+
+{% block wizard_footer %}{% endblock %}
+
+{% block extra_scripts %}
+<script nonce="{{ request.csp_nonce }}">
+  document.querySelectorAll('form[action*="/informe/"]').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      var boton = form.querySelector('button[type="submit"]');
+      if (!boton) { return; }
+      boton.disabled = true;
+      boton.innerHTML =
+        '<span class="spinner-border spinner-border-sm me-1" role="status"' +
+        ' aria-hidden="true"></span> Generando informe…';
+    });
+  });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "data_version": "1.1.0",
+    "artifact_effective_date": "2026-07-31",
+    "source": "Valores de vibración mano-brazo con umbral de acción interno; Resolución MTEySS 295/2003 como referencia normativa",
+    "source_url": "https://www.argentina.gob.ar/normativa/nacional/90396/texto",
+    "provenance_status": "transcribed_and_extended_with_internal_action_threshold_approved",
+    "source_validation": {
+      "status": "official_limits_verified_internal_action_fraction_unsupported",
+      "validated_at": "2026-07-31",
+      "note": "Los límites 12/8/6/4 m/s² por duración coinciden con la Tabla 1 de la Resolución 295/2003. La fracción interna 0,5 y la banda media resultante no están prescriptas por esa tabla."
+    },
+    "professional_approval": {
+      "status": "approved",
+      "approved_by": "Lic. Pablo R. Aguirre — MN 10.027",
+      "approved_at": "2026-08-02",
+      "scope": "Aprobación de los máximos de la Tabla 1 de la Res. MTEySS 295/2003 y adopción de la banda de acción interna al 50 % de esos máximos como criterio preventivo propio."
+    }
+  },
+  "tabla_limites": [
+    { "min_h": 0,   "max_h": 1,  "limite_m_s2": 12.0, "action_fraction": 0.5 },
+    { "min_h": 1,   "max_h": 2,  "limite_m_s2": 8.0,  "action_fraction": 0.5 },
+    { "min_h": 2,   "max_h": 4,  "limite_m_s2": 6.0,  "action_fraction": 0.5 },
+    { "min_h": 4,   "max_h": 8,  "limite_m_s2": 4.0,  "action_fraction": 0.5 },
+    { "min_h": 8,   "max_h": 24, "limite_m_s2": 4.0,  "action_fraction": 0.5 }
+  ],
+  "notas": "Tabla 1 VMB (m/s^2 v.c.m.) por duración diaria. 'action_fraction'=0.5 define un umbral de acción interno (bajo/medio/alto)."
+}

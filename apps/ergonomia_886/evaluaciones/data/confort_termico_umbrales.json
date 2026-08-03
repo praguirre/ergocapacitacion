@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "data_version": "1.1.0",
+    "artifact_effective_date": "2026-07-31",
+    "source": "Resolución SRT 886/2015, Planilla 2H, con polilíneas internas aproximadas de la Curva de Confort de Fanger",
+    "source_url": "https://www.argentina.gob.ar/sites/default/files/res_srt_886_15-formulario.pdf",
+    "provenance_status": "internal_approximation_professionally_approved",
+    "source_validation": {
+      "status": "official_method_verified_digitization_pending",
+      "validated_at": "2026-07-31",
+      "note": "La Planilla 2H exige decidir dentro/fuera de la zona de confort y cita Fanger (1972); no valida las coordenadas digitalizadas ni la ampliación interna a cinco zonas."
+    },
+    "professional_approval": {
+      "status": "approved",
+      "approved_by": "Lic. Pablo R. Aguirre — MN 10.027",
+      "approved_at": "2026-08-02",
+      "scope": "Adopción de la digitalización de la curva de confort de Fanger de la Planilla 2H y de su mapeo a cinco zonas y tres niveles."
+    }
+  },
+  "x_min": 15.0,
+  "x_max": 40.0,
+  "y_min": 0.0,
+  "y_max": 90.0,
+  "boundaries": {
+    "df_frio":           [[15.0, 45.0], [19.0, 0.0]],
+    "frio_confort":      [[15.0, 60.0], [20.0, 30.0], [22.5, 0.0]],
+    "confort_caliente":  [[20.0, 90.0], [25.0, 50.0], [33.0, 0.0]],
+    "caliente_demasiado":[[26.0, 90.0], [30.0, 70.0], [35.0, 45.0], [40.0, 20.0]]
+  },
+  "mapping": {
+    "demasiado_frio": "alto",
+    "frio": "medio",
+    "confort": "bajo",
+    "caliente": "medio",
+    "demasiado_caliente": "alto"
+  },
+  "notas": "Polilíneas de separación de zonas (Fanger, 1972). Clasificación por bandas en función de HR% vs. umbrales interpolados a la To."
+}

@@ -1,0 +1,119 @@
+<!-- planillas/templates/planillas/planilla2_structured_form.html -->
+
+{% extends 'base.html' %}
+{% block help_slug %}{{ help_slug }}{% endblock %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ titulo_planilla }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">{{ titulo_planilla }}</h2>
+    <h4 class="text-muted mb-4">{{ evaluacion.razon_social }}</h4>
+
+    <form method="post" class="card p-4" id="planilla2-form" 
+          data-planilla-type="{% if "2A" in titulo_planilla %}2a{% elif "2B" in titulo_planilla %}2b{% elif "2C" in titulo_planilla %}2c{% elif "2D" in titulo_planilla %}2d{% elif "2E" in titulo_planilla %}2e{% elif "2F" in titulo_planilla %}2f{% elif "2G" in titulo_planilla %}2g{% elif "2H" in titulo_planilla %}2h{% elif "2I" in titulo_planilla %}2i{% endif %}">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            {% if field.field.widget.input_type != 'radio' %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {% bootstrap_field field layout='horizontal' %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <hr>
+
+        {% for paso in "12" %}
+            {% if paso == "1" %}
+                <h5 class="mt-3">PASO 1: Identificar si la tarea del puesto de trabajo implica:</h5>
+            {% else %}
+                <h5 class="mt-4">PASO 2: Determinación del Nivel de Riesgo</h5>
+            {% endif %}
+
+            <table class="table table-bordered mt-2 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 80%;">Descripción</th>
+                        <th class="text-center" style="width: 10%;">Sí</th>
+                        <th class="text-center" style="width: 10%;">No</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field in form %}
+                        {% if field.name|slice:":2" == "p"|add:paso %}
+                        <tr>
+                            <td>{{ field.label_tag }}</td>
+                            {% for radio in field %}
+                                <td class="text-center">{{ radio }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if paso == "1" %}
+                <div id="p1-result-all-no" class="alert alert-success result-box" style="display: none;">Se considera que el riesgo es tolerable.</div>
+                <div id="p1-result-any-si" class="alert alert-warning result-box" style="display: none;">Debe continuar con el Paso 2.</div>
+                <div id="p1-result-q3-si" class="alert alert-danger result-box" style="display: none;">Riesgo **No tolerable**. Continuar con el Paso 2 y solicitar mejoras en tiempo prudencial.</div>
+                <div id="p1-result-q5-si" class="alert alert-danger result-box" style="display: none;">Riesgo **No tolerable**. Continuar con el Paso 2 y solicitar mejoras en tiempo prudencial.</div>
+                <div id="p1-result-no" class="alert alert-success result-box" style="display: none;">Se considera que el riesgo es tolerable.</div>
+                <div id="p1-result-si" class="alert alert-warning result-box" style="display: none;">Debe continuar con el Paso 2.</div>
+                <div id="p1-mb-result-no" class="alert alert-success result-box" style="display: none;">Vibración Mano-Brazo: Se considera que el riesgo es tolerable.</div>
+                <div id="p1-mb-result-si" class="alert alert-warning result-box" style="display: none;">Vibración Mano-Brazo: Debe continuar con el Paso 2.</div>
+                <div id="p1-ce-result-no" class="alert alert-success result-box" style="display: none;">Vibración Cuerpo Entero: Se considera que el riesgo es tolerable.</div>
+                <div id="p1-ce-result-si" class="alert alert-warning result-box" style="display: none;">Vibración Cuerpo Entero: Debe continuar con el Paso 2.</div>
+            {% else %}
+                <div id="p2-result-all-no" class="alert alert-success result-box" style="display: none;">Se presume que el riesgo es tolerable.</div>
+                <div id="p2-result-any-si" class="alert alert-danger result-box" style="display: none;">El empleador no puede presumir que el riesgo sea tolerable. Se debe realizar una **Evaluación de Riesgos**.</div>
+                <div id="p2-result-q3-si" class="alert alert-danger result-box" style="display: none;">Se deben implementar mejoras en forma prudencial. Además, se debe realizar una **Evaluación de Riesgos**.</div>
+                <div id="p2-mb-result-no" class="alert alert-success result-box" style="display: none;">Vibración Mano-Brazo: Se presume que el riesgo es tolerable.</div>
+                <div id="p2-mb-result-si" class="alert alert-danger result-box" style="display: none;">Vibración Mano-Brazo: Se debe realizar una **Evaluación de Riesgos**.</div>
+                <div id="p2-ce-result-no" class="alert alert-success result-box" style="display: none;">Vibración Cuerpo Entero: Se presume que el riesgo es tolerable.</div>
+                <div id="p2-ce-result-si" class="alert alert-danger result-box" style="display: none;">Vibración Cuerpo Entero: Se debe realizar una **Evaluación de Riesgos**.</div>
+                <div id="p2-result-no" class="alert alert-success result-box" style="display: none;">Se presume que el riesgo es tolerable.</div>
+            {% endif %}
+        {% endfor %}
+        <hr>
+
+        <div class="row mt-5 text-center">
+            <div class="col-md-4"><p class="mt-4">_________________________</p><p><strong>Firma del Empleador</strong></p></div>
+            <div class="col-md-4"><p class="mt-4">_________________________</p><p><strong>Firma del Responsable del Servicio de Higiene y Seguridad</strong></p></div>
+            <div class="col-md-4"><p class="mt-4">_________________________</p><p><strong>Firma del Responsable del Servicio de Medicina del Trabajo</strong></p></div>
+        </div>
+
+        <div class="mt-5 d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-1"></i> Guardar Planilla
+            </button>
+
+            {# --- SOPORTE UNO O VARIOS DESTINOS (DROPDOWN ÚNICO) --- #}
+            {% if evaluacion_factor_urls and evaluacion_factor_urls|length > 1 %}
+              <div class="btn-group">
+                <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-clipboard2-check me-1"></i> Realizar Evaluación
+                </button>
+                <ul class="dropdown-menu">
+                  {% for opt in evaluacion_factor_urls %}
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center" href="{{ opt.url }}">
+                        <span class="me-2">•</span> {{ opt.label }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% elif evaluacion_factor_url %}
+              <a href="{{ evaluacion_factor_url }}" class="btn btn-warning">
+                <i class="bi bi-clipboard2-check me-1"></i> Realizar Evaluación
+              </a>
+            {% endif %}
+
+            <a href="{% url 'planillas:detalle_evaluacion' evaluacion.id %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

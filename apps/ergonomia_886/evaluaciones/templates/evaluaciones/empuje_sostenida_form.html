@@ -1,0 +1,112 @@
+{# templates/evaluaciones/empuje_sostenida_form.html #}
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Empuje — Fuerza Sostenida (Tabla 2) | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}empuje_sostenida{% endblock %}
+
+{# Encabezado del factor: usamos el bloque provisto por factor_form_base #}
+{% block factor_title %}
+  <i class="bi bi-arrow-right-square me-2"></i>
+  Empuje — Fuerza Sostenida (Mantener movimiento)
+{% endblock %}
+
+{# Sólo definimos el contenido del formulario. El <form>, CSRF, acciones y calc_data
+   ya vienen del layout factor_form_base. #}
+{% block factor_form %}
+  <div class="row g-3">
+
+    <!-- General -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <strong>General</strong>
+        </div>
+        <div class="card-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-3">
+              {% if form.aplicable %}
+                <div class="form-check">
+                  {{ form.aplicable }}
+                  {{ form.aplicable.label_tag }}
+                  {% if form.aplicable.errors %}<div class="invalid-feedback d-block">{{ form.aplicable.errors }}</div>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-12">
+              {% if form.observaciones %}
+                <label class="form-label mb-1">{{ form.observaciones.label }}</label>
+                {{ form.observaciones }}
+                {% if form.observaciones.help_text %}<div class="form-text">{{ form.observaciones.help_text }}</div>{% endif %}
+                {% if form.observaciones.errors %}<div class="invalid-feedback d-block">{{ form.observaciones.errors }}</div>{% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% include "evaluaciones/_force_scope_checklist.html" %}
+
+    <!-- Parámetros del ensayo -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header">
+          <strong>Parámetros del ensayo</strong>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-3">
+              {% if form.poblacion %}
+                <label class="form-label">{{ form.poblacion.label }}</label>
+                {{ form.poblacion }}
+                {% if form.poblacion.errors %}<div class="invalid-feedback d-block">{{ form.poblacion.errors }}</div>{% endif %}
+                <div class="form-text">Selección del grupo poblacional de referencia (m/f).</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.altura_agarre_cm %}
+                <label class="form-label">{{ form.altura_agarre_cm.label }}</label>
+                {{ form.altura_agarre_cm }}
+                {% if form.altura_agarre_cm.errors %}<div class="invalid-feedback d-block">{{ form.altura_agarre_cm.errors }}</div>{% endif %}
+                <div class="form-text">Altura del punto de agarre (64 / 95 / 144 cm).</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.distancia_m %}
+                <label class="form-label">{{ form.distancia_m.label }}</label>
+                {{ form.distancia_m }}
+                {% if form.distancia_m.errors %}<div class="invalid-feedback d-block">{{ form.distancia_m.errors }}</div>{% endif %}
+                <div class="form-text">Recorrido lineal (2, 8, 15, 30, 45 o 60 m).</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-3">
+              {% if form.frecuencia_opcion %}
+                <label class="form-label">{{ form.frecuencia_opcion.label }}</label>
+                {{ form.frecuencia_opcion }}
+                {% if form.frecuencia_opcion.errors %}<div class="invalid-feedback d-block">{{ form.frecuencia_opcion.errors }}</div>{% endif %}
+                <div class="form-text">Frecuencia (p.ej., 10 por minuto, 1 cada 5 min, etc.).</div>
+              {% endif %}
+            </div>
+
+            <div class="col-12 col-md-4">
+              {% if form.fuerza_n %}
+                <label class="form-label">{{ form.fuerza_n.label }} (N)</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-lightning-charge"></i></span>
+                  {{ form.fuerza_n }}
+                </div>
+                {% if form.fuerza_n.errors %}<div class="invalid-feedback d-block">{{ form.fuerza_n.errors }}</div>{% endif %}
+                <div class="form-text">Fuerza sostenida medida en Newtons (dinamómetro).</div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

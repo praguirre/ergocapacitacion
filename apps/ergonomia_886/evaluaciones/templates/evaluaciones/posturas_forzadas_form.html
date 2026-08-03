@@ -1,0 +1,384 @@
+{# templates/evaluaciones/posturas_forzadas_form.html #}
+
+{% extends "evaluaciones/factor_form_base.html" %}
+
+{% block title %}Posturas Forzadas (REBA) | ErgoApp SRT 886{% endblock %}
+{% block help_slug %}posturas_forzadas{% endblock %}
+
+{% block content %}
+{% with icon_class="bi bi-person-arms-up" factor_subtitle="Método REBA: Evalúe las posturas más forzadas o frecuentes." %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}
+
+{% block factor_title %}Posturas forzadas (REBA){% endblock %}
+
+{% block factor_form %}
+<div class="row g-4">
+
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light"><strong>Datos Generales</strong></div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="form-check form-switch">
+                            {{ form.aplicable }}
+                            <label class="form-check-label fw-bold" for="{{ form.aplicable.id_for_label }}">
+                                {{ form.aplicable.label }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <label class="form-label">{{ form.observaciones.label }}</label>
+                        {{ form.observaciones }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 border-primary border-opacity-25 shadow-sm">
+            <div class="card-header bg-primary bg-opacity-10 text-primary fw-bold">
+                <i class="bi bi-person-standing me-2"></i>Grupo A: Eje Corporal
+            </div>
+            <div class="card-body">
+                
+                <h6 class="text-secondary border-bottom pb-2 mb-3">Cuello</h6>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Posición</label>
+                    {{ form.cuello_base }}
+                </div>
+                <div class="form-check mb-4">
+                    {{ form.cuello_torsion_inclin }}
+                    <label class="form-check-label" for="{{ form.cuello_torsion_inclin.id_for_label }}">
+                        {{ form.cuello_torsion_inclin.label }}
+                    </label>
+                </div>
+
+                <h6 class="text-secondary border-bottom pb-2 mb-3">Tronco</h6>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Posición</label>
+                    {{ form.tronco_base }}
+                </div>
+                <div class="form-check mb-4">
+                    {{ form.tronco_torsion_inclin }}
+                    <label class="form-check-label" for="{{ form.tronco_torsion_inclin.id_for_label }}">
+                        {{ form.tronco_torsion_inclin.label }}
+                    </label>
+                </div>
+
+                <h6 class="text-secondary border-bottom pb-2 mb-3">Piernas</h6>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Soporte</label>
+                    {{ form.piernas_base }}
+                </div>
+                <div class="mb-2 ps-3 border-start border-3">
+                    <div class="form-check">
+                        {{ form.piernas_sedente }}
+                        <label class="form-check-label fw-bold text-primary" for="{{ form.piernas_sedente.id_for_label }}">
+                            {{ form.piernas_sedente.label }}
+                        </label>
+                    </div>
+                    <div class="form-text small mb-2">Si marca esto, la penalización de >60° se ignora.</div>
+                </div>
+                
+                <div class="form-check">
+                    {{ form.piernas_flex_30_60 }}
+                    <label class="form-check-label" for="{{ form.piernas_flex_30_60.id_for_label }}">
+                        {{ form.piernas_flex_30_60.label }}
+                    </label>
+                </div>
+                <div class="form-check">
+                    {{ form.piernas_flex_mas_60 }}
+                    <label class="form-check-label" for="{{ form.piernas_flex_mas_60.id_for_label }}">
+                        {{ form.piernas_flex_mas_60.label }}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card h-100 border-success border-opacity-25 shadow-sm">
+            <div class="card-header bg-success bg-opacity-10 text-success fw-bold">
+                <i class="bi bi-person-arms-up me-2"></i>Grupo B: Miembros Superiores
+            </div>
+            <div class="card-body">
+                
+                <h6 class="text-secondary border-bottom pb-2 mb-3">Brazos (Hombro)</h6>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Posición</label>
+                    {{ form.brazo_base }}
+                </div>
+                <div class="form-check">
+                    {{ form.brazo_hombro_elevado }}
+                    <label class="form-check-label" for="{{ form.brazo_hombro_elevado.id_for_label }}">
+                        {{ form.brazo_hombro_elevado.label }}
+                    </label>
+                </div>
+                <div class="form-check">
+                    {{ form.brazo_abduccion_rotacion }}
+                    <label class="form-check-label" for="{{ form.brazo_abduccion_rotacion.id_for_label }}">
+                        {{ form.brazo_abduccion_rotacion.label }}
+                    </label>
+                </div>
+                <div class="form-check mb-4">
+                    {{ form.brazo_apoyo }}
+                    <label class="form-check-label" for="{{ form.brazo_apoyo.id_for_label }}">
+                        {{ form.brazo_apoyo.label }}
+                    </label>
+                </div>
+
+                <h6 class="text-secondary border-bottom pb-2 mb-3">Antebrazos (Codo)</h6>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">Posición</label>
+                    {{ form.antebrazo_base }}
+                </div>
+
+                <h6 class="text-secondary border-bottom pb-2 mb-3">Muñecas</h6>
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Posición</label>
+                    {{ form.muneca_base }}
+                </div>
+                <div class="form-check">
+                    {{ form.muneca_torsion_desviacion }}
+                    <label class="form-check-label" for="{{ form.muneca_torsion_desviacion.id_for_label }}">
+                        {{ form.muneca_torsion_desviacion.label }}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light fw-bold">Carga / Fuerza</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">{{ form.carga_categoria.label }}</label>
+                    {{ form.carga_categoria }}
+                </div>
+                <div class="form-check">
+                    {{ form.fuerza_rapida }}
+                    <label class="form-check-label" for="{{ form.fuerza_rapida.id_for_label }}">
+                        {{ form.fuerza_rapida.label }}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light fw-bold">Agarre</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">{{ form.agarre.label }}</label>
+                    {{ form.agarre }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card border-warning border-opacity-25 shadow-sm">
+            <div class="card-header bg-warning bg-opacity-10 fw-bold">
+                <i class="bi bi-activity me-2"></i>Puntuación de Actividad
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            {{ form.actividad_estatica }}
+                            <label class="form-check-label" for="{{ form.actividad_estatica.id_for_label }}">
+                                {{ form.actividad_estatica.label }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            {{ form.actividad_repetitiva }}
+                            <label class="form-check-label" for="{{ form.actividad_repetitiva.id_for_label }}">
+                                {{ form.actividad_repetitiva.label }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            {{ form.actividad_inestable }}
+                            <label class="form-check-label" for="{{ form.actividad_inestable.id_for_label }}">
+                                {{ form.actividad_inestable.label }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if object.puntaje_final %}
+<div class="card mt-4 border-dark">
+    <div class="card-header bg-dark text-white">
+        <i class="bi bi-calculator me-2"></i>Resultados Calculados
+    </div>
+    <div class="card-body">
+        
+        <div class="row text-center mb-4">
+            <div class="col-3 border-end">
+                <small class="text-muted d-block">Puntaje A</small>
+                <span class="fs-4 fw-bold">{{ object.puntaje_a|default:"-" }}</span>
+            </div>
+            <div class="col-3 border-end">
+                <small class="text-muted d-block">Puntaje B</small>
+                <span class="fs-4 fw-bold">{{ object.puntaje_b|default:"-" }}</span>
+            </div>
+            <div class="col-3 border-end">
+                <small class="text-muted d-block">Puntaje C</small>
+                <span class="fs-4 fw-bold">{{ object.puntaje_c|default:"-" }}</span>
+            </div>
+            <div class="col-3">
+                <small class="text-muted d-block">REBA FINAL</small>
+                <span class="fs-3 fw-bold">{{ object.puntaje_final|default:"-" }}</span>
+            </div>
+        </div>
+
+        <hr>
+
+        {% with p=object.puntaje_final %}
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-10">
+                <div class="alert text-center border-0 shadow-sm
+                    {% if p == 1 %}
+                        alert-success
+                    {% elif p <= 3 %}
+                        alert-warning 
+                    {% elif p <= 7 %}
+                        alert-warning style='background-color: #fff3cd; color: #856404;' {% elif p <= 10 %}
+                        alert-danger
+                    {% else %}
+                        alert-danger bg-opacity-75 text-white
+                    {% endif %}
+                ">
+                    <h5 class="alert-heading text-uppercase mb-2">
+                        Nivel de Acción (Puntaje {{ p }})
+                    </h5>
+                    
+                    <p class="display-6 fw-bold mb-0">
+                        {% if p == 1 %}
+                            <i class="bi bi-check-circle-fill me-2"></i>No necesario
+                        {% elif p <= 3 %}
+                            <i class="bi bi-exclamation-circle me-2"></i>Puede ser necesario
+                        {% elif p <= 7 %}
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Necesario
+                        {% elif p <= 10 %}
+                            <i class="bi bi-exclamation-diamond-fill me-2"></i>Necesario pronto
+                        {% else %}
+                            <i class="bi bi-radioactive me-2"></i>Actuación inmediata
+                        {% endif %}
+                    </p>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-center gap-3">
+                        <span class="badge bg-light text-dark border">
+                            Nivel de Riesgo: 
+                            {% if p == 1 %}BAJO
+                            {% elif p <= 7 %}MEDIO
+                            {% else %}ALTO{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-2">
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#tablaReferenciaREBA" aria-expanded="false">
+                <i class="bi bi-info-circle me-1"></i>Ver tabla de referencia
+            </button>
+        </div>
+        <div class="collapse mt-3" id="tablaReferenciaREBA">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-striped mb-0 text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Puntuación REBA</th>
+                            <th>Nivel de Acción</th>
+                            <th>Nivel de Riesgo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="{% if p == 1 %}table-success fw-bold{% endif %}">
+                            <td>1</td>
+                            <td>No necesario</td>
+                            <td><span class="badge bg-success">Bajo</span></td>
+                        </tr>
+                        <tr class="{% if p >= 2 and p <= 3 %}table-warning fw-bold{% endif %}">
+                            <td>2 - 3</td>
+                            <td>Puede ser necesario</td>
+                            <td><span class="badge bg-warning text-dark">Medio</span></td>
+                        </tr>
+                        <tr class="{% if p >= 4 and p <= 7 %}table-warning fw-bold{% endif %}">
+                            <td>4 - 7</td>
+                            <td>Necesario</td>
+                            <td><span class="badge bg-warning text-dark">Medio</span></td>
+                        </tr>
+                        <tr class="{% if p >= 8 and p <= 10 %}table-danger fw-bold{% endif %}">
+                            <td>8 - 10</td>
+                            <td>Necesario pronto</td>
+                            <td><span class="badge bg-danger">Alto</span></td>
+                        </tr>
+                        <tr class="{% if p >= 11 %}table-danger fw-bold{% endif %}">
+                            <td>11 - 15</td>
+                            <td>Actuación inmediata</td>
+                            <td><span class="badge bg-danger">Alto</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endwith %}
+
+    </div>
+</div>
+{% endif %}
+
+{{ form.risk_evaluation }}
+{{ form.puntaje_a }}
+{{ form.puntaje_b }}
+{{ form.puntaje_c }}
+{{ form.puntaje_final }}
+
+{% endblock %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script nonce="{{ request.csp_nonce }}">
+document.addEventListener("DOMContentLoaded", function() {
+    const checkSedente = document.getElementById("id_piernas_sedente");
+    const checkMas60 = document.getElementById("id_piernas_flex_mas_60");
+
+    function updateLogic() {
+        if (!checkSedente || !checkMas60) return;
+
+        if (checkSedente.checked) {
+            // Si está sentado, flexión >60 no aplica penalización extra
+            checkMas60.checked = false;
+            checkMas60.disabled = true;
+        } else {
+            checkMas60.disabled = false;
+        }
+    }
+
+    // Listener para cambio en el checkbox de Sedente
+    if (checkSedente) {
+        checkSedente.addEventListener("change", updateLogic);
+    }
+    
+    // Ejecutar al inicio por si ya viene marcado
+    updateLogic();
+});
+</script>
+{% endblock %}

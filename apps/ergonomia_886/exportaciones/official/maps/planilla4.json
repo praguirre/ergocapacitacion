@@ -1,0 +1,23 @@
+{
+  "schema_version":"1.0.0","planilla":"planilla4","page_index":11,
+  "pagesize":[612.0,792.0],"calibrado":true,"default_font":["Helvetica",8.0],
+  "campos":{
+    "razon_social":{"x":128.0,"y":701.7,"max_width":300.0},
+    "cuit":{"x":500.0,"y":701.7,"max_width":90.0},
+    "direccion":{"x":195.0,"y":679.0,"max_width":337.0},
+    "area_sector":{"x":175.0,"y":655.2,"max_width":355.0},
+    "hoja_nro":{"x":500.0,"y":67.0,"max_width":50.0}
+  },
+  "tabla":{
+    "primera_fila_y":585.2,"alto_fila":19.5,"filas_por_pagina":17,"offset_baseline":-13.0,
+    "columnas":[
+      {"clave":"numero","x0":52.55,"x1":84.46,"align":"center"},
+      {"clave":"nombre_puesto","x0":84.46,"x1":235.37,"align":"left","padding":3.0},
+      {"clave":"fecha_evaluacion","x0":235.37,"x1":302.05,"align":"center"},
+      {"clave":"nivel_riesgo","x0":302.05,"x1":342.68,"align":"center"},
+      {"clave":"fecha_impl_admin","x0":342.68,"x1":416.65,"align":"center"},
+      {"clave":"fecha_impl_ing","x0":416.65,"x1":488.41,"align":"center"},
+      {"clave":"fecha_cierre","x0":488.41,"x1":555.09,"align":"center"}
+    ]
+  }
+}

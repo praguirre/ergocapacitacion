@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "schema_version": "1.1.0",
+    "data_version": "1.2.0",
+    "artifact_effective_date": "2026-07-31",
+    "normative_source": "Resolución MTEySS 295/2003, Anexo I, Levantamiento Manual de Cargas",
+    "source": "Resolución MTEySS 295/2003, Anexo I, Levantamiento Manual de Cargas",
+    "source_url": "https://www.argentina.gob.ar/normativa/nacional/90396/texto",
+    "provenance_status": "official_limits_transcribed_no_automatic_aggravant_adjustment",
+    "professional_approval": {
+      "status": "not_recorded",
+      "approved_by": null,
+      "approved_at": null
+    }
+  },
+  "limites": {
+    "tabla1": {
+      "sobre_hombro":       { "proximo": 16, "intermedio": 7,  "alejado": 0 },
+      "nudillos_hombro":    { "proximo": 32, "intermedio": 16, "alejado": 9 },
+      "espinilla_nudillos": { "proximo": 18, "intermedio": 14, "alejado": 7 },
+      "suelo_espinilla":    { "proximo": 14, "intermedio": 0,  "alejado": 0 }
+    },
+    "tabla2": {
+      "sobre_hombro":       { "proximo": 14, "intermedio": 5,  "alejado": 0 },
+      "nudillos_hombro":    { "proximo": 27, "intermedio": 14, "alejado": 7 },
+      "espinilla_nudillos": { "proximo": 16, "intermedio": 11, "alejado": 5 },
+      "suelo_espinilla":    { "proximo": 14, "intermedio": 0,  "alejado": 0 }
+    },
+    "tabla3": {
+      "sobre_hombro":       { "proximo": 11, "intermedio": 0,  "alejado": 0 },
+      "nudillos_hombro":    { "proximo": 14, "intermedio": 9,  "alejado": 5 },
+      "espinilla_nudillos": { "proximo": 9,  "intermedio": 7,  "alejado": 2 },
+      "suelo_espinilla":    { "proximo": 0,  "intermedio": 0,  "alejado": 0 }
+    }
+  },
+  "penalizaciones": {
+    "enabled": false,
+    "policy_status": "approved_no_automatic_adjustment",
+    "provenance": "La fuente oficial exige considerar valores inferiores ante determinadas condiciones, pero no se identificaron coeficientes numéricos aplicables. Por decisión profesional se utiliza el límite oficial base y los agravantes quedan sujetos a juicio profesional trazable.",
+    "professional_decision": {
+      "status": "approved",
+      "decision": "use_official_base_limit_and_require_professional_review",
+      "approved_by": "Responsable profesional del proyecto (usuario solicitante)",
+      "professional_role": "Lic. en Kinesiología y Especialista en Ergonomía",
+      "nominal_identity_status": "not_provided_in_project_record",
+      "approved_at": "2026-07-31"
+    },
+    "legacy_rejected_coefficients": {
+      "giro_mayor_30": 0.9,
+      "una_mano": 0.7,
+      "postura_agachada": 0.85,
+      "carga_inestable": 0.85,
+      "entorno_adverso": 0.9,
+      "turnos_largos": 0.9,
+      "status": "historical_trace_only_do_not_apply"
+    }
+  }
+}
