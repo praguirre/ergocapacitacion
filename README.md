@@ -66,6 +66,43 @@ python manage.py runserver
 | `/ai/` | Chatbot Ergobot (SSE) |
 | `/admin/` | Panel de administración |
 
+## Documentación
+
+La documentación técnica y operativa está centralizada en
+[docs/README.md](docs/README.md). Allí se encuentran los roadmaps, planes de
+implementación, runbook de despliegue, mapa conceptual e inventario del
+proyecto.
+
+El documento de referencia vigente es el
+[**Estado técnico consolidado del 01/08/2026**](docs/ESTADO_TECNICO_CONSOLIDADO_2026-08-01.md):
+consolida la auditoría de producción con el estado real del código en
+`release/beta`, verifica hallazgo por hallazgo qué sigue vigente y qué cambió, y
+define el plan de trabajo priorizado para retomar el desarrollo.
+
+La [auditoría técnica de producción del 30/07/2026](docs/INFORME_TECNICO_AUDITORIA_PRODUCCION_2026-07-30.md)
+se conserva íntegra como fotografía histórica del despliegue auditado.
+
+### Integración del módulo de Ergonomía SRT 886/15
+
+- **02/08/2026 — Commit 0.0:** se abrió la rama
+  `feature/ergonomia-886` y se creó
+  `docs/BITACORA_INTEGRACION_886.md`. El estado de partida quedó verificado con
+  160 pruebas del módulo y 32 de ErgoSolutions en `OK`, sin cambios de modelos
+  pendientes de migración.
+
+### Registro de cambios documentales
+
+- **30/07/2026:** se creó `docs/`, se incorporó el informe técnico de auditoría
+  de producción y se centralizaron los documentos Markdown de arquitectura,
+  planificación, operación e inventario que estaban en la raíz. `README.md` y
+  `AGENTS.md` permanecen en la raíz por su función operativa.
+- **01/08/2026:** se incorporó el **Estado técnico consolidado**, que contrasta
+  la auditoría de producción (`v0.1.3-beta`) con el código de desarrollo
+  (`v0.1.7-beta`). Resultado del contraste: los 27 hallazgos de la auditoría
+  siguen vigentes (4 agravados) y se documentaron 13 hallazgos nuevos de la
+  Etapa 3, dos de ellos bloqueantes para el despliegue. El documento pasa a ser
+  la referencia de estado del proyecto.
+
 ## Tests
 
 ```bash
