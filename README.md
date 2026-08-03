@@ -157,6 +157,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   sus labels históricos y 14 settings con defaults. `CHAT_AI_MODEL` deriva de
   `OPENAI_MODEL`; `help_ai` y `ergobot_ai` coexisten como apps separadas y las
   cuotas usan el cache compartido configurado en 0.8.
+- **03/08/2026 — Commit 2.9:** el módulo se montó bajo
+  `/evaluacion-ergonomica/` con namespaces planos para protocolo, factores,
+  documentos y ayuda. `help_ai` queda separado del Ergobot docente, que
+  conserva su prefijo `/ai/` conforme a CF-1.
 
 ### Registro de cambios documentales
 

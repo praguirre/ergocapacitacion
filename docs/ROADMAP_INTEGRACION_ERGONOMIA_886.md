@@ -231,7 +231,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.6 | Corregir la ruta de los documentos de ayuda (B6) | ✅ |
 | 2.7 | Copiar estáticos y artefactos byte a byte (CF-3, CF-6) | ✅ |
 | 2.8 | Registrar apps y settings del módulo | ✅ |
-| 2.9 | URLconf del módulo y montaje | ⬜ |
+| 2.9 | URLconf del módulo y montaje | ✅ |
 | 2.10 | Plantilla base del módulo y adaptación de 10 templates | ⬜ |
 | 2.11 | Extraer el widget de ayuda contextual | ⬜ |
 | 2.12 | `checks.py` — validación de las 48 rutas declarativas | ⬜ |
@@ -3456,6 +3456,16 @@ urlpatterns = [
     path("c/", include("apps.training.urls_public")),
 ]
 ```
+
+> **Decisión de Arquitectura DA-2.9 — 03/08/2026.** La protección original de
+> `help_ai/tests.py` exigía no modificar aserciones, pero dos expectativas
+> literales fijan `/ai/chat/` y `/ai/guide/`. Eso contradice CF-1 y la decisión
+> §0.8.3 de montar `help_ai` exclusivamente bajo el módulo. Prevalecen CF-1 y
+> la URL pública definida: se autoriza la excepción mínima de actualizar esas
+> dos expectativas a `/evaluacion-ergonomica/ayuda/` y la expectativa ASGI a
+> `config.asgi.application`. También se actualizan
+> targets de `patch` (imports diferidos) y el email obligatorio del fixture de
+> `CustomUser`; no cambian casos, cuotas ni otras aserciones.
 
 ### Verificación
 

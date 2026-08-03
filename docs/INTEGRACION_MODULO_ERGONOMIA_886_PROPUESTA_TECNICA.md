@@ -1171,8 +1171,20 @@ En sentido inverso, reemplazar `ergobot_ai` por `help_ai` tampoco sirve: `ergobo
 >
 > - ❌ ~~«Las 22 pruebas de `help_ai` pasan sin modificación»~~
 > - ✅ **«Las 22 pruebas de `help_ai` pasan. Los únicos cambios admitidos en `help_ai/tests.py` son la calificación con namespace de los 9 `reverse()` y la actualización de rutas de import. Ninguna aserción, ningún `patch`, ningún caso de prueba y ninguna cuota puede modificarse ni eliminarse.»**
+
+> **Decisión de Arquitectura DA-2.9 — ejecución 03/08/2026.** Al montar las
+> URLs se comprobó que dos aserciones literales todavía exigían `/ai/chat/` y
+> `/ai/guide/`. Mantenerlas requeriría volver a montar `help_ai` bajo `/ai/`,
+> violando CF-1 y la decisión de prefijos separados. Se acota la excepción a
+> reemplazar esas dos expectativas por el prefijo público nuevo, actualizar
+> la expectativa ASGI a `config.asgi.application`, actualizar los targets de
+> `patch` como rutas de import diferidas y agregar
+> el email requerido por `CustomUser` al fixture. Casos, cuotas y todas las
+> demás aserciones permanecen intactos.
 >
-> El diff de `help_ai/tests.py` debe revisarse explícitamente contra ese criterio en la Fase 2. Si contiene algo más que esos dos tipos de cambio, la integración incumple CF-1.
+> El diff de `help_ai/tests.py` debe revisarse explícitamente contra DA-2.9 en
+> la Fase 2. Cualquier cambio fuera de namespaces/imports, esas tres
+> expectativas de integración y el email del fixture incumple CF-1.
 
 ---
 

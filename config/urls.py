@@ -31,7 +31,12 @@ urlpatterns = [
     path("capacitacion/", include("apps.training.urls")),  # Páginas de capacitación
     path("quiz/", include("apps.quiz.urls")),  # Quiz
     path("certificados/", include("apps.certificates.urls")),  # Certificados
-    path("ai/", include("apps.ergobot_ai.urls")),  # Chatbot
+    path("ai/", include("apps.ergobot_ai.urls")),  # Chatbot docente — CF-1
+
+    # =========================================================================
+    # Módulo de Ergonomía SRT 886/15
+    # =========================================================================
+    path("evaluacion-ergonomica/", include("apps.ergonomia_886.urls")),
 
     # =========================================================================
     # Autenticación de Profesionales (Commit 13-14) - CON NAMESPACE

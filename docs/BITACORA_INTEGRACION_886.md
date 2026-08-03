@@ -1887,7 +1887,7 @@ Registrar las cuatro apps y portar todos los settings previstos; recién desde
 | Fecha | 2026-08-03 00:47 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `9f2dee8` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -1992,3 +1992,98 @@ la base SQLite en memoria nueva del proceso de servidor.
 ### Notas para el commit siguiente
 Montar el URLconf con namespaces planos; esto debe eliminar la mayoría de los
 `NoReverseMatch` de la suite combinada.
+
+## Commit 2.9 — URLconf del módulo y montaje
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:55 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se creó el URLconf contenedor y se montaron los cuatro namespaces planos bajo
+`/evaluacion-ergonomica/`. CF-1 mantiene Ergobot bajo `/ai/`. La prueba
+focalizada expuso expectativas del origen incompatibles con el prefijo nuevo;
+DA-2.9 documenta y acota su adaptación indispensable.
+
+### Archivos modificados
+- `apps/ergonomia_886/urls.py` — URLconf contenedor sin namespace propio.
+- `config/urls.py` — montaje público del módulo.
+- `apps/ergonomia_886/help_ai/tests.py` — rutas/ASGI, imports diferidos y fixture adaptados conforme DA-2.9.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — DA-2.9 registrada.
+- `README.md` — prefijos y CF-1 documentados.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y DA-2.9.
+- `docs/BITACORA_INTEGRACION_886.md` — mapa literal 2.9.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+planillas:crear_evaluacion                 -> /evaluacion-ergonomica/protocolo/crear/
+planillas:detalle_evaluacion               -> /evaluacion-ergonomica/protocolo/1/
+planillas:planilla1                        -> /evaluacion-ergonomica/protocolo/1/planilla1/
+planillas:planilla2a                       -> /evaluacion-ergonomica/protocolo/1/planilla2a/
+planillas:planilla4                        -> /evaluacion-ergonomica/protocolo/1/planilla4/
+evaluaciones:lmc_form_by_eval              -> /evaluacion-ergonomica/factores/1/lmc/
+evaluaciones:wizard_resumen_by_eval        -> /evaluacion-ergonomica/factores/1/resumen/
+evaluaciones:start_factor                  -> /evaluacion-ergonomica/factores/start/1/lmc/
+exportaciones:panel                        -> /evaluacion-ergonomica/documentos/1/
+exportaciones:protocolo_completo           -> /evaluacion-ergonomica/documentos/1/oficial/protocolo-completo.pdf
+exportaciones:paquete_zip                  -> /evaluacion-ergonomica/documentos/1/paquete.zip
+help_ai:help_guide                         -> /evaluacion-ergonomica/ayuda/guide/lmc/
+help_ai:chat_ai                            -> /evaluacion-ergonomica/ayuda/chat/lmc/
+
+=== CF-1: los dos asistentes en prefijos distintos ===
+  ergobot_ai : /ai/ergobot/ergonomia/stream/
+  help_ai    : /evaluacion-ergonomica/ayuda/chat/lmc/
+
+# Respuestas anónimas
+GET /evaluacion-ergonomica/                                    -> 404
+GET /evaluacion-ergonomica/protocolo/crear/                    -> 302
+GET /evaluacion-ergonomica/factores/1/lmc/                     -> 302
+GET /evaluacion-ergonomica/documentos/1/                       -> 302
+GET /evaluacion-ergonomica/ayuda/guide/lmc/                    -> 401
+
+# Suite preexistente
+Ran 36 tests in 0.145s
+OK
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+# Suite help_ai tras DA-2.9
+Ran 22 tests in 0.213s
+FAILED (failures=2, errors=1)
+Found 22 test(s).
+System check identified no issues (0 silenced).
+Pendientes: widget/base (2.10-2.11), CDN y cabecera CSP (Fase 6).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8027 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8027/
+GET / -> 200
+GET /evaluacion-ergonomica/protocolo/crear/ -> 302
+```
+
+### Desvíos respecto del roadmap
+DA-2.9 resuelve una incompatibilidad lógica: mantener aserciones `/ai/...`
+obligaba a violar CF-1. Se cambiaron solo las dos expectativas de prefijo, la
+expectativa ASGI del proyecto, trece targets de `patch` como imports diferidos
+y el email obligatorio del fixture. Ningún caso, cuota ni aserción funcional
+adicional cambió.
+
+La raíz del módulo devuelve 404 deliberadamente hasta implementar el listado
+en 3.6. Las otras rutas anónimas están protegidas y ninguna devuelve 500.
+
+### Notas para el commit siguiente
+Crear la base intermedia del módulo y adaptar los templates previstos sin
+romper la propagación de `help_slug`.

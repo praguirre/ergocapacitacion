@@ -114,7 +114,7 @@ class HelpContentCoverageTests(SimpleTestCase):
         with self.assertRaises(HelpContentError):
             md("slug-que-no-existe")
 
-    @patch("help_ai.agents.Agent")
+    @patch("apps.ergonomia_886.help_ai.agents.Agent")
     def test_page_agent_receives_global_and_page_specific_context(self, agent_cls):
         for slug in PAGE_HELP_SLUGS:
             with self.subTest(slug=slug):
@@ -141,11 +141,11 @@ class HelpContentCoverageTests(SimpleTestCase):
             with self.subTest(slug=slug):
                 self.assertEqual(
                     reverse("help_ai:chat_ai", kwargs={"slug": slug}),
-                    f"/ai/chat/{slug}/",
+                    f"/evaluacion-ergonomica/ayuda/chat/{slug}/",
                 )
                 self.assertEqual(
                     reverse("help_ai:help_guide", kwargs={"slug": slug}),
-                    f"/ai/guide/{slug}/",
+                    f"/evaluacion-ergonomica/ayuda/guide/{slug}/",
                 )
 
     def test_static_template_slugs_are_registered_for_coverage(self):
@@ -178,6 +178,7 @@ class ChatSecurityTests(TestCase):
     def setUpTestData(cls):
         cls.user = get_user_model().objects.create_user(
             username="chat-security-user",
+            email="chat-security@example.com",
             password="test-password",
         )
 
@@ -185,7 +186,7 @@ class ChatSecurityTests(TestCase):
         cache.clear()
 
     def test_anonymous_chat_request_is_rejected_before_runner(self):
-        with patch("help_ai.views.Runner.run_streamed") as runner:
+        with patch("apps.ergonomia_886.help_ai.views.Runner.run_streamed") as runner:
             response = self.client.post(
                 reverse("help_ai:chat_ai", kwargs={"slug": "lmc"}),
                 data=json.dumps({"q": "¿Qué debo medir?", "thread": []}),
@@ -197,7 +198,7 @@ class ChatSecurityTests(TestCase):
 
     def test_unknown_slug_is_rejected_before_agent_creation(self):
         self.client.force_login(self.user)
-        with patch("help_ai.views.page_agent") as agent:
+        with patch("apps.ergonomia_886.help_ai.views.page_agent") as agent:
             response = self.client.post(
                 reverse("help_ai:chat_ai", kwargs={"slug": "slug-inexistente"}),
                 data=json.dumps({"q": "Consulta", "thread": []}),
@@ -325,8 +326,8 @@ class ChatSecurityTests(TestCase):
             ]
 
         with (
-            patch("help_ai.views.page_agent", return_value=object()),
-            patch("help_ai.views.Runner.run_streamed", return_value=FakeRun()) as runner,
+            patch("apps.ergonomia_886.help_ai.views.page_agent", return_value=object()),
+            patch("apps.ergonomia_886.help_ai.views.Runner.run_streamed", return_value=FakeRun()) as runner,
         ):
             chunks = async_to_sync(consume)()
 
@@ -370,9 +371,9 @@ class ChatSecurityTests(TestCase):
             ]
 
         with (
-            patch("help_ai.views.page_agent", return_value=object()),
+            patch("apps.ergonomia_886.help_ai.views.page_agent", return_value=object()),
             patch(
-                "help_ai.views.Runner.run_streamed",
+                "apps.ergonomia_886.help_ai.views.Runner.run_streamed",
                 return_value=pending_run,
             ),
         ):
@@ -429,12 +430,12 @@ class ChatSecurityTests(TestCase):
             return first
 
         with (
-            patch("help_ai.views.page_agent", return_value=object()),
+            patch("apps.ergonomia_886.help_ai.views.page_agent", return_value=object()),
             patch(
-                "help_ai.views.Runner.run_streamed",
+                "apps.ergonomia_886.help_ai.views.Runner.run_streamed",
                 return_value=pending_run,
             ),
-            patch("help_ai.views.release_chat_lease") as release,
+            patch("apps.ergonomia_886.help_ai.views.release_chat_lease") as release,
         ):
             first = async_to_sync(open_then_disconnect)()
 
@@ -500,12 +501,12 @@ class ChatSecurityTests(TestCase):
             await stream.aclose()
 
         with (
-            patch("help_ai.views.page_agent", return_value=object()),
+            patch("apps.ergonomia_886.help_ai.views.page_agent", return_value=object()),
             patch(
-                "help_ai.views.Runner.run_streamed",
+                "apps.ergonomia_886.help_ai.views.Runner.run_streamed",
                 return_value=incremental_run,
             ),
-            patch("help_ai.views.ResponseTextDeltaEvent", FakeDelta),
+            patch("apps.ergonomia_886.help_ai.views.ResponseTextDeltaEvent", FakeDelta),
         ):
             async_to_sync(exercise_asgi_response)()
 
@@ -518,6 +519,6 @@ class ChatSecurityTests(TestCase):
 
         self.assertEqual(
             settings.ASGI_APPLICATION,
-            "ergonomia_srt.asgi.application",
+            "config.asgi.application",
         )
         self.assertIn("uvicorn", requirements)
