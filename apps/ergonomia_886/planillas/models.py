@@ -4,19 +4,36 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone # Importamos timezone para los valores por defecto de fechas
 
-# Modelo central que agrupa toda una evaluación ergonómica
 class Evaluacion(models.Model):
-    # Se referencia el modelo de usuario por settings y no por import directo,
-    # para que el dominio funcione con cualquier AUTH_USER_MODEL. En el
-    # proyecto destino es accounts.CustomUser.
+    """Raíz del dominio del Protocolo de Ergonomía SRT 886/15."""
+
+    # Vinculación operativa.
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name="evaluaciones_ergonomicas",
+        verbose_name="Profesional responsable",
     )
-    razon_social = models.CharField(max_length=255)
-    cuit = models.CharField(max_length=13)
+    empresa = models.ForeignKey(
+        "company.CompanyProfile",
+        on_delete=models.PROTECT,
+        related_name="evaluaciones_ergonomicas",
+        null=True,
+        blank=True,
+        verbose_name="Empresa evaluada",
+        help_text=(
+            "Empresa registrada en la plataforma. Al seleccionarla se copian "
+            "sus datos a los campos del documento, que quedan editables. "
+            "Dejar vacío si la empresa no es usuaria de la plataforma."
+        ),
+    )
+
+    # Respaldo histórico del documento emitido. Se puebla una sola vez al
+    # crear y nunca se resincroniza: la exportación siempre lee estos campos.
+    razon_social = models.CharField(max_length=300)
+    cuit = models.CharField(max_length=20)
     ciiu = models.CharField(max_length=10, blank=True, null=True, verbose_name="CIIU")
-    direccion_establecimiento = models.CharField(max_length=255)
+    direccion_establecimiento = models.CharField(max_length=400)
     provincia = models.CharField(max_length=100)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)

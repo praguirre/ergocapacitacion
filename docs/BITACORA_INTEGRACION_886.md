@@ -2354,7 +2354,7 @@ realizar la prueba de humo autenticada que cierra la Fase 2.
 | Fecha | 2026-08-03 01:18 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | pendiente hasta crear el commit |
+| Hash | `89b47f5` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -2523,3 +2523,79 @@ repitió sobre las páginas visibles 6/9 y allí se aprobaron Borg/Fanger.
 ### Notas para el commit siguiente
 Fase 2 cerrada. Iniciar 3.1 con la FK protegida a `CompanyProfile`, preservar
 los campos históricos y generar/revisar íntegramente la migración 0002.
+
+## Commit 3.1 — `Evaluacion.empresa` y alineación de longitudes
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 01:22 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | pendiente hasta crear el commit |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se agregó `Evaluacion.empresa`, FK nullable con `PROTECT` a `CompanyProfile`, y
+se definió `related_name` para empresa y profesional. Los campos de respaldo
+histórico se conservaron y ampliaron a razón social 300, CUIT 20 y dirección
+400. Se generó, leyó íntegramente y aplicó la migración aditiva 0002.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/models.py` — relación y snapshots ampliados.
+- `apps/ergonomia_886/planillas/migrations/0002_evaluacion_empresa.py` — migración aditiva.
+- `README.md` — decisión documental y longitudes registradas.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 2.13 y evidencia literal 3.1.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py makemigrations planillas --name evaluacion_empresa --settings=config.test_settings
+Migrations for 'planillas':
+  apps/ergonomia_886/planillas/migrations/0002_evaluacion_empresa.py
+    + Add field empresa to evaluacion
+    ~ Alter field cuit on evaluacion
+    ~ Alter field direccion_establecimiento on evaluacion
+    ~ Alter field razon_social on evaluacion
+    ~ Alter field usuario on evaluacion
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Found 196 test(s).
+System check identified no issues (0 silenced).
+Ran 196 tests in 1.689s
+OK
+Destroying test database for alias 'default'...
+
+.venv/bin/python manage.py migrate --noinput
+Operations to perform:
+  Apply all migrations: accounts, admin, auth, certificates, company, contenttypes, evaluaciones, exportaciones, planillas, presencial, quiz, sessions, training
+Running migrations:
+  Applying planillas.0002_evaluacion_empresa... OK
+
+.venv/bin/python manage.py migrate --check
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8031 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8031/
+GET / -> 200
+GET /evaluacion-ergonomica/protocolo/crear/ -> 302
+```
+
+### Desvíos respecto del roadmap
+Django generó la dependencia contra la hoja actual de `company`,
+`0004_create_contact_request`, en vez de la mínima `0001_create_company_profile`
+anticipada por el roadmap. Se conservó el grafo producido por el autodetector:
+la migración sigue siendo aditiva y el modelo objetivo existe desde 0001.
+
+### Notas para el commit siguiente
+Ampliar `CLAVES_PROHIBIDAS` antes de incorporar relaciones con trabajadores,
+manteniendo CF-4 y `trace_include_sensitive_data=False`.

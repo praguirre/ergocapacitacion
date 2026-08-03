@@ -178,6 +178,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   recorrió diez pantallas, calculó LMC, generó PDF/ZIP y verificó CF-1, CF-5 y
   CF-6 sin persistir datos. DA-2.13 adelantó el mínimo CSP requerido por la
   propia compuerta: vendor local, nonces, listeners y middleware bloqueante.
+- **03/08/2026 — Commit 3.1:** `Evaluacion` se vinculó opcionalmente a
+  `CompanyProfile` mediante `PROTECT`. Los campos documentales permanecen como
+  snapshot histórico y se ampliaron a 300/20/400 caracteres para copiar sin
+  truncamiento razón social, CUIT y domicilio.
 
 ### Registro de cambios documentales
 

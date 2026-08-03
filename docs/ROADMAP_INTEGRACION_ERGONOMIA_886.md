@@ -241,7 +241,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 3.1 | `Evaluacion.empresa` y alineación de longitudes | ⬜ |
+| 3.1 | `Evaluacion.empresa` y alineación de longitudes | ✅ |
 | 3.2 | **Ampliar `CLAVES_PROHIBIDAS`** (CF-4) | ⬜ |
 | 3.3 | Propiedad mixta por tipo de usuario | ⬜ |
 | 3.4 | Decoradores en todas las vistas del módulo | ⬜ |
@@ -4327,12 +4327,12 @@ dependencies = [
 .venv/bin/python manage.py test --settings=config.test_settings
 ```
 
-- [ ] La migración es aditiva
-- [ ] Las ~196 pruebas siguen pasando
-- [ ] Ninguna prueba de `exportaciones` falla por el cambio de longitud
+- [x] La migración es aditiva
+- [x] Las ~196 pruebas siguen pasando
+- [x] Ninguna prueba de `exportaciones` falla por el cambio de longitud
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.1, con la migración generada · Tabla de control: 3.1 ✅ · `README.md`
+- [x] Bitácora: entrada 3.1, con la migración generada · Tabla de control: 3.1 ✅ · `README.md`
 
 ### Git
 
