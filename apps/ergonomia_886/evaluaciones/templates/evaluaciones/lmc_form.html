@@ -12,7 +12,7 @@
 
   {# --- Resumen enriquecido (opcional) --- #}
   {% if object and object.calc_data %}
-    <div class="mt-4">
+    <div class="container-fluid px-3 px-lg-4 mt-4">
       <div class="card shadow-sm">
         <div class="card-header"><strong>Resultado de la evaluación</strong></div>
         <div class="card-body">
@@ -85,7 +85,7 @@
 
           {% if object.calc_data.recomendaciones %}
             <div class="mt-3">
-              <div class="p-3 border rounded bg-light">
+              <div class="p-3 border rounded bg-secondary bg-opacity-10">
                 <div class="text-muted small mb-1">Recomendaciones</div>
                 <ul class="mb-0">
                   {% for rec in object.calc_data.recomendaciones %}

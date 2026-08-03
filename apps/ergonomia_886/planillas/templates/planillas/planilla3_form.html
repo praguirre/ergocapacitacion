@@ -11,7 +11,7 @@
     <h2 class="mb-4">Planilla 3: Identificación de Medidas Correctivas y Preventivas</h2>
     <h4 class="text-muted mb-4">{{ evaluacion.razon_social }}</h4>
 
-    <form method="post" class="card p-4">
+    <form method="post" class="card bg-dark border-secondary p-4">
         {% csrf_token %}
         
         <h3 class="border-bottom pb-2 mb-3">A. Medidas Preventivas Generales</h3>
@@ -22,8 +22,8 @@
         {{ medidas_formset.management_form }}
         
         <div class="table-responsive">
-            <table class="table table-sm table-bordered">
-                <thead class="table-light">
+            <table class="table table-dark table-sm table-bordered">
+                <thead>
                     <tr>
                         <th style="width: 5%;">N°</th>
                         <th>Descripción de la Medida</th>

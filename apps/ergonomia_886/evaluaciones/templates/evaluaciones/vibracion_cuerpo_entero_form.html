@@ -23,8 +23,8 @@
   {% endif %}
 
   {# 1) CONTEXTO Y MONTAJE #}
-  <div class="card mb-4 border-0 shadow-sm">
-    <div class="card-header bg-light fw-bold">1. Contexto y Montaje</div>
+  <div class="card bg-dark border-secondary mb-4 shadow-sm">
+    <div class="card-header bg-secondary bg-opacity-10 fw-bold">1. Contexto y Montaje</div>
     <div class="card-body">
       <div class="row g-3">
 
@@ -224,7 +224,7 @@
             <div class="col-12 mt-2"><hr class="my-1 text-muted"></div>
 
             <div class="col-md-3">
-              <label class="form-label fw-bold text-dark small">{{ form_seg.aw_x.label }}</label>
+              <label class="form-label fw-bold text-light small">{{ form_seg.aw_x.label }}</label>
               <div class="input-group input-group-sm">
                 {{ form_seg.aw_x }} <span class="input-group-text">m/s²</span>
               </div>
@@ -232,7 +232,7 @@
             </div>
 
             <div class="col-md-3">
-              <label class="form-label fw-bold text-dark small">{{ form_seg.aw_y.label }}</label>
+              <label class="form-label fw-bold text-light small">{{ form_seg.aw_y.label }}</label>
               <div class="input-group input-group-sm">
                 {{ form_seg.aw_y }} <span class="input-group-text">m/s²</span>
               </div>
@@ -240,7 +240,7 @@
             </div>
 
             <div class="col-md-3">
-              <label class="form-label fw-bold text-dark small">{{ form_seg.aw_z.label }}</label>
+              <label class="form-label fw-bold text-light small">{{ form_seg.aw_z.label }}</label>
               <div class="input-group input-group-sm">
                 {{ form_seg.aw_z }} <span class="input-group-text">m/s²</span>
               </div>
@@ -285,8 +285,8 @@
   </div>
 
   {# 3) CAMPOS COMUNES PADRE #}
-  <div class="card mb-4 border-0 shadow-sm">
-    <div class="card-header bg-light fw-bold">Observaciones</div>
+  <div class="card bg-dark border-secondary mb-4 shadow-sm">
+    <div class="card-header bg-secondary bg-opacity-10 fw-bold">Observaciones</div>
     <div class="card-body">
 
       <div class="form-check mb-3">
@@ -361,19 +361,19 @@
           <div class="col-12 mt-2"><hr class="my-1 text-muted"></div>
 
           <div class="col-md-3">
-            <label class="form-label fw-bold text-dark small">Eje X (RMS)</label>
+            <label class="form-label fw-bold text-light small">Eje X (RMS)</label>
             <div class="input-group input-group-sm">
               {{ segmentos.empty_form.aw_x }} <span class="input-group-text">m/s²</span>
             </div>
           </div>
           <div class="col-md-3">
-            <label class="form-label fw-bold text-dark small">Eje Y (RMS)</label>
+            <label class="form-label fw-bold text-light small">Eje Y (RMS)</label>
             <div class="input-group input-group-sm">
               {{ segmentos.empty_form.aw_y }} <span class="input-group-text">m/s²</span>
             </div>
           </div>
           <div class="col-md-3">
-            <label class="form-label fw-bold text-dark small">Eje Z (RMS)</label>
+            <label class="form-label fw-bold text-light small">Eje Z (RMS)</label>
             <div class="input-group input-group-sm">
               {{ segmentos.empty_form.aw_z }} <span class="input-group-text">m/s²</span>
             </div>

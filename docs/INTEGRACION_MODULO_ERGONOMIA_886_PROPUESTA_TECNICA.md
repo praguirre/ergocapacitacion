@@ -1416,7 +1416,7 @@ Se preserva, extraído: el widget de ayuda (`base.html:49-113`) y las 5 referenc
 ### Impacto de la decisión
 
 - **23 templates del origen declaran `{% block help_slug %}`** **[VERIFICADO]**. Ese bloque debe seguir existiendo en la cadena de herencia o los 23 fallan silenciosamente —el widget cargaría siempre el slug `home`. Es un fallo sin excepción y difícil de detectar: **debe verificarse pantalla por pantalla** (§11.4).
-- El tema pasa de claro a oscuro. Los 28 templates del módulo fueron diseñados sobre Bootstrap claro. **[PENDIENTE]** Es previsible que haya ajustes de contraste —tablas, badges, formularios—, especialmente en las tablas densas de las Planillas 2. No se puede cuantificar sin verlo renderizado. Se estima medio día dentro de la Fase 4.
+- El tema pasa de claro a oscuro. El inventario ejecutable real contiene **25 templates HTML** (23 con `help_slug`) y materializa 30 pantallas. Se ajustaron contraste, tablas, cards y contenedores en la Fase 4; el recorrido automatizado y la inspección visual confirmaron el tema oscuro. Véase H-R.
 - El `{% csrf_token %}` del formulario de chat (`base.html:99`) debe conservarse al extraer el widget.
 
 ---
@@ -3530,7 +3530,7 @@ cd /Users/praguirre/ergocapacitacion
 | **4.1** | **Activar la tarjeta «Evaluaciones»** en `templates/dashboard/home.html:79-96` | §7.7 |
 | **4.2** | Entrada «Evaluaciones» en el navbar de `base_dashboard.html` | §7.8 |
 | **4.3** | Cuarta stat en el dashboard del profesional, con import diferido | §7.7 |
-| **4.4** | Ajustes de contraste de los 28 templates del módulo al tema oscuro | Área 8 |
+| **4.4** | Ajustes de contraste de los 25 templates HTML del módulo al tema oscuro | Área 8 |
 | **4.5** | Loggers del módulo en `LOGGING` | Matriz fila 49 |
 
 ### Criterio de aceptación de la Fase 4
@@ -3776,7 +3776,7 @@ Antes de cada despliegue, y siempre en este orden **[VERIFICADO — protocolo de
 | **R-4** | Cuotas no globales por falta de `CACHES` | Media | Medio | B4 + verificación explícita del lease | 0 |
 | **R-5** | SSE sobre workers WSGI degrada el servicio | Media | **Alto** | Preexistente (H12). Se agrava con dos consumidores de SSE | — |
 | **R-6** | `openai` 1.x → 2.x altera el comportamiento | Baja | Medio | API verificada presente en 0.6.9. Las 38 pruebas de IA usan `patch` | 2 |
-| **R-7** | Los 28 templates no se ven bien sobre tema oscuro | **Alta** | Bajo | Medio día de ajuste previsto en la Fase 4 | 4 |
+| **R-7** | Los 25 templates HTML no se ven bien sobre tema oscuro | **Alta** | Bajo | Ajuste y recorrido de 30 pantallas ejecutados en la Fase 4 | 4 |
 | **R-8** | El bloque `help_slug` se rompe al cambiar la herencia → widget siempre con slug `home` | Media | Medio | Plantilla intermedia `base_886.html` (§7.9) + verificación de las 23 pantallas | 2, 4 |
 | **R-9** | Truncamiento al copiar de `CompanyProfile` a `Evaluacion` | Media | Medio | Ampliar longitudes en la migración `0002` (§8.2) | 3 |
 | **R-10** | La superficie de datos personales ampliada se filtra al LLM | Media | **Alto** | **Ampliar `CLAVES_PROHIBIDAS`** + T-7 (**CF-4**) | 3 |
@@ -4143,6 +4143,7 @@ Adicionalmente, dos precisiones sobre `app_label` y rutas de archivo:
 | **H-O** | `help_ai.chat_view` es async y su prueba de seguridad exige conservar HTTP 401; el `backoffice_required` síncrono y `login_required` cambiarían o romperían ese contrato | Roadmap 3.4 y decisión vinculante sobre las 22 pruebas de `help_ai` | ⚠️ El chat conserva su validación autenticada previa; la guía usa `login_required`; las 22 pruebas pasan intactas y CF-1 no se relaja |
 | **H-P** | Los cuatro snapshots de `Evaluacion` tienen `blank=False`; el código propuesto para poblarlos en `save()` no alcanza porque `ModelForm.is_valid()` falla antes | Roadmap 3.5 | ⚠️ El formulario los completa en `clean()` sólo al crear y conserva una validación obligatoria explícita; `save()` mantiene la defensa CF-5 |
 | **H-Q** | El roadmap requiere `ergonomia_886:evaluacion_list`, pero el URLconf padre no puede adquirir ese namespace sin anidar y romper los namespaces planos de 2.9 | Roadmap 3.6 y decisión de namespaces planos | ⚠️ Se creó un include vacío con namespace sólo para rutas raíz; `planillas:`, `evaluaciones:`, `exportaciones:` y `help_ai:` permanecen planos |
+| **H-R** | El módulo contiene **25 templates HTML**, no 28; 23 declaran `help_slug`. Las 30 pantallas resultan de reutilizar la Planilla 2 para nueve variantes y de los 13 factores | Propuesta y roadmap 4.4 | ⚠️ Se verificó el inventario real por prueba automática; el alcance funcional de 30 pantallas no se recortó |
 
 ---
 

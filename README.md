@@ -226,6 +226,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   estadística con sus evaluaciones ergonómicas. El acceso al modelo es diferido
   y tolerante al desmontaje: sin las cuatro apps 886 el dashboard responde 200
   y omite la estadística.
+- **03/08/2026 — Commit 4.4:** los 25 templates HTML del módulo fueron auditados
+  para el tema oscuro y sus 30 pantallas quedaron cubiertas por un recorrido
+  HTTP. Se verificaron los 23 bloques de ayuda, los cinco scripts interactivos,
+  tablas densas y ausencia de overflow; la suite total alcanza 232 pruebas.
 
 ### Registro de cambios documentales
 

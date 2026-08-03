@@ -7,6 +7,7 @@
 {% block help_slug %}{{ help_slug|default:"factor" }}{% endblock %}
 
 {% block content_886 %}
+<div class="container-fluid py-4 px-3 px-lg-4">
 <div class="d-flex align-items-center justify-content-between mb-3">
   <div>
     <h1 class="h3 mb-0">
@@ -128,7 +129,7 @@
       <summary class="mb-2 text-muted">
         <i class="bi bi-search me-2"></i>Ver trazabilidad (calc_data)
       </summary>
-      <pre class="bg-light border rounded p-3" style="white-space:pre-wrap;">{{ object.calc_data|default:"{}" }}</pre>
+      <pre class="bg-secondary bg-opacity-10 border rounded p-3" style="white-space:pre-wrap;">{{ object.calc_data|default:"{}" }}</pre>
     </details>
   </div>
 {% endif %}
@@ -149,4 +150,5 @@
   });
 </script>
 {% endblock %}
+</div>
 {% endblock %}

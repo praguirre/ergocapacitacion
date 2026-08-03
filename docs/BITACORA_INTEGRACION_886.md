@@ -3395,7 +3395,7 @@ Agregar la cuarta stat mediante un import diferido y tolerante al desmontaje.
 | Fecha | 2026-08-03 11:31 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `3f9b8fe` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -3453,5 +3453,157 @@ setting y tolerancia a `RuntimeError`. La desmontabilidad se verificó con
 `override_settings`, evitando editar temporalmente el archivo de configuración.
 
 ### Notas para el commit siguiente
-Revisar los 28 templates del módulo sobre el tema oscuro y ejecutar el recorrido
+Revisar los templates del módulo sobre el tema oscuro y ejecutar el recorrido
 visual y funcional completo previsto en 4.4.
+
+---
+
+## Commit 4.4 — Ajustes de contraste al tema oscuro
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:42 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se auditó el inventario real de 25 templates HTML y se corrigieron fondos
+claros, encabezados, tablas, trazas, labels y contenedores. Las tablas usan la
+variante oscura y los formularios cuantitativos tienen padding responsive. Se
+agregó un recorrido automatizado de las 30 pantallas, los 23 bloques de ayuda y
+los cinco scripts. La inspección visual detectó y cerró un overflow de 12 px en
+los factores. También se corrigió un 500 del hub al resolver el fallback
+`label/nombre` con factores existentes.
+
+### Archivos modificados
+- `apps/ergonomia_886/**/templates/**/*.html` — contraste y contenedores en 17 templates.
+- `apps/ergonomia_886/evaluaciones/tests_ui_dark.py` — inventario, 30 pantallas, slugs y scripts.
+- `README.md` — auditoría visual y funcional registrada.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — inventario real, avance y criterios.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — hallazgo H-R.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 4.3 y evidencia literal 4.4.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.evaluaciones.tests_ui_dark --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+...
+Ran 3 tests in 0.309s
+OK
+Destroying test database for alias 'default'...
+Found 3 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 232 tests in 2.214s
+OK
+Destroying test database for alias 'default'...
+Found 232 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+.venv/bin/python manage.py migrate --check --settings=config.test_settings
+(sin salida)
+
+rg -n 'bg-(white|light)|table-light|text-gray-800|<table sin table-dark' apps/ergonomia_886 --glob '*.html'
+(sin salida)
+git diff --check
+(sin salida)
+
+Navegador — listado:
+{"cardBg":"rgb(33, 37, 41)","overflow":false,"slug":"dashboard","tableColor":"rgb(255, 255, 255)","theme":"dark"}
+Navegador — Planilla 1:
+{"cardColor":"rgb(222, 226, 230)","overflow":false,"rows":9,"slug":"planilla1","tableDark":true}
+Navegador — Posturas, antes del ajuste de contenedor:
+{"foreground":"rgb(248, 249, 250)","lightClasses":0,"overflow":true,"scriptOk":true,"slug":"posturas_forzadas"}
+Navegador — Posturas, después del ajuste:
+{"container":"container-fluid py-4 px-3 px-lg-4","innerWidth":1280,"overflow":false,"scriptOk":true,"scrollWidth":1280,"slug":"posturas_forzadas"}
+Consola JavaScript de Posturas:
+[]
+Navegador — panel de documentos:
+{"buttons":18,"cards":3,"foreground":"rgb(248, 249, 250)","overflow":false,"slug":"exportaciones"}
+```
+
+### Recorrido de 30 pantallas
+
+| # | Pantalla | HTTP | Tema | `data-page-slug` |
+|---:|---|:---:|:---:|---|
+| 1 | Listado | 200 | oscuro | `dashboard` |
+| 2 | Crear evaluación | 200 | oscuro | `crear` |
+| 3 | Detalle / hub | 200 | oscuro | `dashboard` |
+| 4 | Planilla 1 | 200 | oscuro | `planilla1` |
+| 5 | Planilla 2A | 200 | oscuro | `planilla2a` |
+| 6 | Planilla 2B | 200 | oscuro | `planilla2b` |
+| 7 | Planilla 2C | 200 | oscuro | `planilla2c` |
+| 8 | Planilla 2D | 200 | oscuro | `planilla2d` |
+| 9 | Planilla 2E | 200 | oscuro | `planilla2e` |
+| 10 | Planilla 2F | 200 | oscuro | `planilla2f` |
+| 11 | Planilla 2G | 200 | oscuro | `planilla2g` |
+| 12 | Planilla 2H | 200 | oscuro | `planilla2h` |
+| 13 | Planilla 2I | 200 | oscuro | `planilla2i` |
+| 14 | Planilla 3 | 200 | oscuro | `planilla3` |
+| 15 | Planilla 4 | 200 | oscuro | `planilla4` |
+| 16 | LMC | 200 | oscuro | `lmc` |
+| 17 | Empuje inicial | 200 | oscuro | `empuje_inicial` |
+| 18 | Empuje sostenido | 200 | oscuro | `empuje_sostenida` |
+| 19 | Tracción inicial | 200 | oscuro | `traccion_inicial` |
+| 20 | Tracción sostenida | 200 | oscuro | `traccion_sostenida` |
+| 21 | Transporte | 200 | oscuro | `transporte` |
+| 22 | Bipedestación | 200 | oscuro | `bipedestacion` |
+| 23 | Repetitivos MS | 200 | oscuro | `repetitivos_ms` |
+| 24 | Posturas forzadas | 200 | oscuro | `posturas_forzadas` |
+| 25 | Vibración mano-brazo | 200 | oscuro | `vibracion_mano_brazo` |
+| 26 | Vibración cuerpo entero | 200 | oscuro | `vibracion_cuerpo_entero` |
+| 27 | Confort térmico | 200 | oscuro | `confort_termico` |
+| 28 | Estrés de contacto | 200 | oscuro | `estres_contacto` |
+| 29 | Wizard de resumen | 200 | oscuro | `wizard_resumen` |
+| 30 | Panel de documentos | 200 | oscuro | `exportaciones` |
+
+### Inventario de los 23 bloques `help_slug`
+
+| # | Template | Slug verificado |
+|---:|---|---|
+| 1 | `planillas/evaluacion_list.html` | `dashboard` |
+| 2 | `planillas/crear_evaluacion.html` | `crear` |
+| 3 | `planillas/detalle_evaluacion.html` | `dashboard` |
+| 4 | `planillas/planilla1_form.html` | `planilla1` |
+| 5 | `planillas/planilla2_structured_form.html` | dinámico `planilla2a`–`planilla2i` |
+| 6 | `planillas/planilla3_form.html` | `planilla3` |
+| 7 | `planillas/planilla4_form.html` | `planilla4` |
+| 8 | `evaluaciones/factor_form_base.html` | dinámico `factor` |
+| 9 | `evaluaciones/bipedestacion_form.html` | `bipedestacion` |
+| 10 | `evaluaciones/confort_termico_form.html` | `confort_termico` |
+| 11 | `evaluaciones/empuje_inicial_form.html` | `empuje_inicial` |
+| 12 | `evaluaciones/empuje_sostenida_form.html` | `empuje_sostenida` |
+| 13 | `evaluaciones/estres_contacto_form.html` | `estres_contacto` |
+| 14 | `evaluaciones/lmc_form.html` | `lmc` |
+| 15 | `evaluaciones/posturas_forzadas_form.html` | `posturas_forzadas` |
+| 16 | `evaluaciones/repetitivos_ms_form.html` | `repetitivos_ms` |
+| 17 | `evaluaciones/traccion_inicial_form.html` | `traccion_inicial` |
+| 18 | `evaluaciones/traccion_sostenida_form.html` | `traccion_sostenida` |
+| 19 | `evaluaciones/transporte_form.html` | `transporte` |
+| 20 | `evaluaciones/vibracion_cuerpo_entero_form.html` | `vibracion_cuerpo_entero` |
+| 21 | `evaluaciones/vibracion_mano_brazo_form.html` | `vibracion_mano_brazo` |
+| 22 | `evaluaciones/wizard_resumen.html` | `wizard_resumen` |
+| 23 | `exportaciones/panel_exportacion.html` | `exportaciones` |
+
+### Desvíos respecto del roadmap
+El inventario real contiene 25 templates HTML, no 28; 23 declaran el bloque de
+ayuda y las reutilizaciones materializan las 30 pantallas. Se registró H-R en la
+propuesta. El panel expone 18 controles de acción en el fixture, no siete.
+
+El recorrido descubrió un 500 previo en el hub: el filtro `default:f.nombre`
+intentaba resolver `nombre` aun cuando el diccionario moderno ya traía `label`.
+Se reemplazó por una rama explícita compatible. También descubrió que los grids
+de factores excedían 12 px el viewport; el contenedor responsive lo cerró.
+
+### Notas para el commit siguiente
+Agregar los loggers del módulo y ejecutar la verificación integral de CF-1.

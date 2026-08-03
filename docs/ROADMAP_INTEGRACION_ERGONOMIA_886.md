@@ -258,7 +258,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 4.1 | **Activar la tarjeta «Evaluaciones»** | ✅ |
 | 4.2 | Entrada de navegación en el navbar | ✅ |
 | 4.3 | Cuarta stat del dashboard con import diferido | ✅ |
-| 4.4 | Ajustes de contraste al tema oscuro | ⬜ |
+| 4.4 | Ajustes de contraste al tema oscuro | ✅ |
 | 4.5 | Loggers del módulo y verificación de CF-1 | ⬜ |
 
 ### Fase 5 — Aprovechamiento · `ergocapacitacion`
@@ -5542,7 +5542,8 @@ git push
 ## Commit 4.4 — Ajustes de contraste al tema oscuro
 
 ### Objetivo
-Los 28 templates del módulo fueron diseñados sobre Bootstrap claro; el backoffice usa `data-bs-theme="dark"`.
+El inventario real es de 25 templates HTML (23 con `help_slug`) que materializan
+las 30 pantallas del recorrido; el backoffice usa `data-bs-theme="dark"`.
 
 ### Clases a revisar
 
@@ -5583,13 +5584,13 @@ Abrir la consola del navegador y en cada pantalla verificar:
 Debe coincidir con el slug de esa pantalla, no con "home".
 ```
 
-- [ ] Las 30 pantallas son legibles sobre fondo oscuro
-- [ ] Los 5 formularios con JavaScript funcionan
-- [ ] **Los 23 slugs de ayuda son los correctos**
+- [x] Las 30 pantallas son legibles sobre fondo oscuro
+- [x] Los 5 formularios con JavaScript funcionan
+- [x] **Los 23 slugs de ayuda son los correctos**
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 4.4, con la tabla de las 30 pantallas y los 23 slugs verificados
-- [ ] Tabla de control: 4.4 ✅ · `README.md`
+- [x] Bitácora: entrada 4.4, con la tabla de las 30 pantallas y los 23 slugs verificados
+- [x] Tabla de control: 4.4 ✅ · `README.md`
 
 ### Git
 

@@ -91,14 +91,14 @@
     </div>
 
     {# ───── Resumen de la evaluación (factores) ───── #}
-    <div class="card mt-4">
+    <div class="card bg-dark border-secondary mt-4">
       <div class="card-body">
         <h2 class="h4 mb-3"><i class="bi bi-collection me-2"></i>Resumen de la evaluación</h2>
 
         {# Este bloque replica wizard_resumen.html, con compatibilidad label/nombre #}
         {% if factores %}
           <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table table-dark align-middle">
               <thead>
                 <tr>
                   <th style="width:36px;"></th>
@@ -113,7 +113,9 @@
                   {% with inst=f.instance %}
                   <tr>
                     <td>{% if f.icon %}<i class="{{ f.icon }}"></i>{% endif %}</td>
-                    <td class="fw-semibold">{{ f.label|default:f.nombre }}</td>
+                    <td class="fw-semibold">
+                      {% if f.label %}{{ f.label }}{% else %}{{ f.nombre }}{% endif %}
+                    </td>
 
                     <td>
                       {% if not inst %}

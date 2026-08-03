@@ -11,7 +11,7 @@
         <div class="col-md-8">
             <h2 class="mb-4">Iniciar Nueva Evaluación Ergonómica</h2>
             <p class="text-muted">Complete los datos del establecimiento para comenzar.</p>
-            <form method="post" class="card p-4">
+            <form method="post" class="card bg-dark border-secondary p-4">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 <button type="submit" class="btn btn-primary mt-3">Crear y Continuar</button>

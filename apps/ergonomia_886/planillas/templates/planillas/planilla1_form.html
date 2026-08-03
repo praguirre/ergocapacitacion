@@ -14,19 +14,19 @@
     <form method="post">
         {% csrf_token %}
         
-        <div class="card mb-4">
+        <div class="card bg-dark border-secondary mb-4">
             <div class="card-body">
                 <h5 class="card-title">Datos Generales del Puesto</h5>
                 {% bootstrap_form form %}
             </div>
         </div>
 
-        <div class="card">
+        <div class="card bg-dark border-secondary">
             <div class="card-body">
                 <h5 class="card-title">Matriz de Factores de Riesgo</h5>
                 {{ formset.management_form }}
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table table-dark">
                         <thead>
                             <tr>
                                 <th>Factor de Riesgo</th>

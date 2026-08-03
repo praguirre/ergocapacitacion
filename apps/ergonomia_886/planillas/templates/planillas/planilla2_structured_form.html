@@ -11,7 +11,7 @@
     <h2 class="mb-4">{{ titulo_planilla }}</h2>
     <h4 class="text-muted mb-4">{{ evaluacion.razon_social }}</h4>
 
-    <form method="post" class="card p-4" id="planilla2-form" 
+    <form method="post" class="card bg-dark border-secondary p-4" id="planilla2-form"
           data-planilla-type="{% if "2A" in titulo_planilla %}2a{% elif "2B" in titulo_planilla %}2b{% elif "2C" in titulo_planilla %}2c{% elif "2D" in titulo_planilla %}2d{% elif "2E" in titulo_planilla %}2e{% elif "2F" in titulo_planilla %}2f{% elif "2G" in titulo_planilla %}2g{% elif "2H" in titulo_planilla %}2h{% elif "2I" in titulo_planilla %}2i{% endif %}">
         {% csrf_token %}
         
@@ -33,8 +33,8 @@
                 <h5 class="mt-4">PASO 2: Determinación del Nivel de Riesgo</h5>
             {% endif %}
 
-            <table class="table table-bordered mt-2 align-middle">
-                <thead class="table-light">
+            <table class="table table-dark table-bordered mt-2 align-middle">
+                <thead>
                     <tr>
                         <th style="width: 80%;">Descripción</th>
                         <th class="text-center" style="width: 10%;">Sí</th>
