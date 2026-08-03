@@ -2937,7 +2937,7 @@ paginación sin degradar la consulta original.
 | Fecha | 2026-08-03 10:39 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `6f3673f` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -3011,3 +3011,70 @@ el formulario aparecerá automáticamente cuando 3.7 registre la ruta.
 ### Notas para el commit siguiente
 Agregar eliminación exclusivamente por POST y sólo para el profesional creador,
 manteniendo 404 contra enumeración.
+
+---
+
+## Commit 3.7 — Vista de eliminación de evaluación
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 10:41 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se agregó la eliminación namespaced como operación exclusivamente POST. Antes
+de resolver el objeto se exige que el usuario sea un profesional activo; luego
+se filtra por el autor exacto. Una empresa o un profesional ajeno reciben 404,
+y el autor vuelve al listado con un mensaje de confirmación.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/views.py` — eliminación restringida al autor.
+- `apps/ergonomia_886/urls.py` — ruta raíz namespaced de eliminación.
+- `apps/ergonomia_886/planillas/tests_eliminar.py` — cuatro pruebas de seguridad y método.
+- `README.md` — política de eliminación registrada.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance marcado.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.6 y evidencia literal 3.7.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_eliminar --settings=config.test_settings -v 2
+Found 4 test(s).
+test_el_autor_puede_eliminar_por_post ... ok
+test_get_no_elimina ... ok
+test_un_profesional_no_puede_eliminar_la_evaluacion_de_otro ... ok
+test_una_empresa_no_puede_eliminar_un_protocolo ... ok
+Ran 4 tests in 0.036s
+OK
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 215 tests in 1.657s
+OK
+Destroying test database for alias 'default'...
+Found 215 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py runserver 127.0.0.1:8037 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8037/
+GET /evaluacion-ergonomica/1/eliminar/ -> 302
+```
+
+### Desvíos respecto del roadmap
+Ninguno. La ruta se incorporó al include raíz aislado creado en 3.6 para
+preservar simultáneamente el namespace `ergonomia_886:` y los subnamespaces
+planos.
+
+### Notas para el commit siguiente
+Agregar los tres índices que cubren los patrones reales de listado y búsqueda.

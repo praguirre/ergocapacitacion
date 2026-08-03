@@ -204,6 +204,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   aterrizaje del módulo. Conserva búsqueda sobre seis campos, tres filtros,
   seis órdenes permitidos, paginación de veinte y precarga optimizada; aplica
   D-9 y oculta el alta a usuarios empresa.
+- **03/08/2026 — Commit 3.7:** la eliminación exige POST y queda restringida
+  al profesional autor. Empresas y otros profesionales reciben 404 para no
+  confirmar la existencia del protocolo; GET nunca elimina.
 
 ### Registro de cambios documentales
 

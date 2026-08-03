@@ -10,6 +10,8 @@ from django.contrib import messages
 from django.forms import modelformset_factory
 from django.core.paginator import Paginator
 from django.db.models import Prefetch, Q
+from django.http import Http404
+from django.views.decorators.http import require_POST
 from apps.accounts.decorators import backoffice_required
 from .models import (
     Evaluacion,
@@ -126,6 +128,26 @@ def evaluacion_list_view(request):
         "current_orden": orden,
         "puede_crear": puede_editar_evaluaciones(request.user),
     })
+
+
+@login_required
+@backoffice_required
+@require_POST
+def eliminar_evaluacion_view(request, evaluacion_id):
+    """Elimina una evaluación exclusivamente cuando la solicita su autor."""
+    if not puede_editar_evaluaciones(request.user):
+        raise Http404
+
+    evaluacion = get_object_or_404(
+        Evaluacion, pk=evaluacion_id, usuario=request.user,
+    )
+    razon_social = evaluacion.razon_social
+    evaluacion.delete()
+    messages.success(
+        request,
+        f"Evaluación de «{razon_social}» eliminada correctamente.",
+    )
+    return redirect("ergonomia_886:evaluacion_list")
 
 
 # ─────────────────────────────────────────────────────────────────────

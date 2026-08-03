@@ -247,7 +247,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 3.4 | Decoradores en todas las vistas del módulo | ✅ |
 | 3.5 | Formulario de creación con selector de empresa (CF-5) | ✅ |
 | 3.6 | Vista de listado de evaluaciones | ✅ |
-| 3.7 | Vista de eliminación de evaluación | ⬜ |
+| 3.7 | Vista de eliminación de evaluación | ✅ |
 | 3.8 | Índices de consulta | ⬜ |
 | 3.9 | Pruebas de propiedad, saneamiento y no regresión | ⬜ |
 
@@ -5145,7 +5145,7 @@ def eliminar_evaluacion_view(request, evaluacion_id):
 ```
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.7 · Tabla de control: 3.7 ✅ · `README.md`
+- [x] Bitácora: entrada 3.7 · Tabla de control: 3.7 ✅ · `README.md`
 
 ### Git
 

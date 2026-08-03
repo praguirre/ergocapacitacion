@@ -24,6 +24,11 @@ from .planillas import views as planillas_views
 
 root_urlpatterns = [
     path("", planillas_views.evaluacion_list_view, name="evaluacion_list"),
+    path(
+        "<int:evaluacion_id>/eliminar/",
+        planillas_views.eliminar_evaluacion_view,
+        name="eliminar_evaluacion",
+    ),
 ]
 
 
