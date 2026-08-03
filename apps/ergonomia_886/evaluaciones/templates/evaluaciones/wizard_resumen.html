@@ -52,6 +52,33 @@
   </div>
 {% endif %}
 
+{% if capacitaciones_sugeridas %}
+  <div class="card border-success mb-4">
+    <div class="card-body">
+      <h2 class="h5 card-title">
+        <i class="bi bi-mortarboard me-2"></i>Capacitación sugerida
+      </h2>
+      <p class="text-muted mb-3">
+        Estos módulos activos pueden compartirse con los trabajadores del puesto
+        a partir de los niveles ya calculados.
+      </p>
+      {% for sugerencia in capacitaciones_sugeridas %}
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3{% if not forloop.last %} border-bottom pb-3 mb-3{% endif %}">
+          <div>
+            <div class="fw-semibold">{{ sugerencia.module.title }}</div>
+            <div class="small text-muted">
+              Factores: {{ sugerencia.factores|join:", " }}.
+            </div>
+          </div>
+          <a href="{{ sugerencia.url }}" class="btn btn-sm btn-outline-success">
+            <i class="bi bi-box-arrow-up-right me-1"></i>Abrir capacitación
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
 {% if factores %}
   <div class="table-responsive">
     <table class="table table-dark align-middle">

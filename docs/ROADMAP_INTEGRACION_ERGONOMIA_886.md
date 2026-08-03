@@ -24,7 +24,7 @@ Es un **plan de ejecución commit por commit**. No es un documento de diseño: e
 | **2** — Trasplante | `ergocapacitacion` | 13 (2.1–2.13) | ✅ |
 | **3** — Normalización de dominio | `ergocapacitacion` | 9 (3.1–3.9) | ✅ |
 | **4** — Integración de UI 🎯 | `ergocapacitacion` | 5 (4.1–4.5) | ✅ |
-| **5** — Aprovechamiento | `ergocapacitacion` | 6 (5.1–5.6) | ❌ |
+| **5** — Aprovechamiento | `ergocapacitacion` | 6 (5.1–5.6) | ✅ |
 | **6** — Content Security Policy | `ergocapacitacion` | 7 (6.1–6.7) | ❌ independiente |
 
 > **El objetivo de negocio se cumple al terminar la Fase 4** (commit 4.1). Las Fases 5 y 6 agregan valor sobre algo que ya funciona y pueden posponerse sin bloquear un despliegue.
@@ -270,7 +270,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 5.3 | Trabajadores estructurados (O-3, CF-4, CF-5) | ✅ |
 | 5.4 | Sincronización con la agenda (O-4, CF-2) | ✅ |
 | 5.5 | Enlace desde la agenda hacia la Planilla 4 | ✅ |
-| 5.6 | Sugerencia de capacitaciones por nivel de riesgo (O-6) | ⬜ |
+| 5.6 | Sugerencia de capacitaciones por nivel de riesgo (O-6) | ✅ |
 
 ### Fase 6 — Content Security Policy · `ergocapacitacion`
 
@@ -6040,10 +6040,10 @@ NIVELES_QUE_DISPARAN_SUGERENCIA = {"medio", "alto"}
 
 ### Verificación
 
-- [ ] La sugerencia aparece sólo con nivel `medio` o `alto`
-- [ ] El enlace lleva a un `TrainingModule` que existe y está activo
-- [ ] **Ningún nivel se recalcula** (CF-2)
-- [ ] `apps.training` no importa nada del módulo
+- [x] La sugerencia aparece sólo con nivel `medio` o `alto`
+- [x] El enlace lleva a un `TrainingModule` que existe y está activo
+- [x] **Ningún nivel se recalcula** (CF-2)
+- [x] `apps.training` no importa nada del módulo
 
 ### 🔴 REGLA DE ORO · Git
 

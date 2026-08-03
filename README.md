@@ -255,6 +255,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   a la Planilla 4 correcta. La resolución vive en un templatetag del módulo,
   vuelve a aplicar D-9 y no introduce imports de Ergonomía en `apps.company`;
   una empresa ajena no obtiene URL. Pasan 257 pruebas.
+- **03/08/2026 — Commit 5.6 / cierre de Fase 5:** el wizard sugiere el módulo
+  activo de Ergonomía ante niveles persistidos medio/alto en cinco factores y
+  agrupa las causas. El enlace usa el flujo público por slug para trabajadores;
+  CF-2 queda cubierta con cero llamadas al motor y niveles intactos. La fase
+  cierra con 261 pruebas, checks y migraciones limpios.
 
 ### Registro de cambios documentales
 

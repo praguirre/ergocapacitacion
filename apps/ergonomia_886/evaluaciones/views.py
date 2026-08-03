@@ -26,6 +26,7 @@ from .models import RiskEvaluation
 from .pdf import build_wizard_summary_pdf
 from .choices import FactorSlug, NivelRiesgo
 from .forms import RiskEvaluationQuickForm, VCESegmentFormSet
+from .sugerencias import sugerencias_para_factores
 
 logger = logging.getLogger(__name__)
 
@@ -357,6 +358,9 @@ class WizardResumenView(LoginRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx["evaluacion"] = self.risk_eval
         ctx["factores"] = _build_wizard_items(self.risk_eval)
+        ctx["capacitaciones_sugeridas"] = sugerencias_para_factores(
+            ctx["factores"]
+        )
         ctx["resumen_global"] = _sync_wizard_summary(
             self.risk_eval,
             ctx["factores"],

@@ -4130,7 +4130,7 @@ Ergonomía en Python bajo `apps.company`.
 | Fecha | 2026-08-03 11:57 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `611d0e3` |
 | Fase | 5 |
 | Estado | ✅ Completado |
 
@@ -4207,3 +4207,110 @@ autoriza la evaluación y tolera IDs malformados sin producir HTTP 500.
 ### Notas para el commit siguiente
 Consumir niveles ya persistidos para sugerir capacitaciones activas, sin llamar
 al motor de cálculo ni agregar imports del módulo en `apps.training`.
+
+---
+
+## Commit 5.6 — Sugerencia de capacitaciones por nivel de riesgo (O-6)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 12:00 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+El resumen de evaluación muestra módulos de capacitación activos cuando LMC,
+transporte, empuje inicial, posturas forzadas o repetitivos tienen nivel
+persistido medio/alto. Factores que apuntan al mismo módulo se agrupan. El
+enlace resuelve la ruta pública del `TrainingModule` activo para compartirla
+con trabajadores. La sugerencia no importa ni ejecuta el motor de cálculo.
+
+### Archivos modificados
+- `apps/ergonomia_886/evaluaciones/sugerencias.py` — mapeo declarativo y consulta
+  de módulos activos.
+- `apps/ergonomia_886/evaluaciones/views.py` — contexto del wizard.
+- `apps/ergonomia_886/evaluaciones/templates/evaluaciones/wizard_resumen.html`
+  — tarjeta y enlace de capacitación sugerida.
+- `apps/ergonomia_886/evaluaciones/tests_sugerencias.py` — niveles, enlace,
+  ausencia de cálculo y desacoplamiento de Training.
+- documentación de trazabilidad y cierre de Fase 5.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.evaluaciones.tests_sugerencias --settings=config.test_settings
+Creating test database for alias 'default'...
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.038s
+
+OK
+Destroying test database for alias 'default'...
+Found 4 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.evaluaciones apps.training --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................
+----------------------------------------------------------------------
+Ran 53 tests in 0.519s
+
+OK
+Destroying test database for alias 'default'...
+Found 53 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 261 tests in 2.242s
+
+OK
+Destroying test database for alias 'default'...
+Found 261 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+.venv/bin/python manage.py migrate --check --settings=config.settings
+(sin salida)
+
+rg -n "apps\.ergonomia_886|from apps\.ergonomia_886|import apps\.ergonomia_886" apps/training -g '*.py' -g '!tests*.py' -g '!migrations/*.py'
+(sin salida)
+rg -n "calculators|run_for_instance|save_and_calculate" apps/ergonomia_886/evaluaciones/sugerencias.py
+4:escribe ninguna clasificación; ``calculators.py`` continúa siendo la única
+(única coincidencia: comentario normativo; cero imports o llamadas)
+
+.venv/bin/python manage.py shell --settings=config.settings -c '<smoke de solo lectura>'
+51 objects imported automatically (use -v 2 for details).
+
+modulo_ergonomia_activo= True
+slug= ergonomia
+smoke_link_status= 302
+git diff --check
+(sin salida)
+```
+
+### Evidencia CF-2
+La prueba abre el wizard con LMC `alto` y Transporte `bajo`, intercepta
+`calculators.run_for_instance` y confirma cero llamadas. Luego refresca ambos
+modelos desde la base y verifica que continúan `alto` y `bajo`. La función de
+sugerencias sólo compara el valor persistido con `{medio, alto}` y consulta el
+módulo activo; no guarda ningún modelo de evaluación.
+
+### Desvíos respecto del roadmap
+Sin desvíos. Como `training:training_home` no recibe slug y selecciona el módulo
+más recientemente actualizado, el enlace usa la ruta existente
+`training_public:training_public` (`/c/ergonomia/`), que valida slug + activo,
+prepara la sesión del trabajador y redirige al flujo de acceso. El humo local
+confirmó que el módulo `ergonomia` existe, está activo y la ruta responde 302.
+
+### Notas para el commit siguiente
+Fase 5 cerrada con seis commits, 261 pruebas OK, checks y migraciones limpios.
+No iniciar la Fase 6 sin instrucción explícita del usuario.
