@@ -35,6 +35,7 @@ from .querysets import (
     obtener_evaluacion_o_404,
     puede_editar_evaluaciones,
 )
+from .agenda import sincronizar_medida_con_agenda
 
 # NUEVOS imports para integrar el resumen de factores desde la app evaluaciones
 from apps.ergonomia_886.evaluaciones.views import _build_wizard_items, _get_riskeval_or_404_for_user, _wizard_url
@@ -492,6 +493,7 @@ class Planilla4UpdateView(LoginRequiredMixin, View):
             {"planilla3": planilla3, "formset": formset, "evaluacion": evaluacion},
         )
 
+    @transaction.atomic
     def post(self, request, evaluacion_id):
         evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
         planilla3 = get_object_or_404(Planilla3, evaluacion=evaluacion)
@@ -499,6 +501,9 @@ class Planilla4UpdateView(LoginRequiredMixin, View):
 
         if formset.is_valid():
             formset.save()
+            for form in formset.forms:
+                if form.cleaned_data:
+                    sincronizar_medida_con_agenda(form.instance)
             messages.success(request, "Matriz de seguimiento guardada.")
             return redirect('planillas:detalle_evaluacion', evaluacion_id=evaluacion.id)
 

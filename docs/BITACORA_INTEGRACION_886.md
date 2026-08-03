@@ -3942,7 +3942,7 @@ Agregar la relación opcional de Planilla 1 con la nómina y conservar el snapsh
 | Fecha | 2026-08-03 11:52 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `0ed99bb` |
 | Fase | 5 |
 | Estado | ✅ Completado |
 
@@ -4033,3 +4033,90 @@ nuevo por cada suite y humo funcional cubierto con formularios/exports reales.
 ### Notas para el commit siguiente
 Proyectar explícitamente las medidas de Planilla 4 hacia `AgendaEvent`, sin
 signals y sin recalcular niveles de riesgo.
+
+---
+
+## Commit 5.4 — Sincronización con la agenda (O-4, CF-2)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:55 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Cada fila guardada de Planilla 4 con empresa y fecha comprometida se proyecta a
+`AgendaEvent` mediante una llamada explícita desde la vista. La clave natural
+empresa/tipo/ID actualiza sin duplicar. La fecha de ingeniería prevalece sobre
+la administrativa, el cierre marca el evento completado y la prioridad sólo
+mapea el entero de riesgo ya persistido. La agenda nunca escribe al protocolo.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/agenda.py` — proyección unidireccional y mapeo.
+- `apps/ergonomia_886/planillas/views.py` — llamada explícita y transacción.
+- `apps/ergonomia_886/planillas/tests_agenda.py` — seis escenarios obligatorios.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_agenda --settings=config.test_settings
+Creating test database for alias 'default'...
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.044s
+
+OK
+Destroying test database for alias 'default'...
+Found 6 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.planillas apps.company --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................
+----------------------------------------------------------------------
+Ran 53 tests in 0.254s
+
+OK
+Destroying test database for alias 'default'...
+Found 53 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+..............................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 254 tests in 2.161s
+
+OK
+Destroying test database for alias 'default'...
+Found 254 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+.venv/bin/python manage.py migrate --check --settings=config.settings
+(sin salida)
+git diff --check
+(sin salida)
+```
+
+### Evidencia CF-2
+La prueba guarda un seguimiento con nivel persistido `3`, ejecuta la
+sincronización, comprueba prioridad `urgent`, refresca el seguimiento desde la
+base y confirma que el nivel continúa siendo `3`. `agenda.py` no importa ni
+invoca `calculators.py`; sólo contiene el mapeo 1/2/3 a prioridades de agenda.
+
+### Desvíos respecto del roadmap
+Sin desvíos. Se usó `datetime.combine(..., time.min)` de la biblioteca estándar
+en lugar del atributo indirecto `timezone.datetime` del ejemplo, conservando
+exactamente la medianoche consciente de zona horaria.
+
+### Notas para el commit siguiente
+Agregar desde la agenda un enlace autorizado hacia la Planilla 4 sin imports de
+Ergonomía en Python bajo `apps.company`.

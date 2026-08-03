@@ -247,6 +247,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   texto profesional y el total del puesto prevalecen. El PDF nunca consulta la
   relación y un reporte real excluye CUIL, DNI, email y legajo por CF-4. La
   migración aditiva quedó aplicada y pasan 248 pruebas.
+- **03/08/2026 — Commit 5.4:** guardar Planilla 4 crea o actualiza un vencimiento
+  ergonómico en la agenda de la empresa, sin duplicados. El cierre se refleja
+  como completado y la prioridad sólo mapea el nivel persistido, sin recalcular
+  ni modificarlo (CF-2). La proyección es unidireccional y pasan 254 pruebas.
 
 ### Registro de cambios documentales
 

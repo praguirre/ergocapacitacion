@@ -268,7 +268,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 5.1 | Evidencia de vibración adjuntable (O-5, D-1) | ✅ |
 | 5.2 | Aclaración de firma en planillas oficiales (O-2, CF-5) | ✅ |
 | 5.3 | Trabajadores estructurados (O-3, CF-4, CF-5) | ✅ |
-| 5.4 | Sincronización con la agenda (O-4, CF-2) | ⬜ |
+| 5.4 | Sincronización con la agenda (O-4, CF-2) | ✅ |
 | 5.5 | Enlace desde la agenda hacia la Planilla 4 | ⬜ |
 | 5.6 | Sugerencia de capacitaciones por nivel de riesgo (O-6) | ⬜ |
 
