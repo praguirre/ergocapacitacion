@@ -274,6 +274,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   y quiz se reemplazaron por `addEventListener`; el listener de copia ya estaba
   adelantado. Templates y JavaScript quedan sin atributos ni propiedades
   `on*`, listos para `script-src-attr 'none'`; pasan las 261 pruebas.
+- **03/08/2026 — Commit 6.4:** el recorrido previo al CSP cubrió las 33
+  pantallas del destino y las 30 del módulo: cero errores de consola, cero
+  overflow, recursos e íconos locales y JavaScript interactivo operativo. Se
+  corrigió el ícono inexistente `bi-weight` de LMC; CF-1 quedó validada con la
+  guía VCE real y 24 pruebas conjuntas de ambos asistentes.
 
 ### Registro de cambios documentales
 

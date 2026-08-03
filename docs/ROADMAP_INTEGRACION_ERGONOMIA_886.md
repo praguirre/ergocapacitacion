@@ -279,7 +279,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 6.1 | Migrar CDN a `vendor/` local | ✅ |
 | 6.2 | Extraer los 5 bloques `<script>` inline | ✅ |
 | 6.3 | Reemplazar los 3 manejadores en línea | ✅ |
-| 6.4 | Verificación visual de las 33 pantallas | ⬜ |
+| 6.4 | Verificación visual de las 33 pantallas | ✅ |
 | 6.5 | Portar el middleware con modo `Report-Only` | ⬜ |
 | 6.6 | Período de observación | ⬜ |
 | 6.7 | Activar el CSP en modo bloqueante | ⬜ |
@@ -6232,10 +6232,10 @@ git push
 
 Recorrer las 33 pantallas del destino más las 30 del módulo con la consola del navegador abierta, registrando en la bitácora una tabla con: pantalla, estado visual, errores de consola, funcionalidad JavaScript.
 
-- [ ] Las 63 pantallas se ven correctamente
-- [ ] **Cero errores en la consola**
-- [ ] Toda la funcionalidad JavaScript opera
-- [ ] **El chatbot Ergobot y el widget de ayuda responden (CF-1)**
+- [x] Las 63 pantallas se ven correctamente
+- [x] **Cero errores en la consola**
+- [x] Toda la funcionalidad JavaScript opera
+- [x] **El chatbot Ergobot y el widget de ayuda responden (CF-1)**
 
 ### 🔴 REGLA DE ORO · Git
 

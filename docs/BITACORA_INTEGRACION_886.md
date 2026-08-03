@@ -4525,7 +4525,7 @@ ya estaba adelantado desde 2.13.
 | Fecha | 2026-08-03 12:38 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `226ce67` |
 | Fase | 6 |
 | Estado | ✅ Completado con desvío documentado |
 
@@ -4596,3 +4596,173 @@ Aunque no eran atributos inline, se migraron también para dejar cero contratos
 ### Notas para el commit siguiente
 Ejecutar el recorrido conjunto de las 33 pantallas del destino y las 30 del
 módulo con consola abierta y tabla completa.
+
+---
+
+## Commit 6.4 — Verificación visual de las 33 pantallas
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 12:45 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 6 |
+| Estado | ✅ Completado con desvío corregido |
+
+### Qué se hizo
+Se recorrieron en navegador las 33 pantallas/estados del destino y las 30 rutas
+del módulo con fixtures SQLite descartables. En cada ruta se verificaron carga
+local de Bootstrap, íconos, overflow, controles interactivos, slug de ayuda y
+consola. Se probaron además los toggles de VMB y bipedestación, la exclusión
+REBA de piernas sedentes, el agregado de tramos VCE y la carga de una guía de
+ayuda real. El recorrido inicial encontró `bi-weight` inexistente; se corrigió
+a `bi-box-seam` y se repitieron las 63 rutas desde cero.
+
+### Archivos modificados
+- `apps/ergonomia_886/evaluaciones/templates/evaluaciones/lmc_form.html` —
+  ícono válido para el campo de peso.
+- documentación de trazabilidad del commit.
+
+### Tabla completa del recorrido
+
+| # | Pantalla | Estado visual | Consola | JavaScript / señal |
+|---:|---|:---:|:---:|---|
+| 1 | Landing pública | ✅ | 0 | 10 controles |
+| 2 | Acceso trabajadores | ✅ | 0 | 13 controles |
+| 3 | Login profesional | ✅ | 0 | 12 controles |
+| 4 | Registro profesional | ✅ | 0 | 17 controles |
+| 5 | Login empresa | ✅ | 0 | 11 controles |
+| 6 | Registro empresa | ✅ | 0 | 22 controles |
+| 7 | Dashboard profesional | ✅ | 0 | navbar y 11 controles |
+| 8 | Perfil profesional | ✅ | 0 | formularios, 25 controles |
+| 9 | Menú capacitaciones | ✅ | 0 | 11 controles |
+| 10 | Selector modalidad | ✅ | 0 | 14 controles |
+| 11 | Links online | ✅ | 0 | `online_links.js`, 19 controles |
+| 12 | Compartir link | ✅ | 0 | 17 controles |
+| 13 | Solicitudes contacto | ✅ | 0 | 13 controles |
+| 14 | Historial presencial | ✅ | 0 | 10 controles |
+| 15 | Capacitación presencial | ✅ | 0 | chat inicializado, 16 controles |
+| 16 | Quiz presencial | ✅ | 0 | pregunta renderizada, 20 controles |
+| 17 | Dashboard empresa | ✅ | 0 | navbar condicional, 15 controles |
+| 18 | Perfil empresa | ✅ | 0 | formularios, 31 controles |
+| 19 | Nómina | ✅ | 0 | 21 controles |
+| 20 | Nómina filtrada | ✅ | 0 | filtro activo, 21 controles |
+| 21 | Alta nómina | ✅ | 0 | 26 controles |
+| 22 | Ficha trabajador | ✅ | 0 | 15 controles |
+| 23 | Edición trabajador | ✅ | 0 | 24 controles |
+| 24 | Agenda | ✅ | 0 | 17 controles |
+| 25 | Agenda filtrada | ✅ | 0 | filtro pendiente, 17 controles |
+| 26 | Alta evento | ✅ | 0 | 23 controles |
+| 27 | Edición evento | ✅ | 0 | 23 controles |
+| 28 | Directorio | ✅ | 0 | 17 controles |
+| 29 | Capacitación trabajador | ✅ | 0 | widget + chat, 6 controles |
+| 30 | Resultado quiz | ✅ | 0 | 3 controles |
+| 31 | Directorio buscado | ✅ | 0 | búsqueda QA, 17 controles |
+| 32 | Solicitudes filtradas | ✅ | 0 | filtro pendiente, 13 controles |
+| 33 | Acceso con retorno | ✅ | 0 | `next` preservado, 13 controles |
+| 34 | Listado 886 | ✅ | 0 | ayuda `dashboard`, 26 controles |
+| 35 | Crear evaluación | ✅ | 0 | ayuda `crear`, 24 controles |
+| 36 | Detalle / hub | ✅ | 0 | ayuda `dashboard`, 43 controles |
+| 37 | Planilla 1 | ✅ | 0 | ayuda `planilla1`, 97 controles |
+| 38 | Planilla 2A | ✅ | 0 | ayuda `planilla2a`, 39 controles |
+| 39 | Planilla 2B | ✅ | 0 | ayuda `planilla2b`, 45 controles |
+| 40 | Planilla 2C | ✅ | 0 | ayuda `planilla2c`, 39 controles |
+| 41 | Planilla 2D | ✅ | 0 | ayuda `planilla2d`, 31 controles |
+| 42 | Planilla 2E | ✅ | 0 | ayuda `planilla2e`, 31 controles |
+| 43 | Planilla 2F | ✅ | 0 | ayuda `planilla2f`, 35 controles |
+| 44 | Planilla 2G | ✅ | 0 | ayuda `planilla2g`, 41 controles |
+| 45 | Planilla 2H | ✅ | 0 | ayuda `planilla2h`, 25 controles |
+| 46 | Planilla 2I | ✅ | 0 | ayuda `planilla2i`, 31 controles |
+| 47 | Planilla 3 | ✅ | 0 | ayuda `planilla3`, 40 controles |
+| 48 | Planilla 4 | ✅ | 0 | ayuda `planilla4`, 23 controles |
+| 49 | Factor LMC | ✅ | 0 | ayuda `lmc`, 35 controles |
+| 50 | Empuje inicial | ✅ | 0 | ayuda `empuje_inicial`, 35 controles |
+| 51 | Empuje sostenida | ✅ | 0 | ayuda `empuje_sostenida`, 32 controles |
+| 52 | Tracción inicial | ✅ | 0 | ayuda `traccion_inicial`, 34 controles |
+| 53 | Tracción sostenida | ✅ | 0 | ayuda `traccion_sostenida`, 32 controles |
+| 54 | Transporte | ✅ | 0 | ayuda `transporte`, 35 controles |
+| 55 | Bipedestación | ✅ | 0 | toggle deambulación OK, 42 controles |
+| 56 | Repetitivos MS | ✅ | 0 | ayuda `repetitivos_ms`, 32 controles |
+| 57 | Posturas forzadas | ✅ | 0 | lógica sedente REBA OK, 45 controles |
+| 58 | Vibración mano-brazo | ✅ | 0 | toggle múltiple OK, 42 controles |
+| 59 | Vibración cuerpo entero | ✅ | 0 | formset 1→2 OK, 75 controles |
+| 60 | Confort térmico | ✅ | 0 | ayuda `confort_termico`, 26 controles |
+| 61 | Estrés contacto | ✅ | 0 | ayuda `estres_contacto`, 44 controles |
+| 62 | Wizard resumen | ✅ | 0 | ayuda `wizard_resumen`, 33 controles |
+| 63 | Documentos | ✅ | 0 | ayuda `exportaciones`, 32 controles |
+
+### Verificaciones ejecutadas
+
+```text
+Auditoría final en navegador:
+{
+  "count": 63,
+  "failures": [],
+  "errors": []
+}
+
+VMB: {"multiple":"","simple":"none","value":"multiple"}
+Bipedestación: {"mph":"","value":"deambulacion"}
+Posturas forzadas: {"mas60":false,"mas60Disabled":true,"sedente":true}
+VCE: {"before":{"total":"1"},"after":{"total":"2"}}
+Ayuda contextual: {"guideHeading":"Guía: Evaluación de Vibración de Cuerpo Entero (VCE)","guideLength":10678,"slug":"vibracion_cuerpo_entero","widgetClass":"offcanvas offcanvas-end show"}
+
+.venv/bin/python manage.py test apps.ergobot_ai apps.ergonomia_886.help_ai --settings=config.test_settings
+Creating test database for alias 'default'...
+........................
+----------------------------------------------------------------------
+Ran 24 tests in 0.228s
+
+OK
+Destroying test database for alias 'default'...
+Found 24 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.evaluaciones.tests_ui_dark apps.ergonomia_886.help_ai apps.dashboard apps.presencial apps.quiz apps.training --settings=config.test_settings
+Creating test database for alias 'default'...
+...............................................
+----------------------------------------------------------------------
+Ran 47 tests in 0.658s
+
+OK
+Destroying test database for alias 'default'...
+Found 47 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 261 tests in 2.331s
+
+OK
+Destroying test database for alias 'default'...
+Found 261 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+git diff --check
+(sin salida)
+```
+
+### Evidencia CF-1
+El widget `help_ai` abrió la guía específica VCE (10.678 caracteres) y el chat
+Ergobot quedó inicializado en sus dos superficies. Las 24 pruebas conjuntas de
+`apps.ergobot_ai` y `apps.ergonomia_886.help_ai` verificaron endpoints y flujos
+sin cruzar imports. No se enviaron datos ni prompts a un proveedor externo.
+
+### Desvíos respecto del roadmap
+El commit se preveía sólo documental. El recorrido real descubrió que
+`bi-weight` no existe en Bootstrap Icons 1.11.3 y aparecía vacío en LMC. Se
+reemplazó por `bi-box-seam`, se confirmó su glifo en el vendor y se repitieron
+las 63 pantallas. El navegador de QA solicita `/sw.js` por infraestructura
+propia; la aplicación no registra service workers y la consola de las páginas
+permaneció en cero errores.
+
+### Notas para el commit siguiente
+Introducir el setting `CSP_REPORT_ONLY=True` y emitir la política en cabecera
+Report-Only sin modificar sus directivas.
