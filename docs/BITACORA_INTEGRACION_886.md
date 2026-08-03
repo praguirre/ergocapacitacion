@@ -351,7 +351,7 @@ Ninguna.
 | Fecha | 2026-08-02 23:37 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `d3eecb4` |
 | Fase | 0 |
 | Estado | ✅ Completado |
 
@@ -404,3 +404,88 @@ Ninguno.
 
 ### Notas para el commit siguiente
 Ninguna.
+
+## Commit 0.6 — Tests de regresión de N1 y N2
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:40 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se agregaron cuatro pruebas de regresión: diez rutas anónimas contra HTTP 500,
+destino de login resoluble y ficha del trabajador con y sin `QuizState`. Se
+reintrodujo N2 temporalmente y la prueba falló con el `AttributeError` esperado.
+
+### Archivos modificados
+- `apps/company/tests_regresion.py` — cuatro pruebas nuevas para N1 y N2.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada, fallos iniciales y evidencia final.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.6 marcado como completado.
+- `README.md` — registro de las nuevas regresiones automáticas.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.company.tests_regresion -v 2  # primera ejecución literal relevante
+Found 4 test(s).
+FAIL: test_el_anonimo_es_redirigido_a_un_login_que_existe
+AssertionError: '/empresa/auth/login/' not found in '/acceso/?next=/dashboard/empresa/nomina/'
+ERROR: test_ficha_sin_quizstate_responde_200
+ValueError: Missing staticfiles manifest entry for 'css/dashboard.css'
+test_ficha_con_quizstate_responde_200 ... skipped 'No hay modulos de capacitacion activos en la base de test'
+Ran 4 tests in 0.146s
+FAILED (failures=1, errors=1, skipped=1)
+
+.venv/bin/python manage.py test apps.company.tests_regresion -v 2  # después de adaptar a la realidad
+test_el_anonimo_es_redirigido_a_un_login_que_existe ... ok
+test_ninguna_ruta_de_backoffice_devuelve_500_a_un_anonimo ... ok
+test_ficha_con_quizstate_responde_200 ... ok
+test_ficha_sin_quizstate_responde_200 ... ok
+----------------------------------------------------------------------
+Ran 4 tests in 0.153s
+
+OK
+
+# N2 reintroducida temporalmente para verificar la sensibilidad de la prueba
+.venv/bin/python manage.py test apps.company.tests_regresion.FichaTrabajadorConQuizStateTests.test_ficha_con_quizstate_responde_200 -v 2
+ERROR: test_ficha_con_quizstate_responde_200
+AttributeError: 'QuizState' object has no attribute 'is_approved'
+----------------------------------------------------------------------
+Ran 1 test in 0.125s
+FAILED (errors=1)
+
+# Corrección restaurada; suite completa
+.venv/bin/python manage.py test apps
+....................................
+----------------------------------------------------------------------
+Ran 36 tests in 4.252s
+
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8006 --noreload
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8006/
+
+curl -s -o /dev/null -w 'GET /dashboard/ -> HTTP %{http_code}\n' http://127.0.0.1:8006/dashboard/
+GET /dashboard/ -> HTTP 302
+```
+
+### Desvíos respecto del roadmap
+La prueba propuesta asumía que el decorador de empresa era la primera capa,
+pero el commit 0.3 exige `@login_required` por fuera y por eso el destino real
+es `settings.LOGIN_URL`. Se verificó ese destino resoluble. La base efímera no
+contenía módulos activos, por lo que se creó uno explícitamente para evitar un
+`skipTest`. Finalmente, el storage manifestado requería `collectstatic`; se
+aisló `StaticFilesStorage` solo en la clase que renderiza la ficha. Ninguna
+aserción existente fue modificada ni relajada.
+
+### Notas para el commit siguiente
+El commit 0.7 centraliza a nivel de settings de prueba el mismo aislamiento de
+storage que esta regresión necesita localmente.

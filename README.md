@@ -106,6 +106,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **02/08/2026 — Commit 0.5:** se corrigió la ficha del trabajador para usar
   `QuizState.last_passed` y `Certificate.is_valid`, eliminando el atributo
   inexistente que causaba la regresión N2.
+- **02/08/2026 — Commit 0.6:** se agregaron cuatro pruebas automáticas para N1
+  y N2: diez rutas de backoffice anónimas, login resoluble y ficha del
+  trabajador con y sin `QuizState`. La suite subió de 32 a 36 pruebas.
 
 ### Registro de cambios documentales
 
