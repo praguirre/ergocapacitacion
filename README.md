@@ -149,6 +149,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   Markdown desde `settings.BASE_DIR/static/ayuda/help_texts`, independizando
   la ruta de la profundidad del paquete y manteniendo el error estricto ante
   contenido ausente o inválido.
+- **03/08/2026 — Commit 2.7:** se copiaron byte a byte los 44 estáticos del
+  módulo: 33 documentos de ayuda, CSS/JS del widget, `planilla_logic.js` y
+  dependencias vendor. Los 13 artefactos normativos cargan con SHA-256 y las
+  siete aprobaciones profesionales permanecen en estado `approved`.
 
 ### Registro de cambios documentales
 

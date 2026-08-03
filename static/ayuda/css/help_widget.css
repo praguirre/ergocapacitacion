@@ -1,0 +1,48 @@
+/* static/ayuda/css/help_widget.css */
+
+/* 1) Offcanvas: el body es un contenedor flex vertical sin padding extra */
+#helpWidget .offcanvas-body {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+/* 2) El contenedor de pestañas debe crecer y permitir overflow interno */
+#helpWidget .tab-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0; /* Importante para que flex calcule bien las alturas */
+}
+
+/* 3) Cada pane ocupa toda la altura disponible, pero NO tocamos 'display' */
+#helpWidget .tab-pane {
+    height: 100%;
+    min-height: 0;
+    /* NO poner display:flex aquí */
+}
+
+/* 4) Solo el pane de Chat se maquetea como flex columna */
+#helpWidget #chat-ia-tab-pane {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 5) Área de mensajes: crece y scrollea dentro del pane de Chat */
+#helpWidget #chat-messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    padding: 10px;
+}
+
+/* 6) Ajustes menores existentes */
+#helpWidget #chatLog { max-height: 45vh; }
+
+#helpWidget .badge { white-space: pre-wrap; }
+
+/* (Opcional) Refuerzo: asegurar que panes inactivos no ocupen espacio */
+#helpWidget .tab-pane:not(.active) {
+    display: none !important;
+}

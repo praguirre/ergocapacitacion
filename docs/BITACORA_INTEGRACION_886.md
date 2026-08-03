@@ -1717,7 +1717,7 @@ Corregir el cálculo de la ruta de ayuda antes de registrar las apps.
 | Fecha | 2026-08-03 00:41 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `2d0c9f6` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -1778,3 +1778,104 @@ quedó colgada; se repitió con timeout en 8024 y respondió 200.
 
 ### Notas para el commit siguiente
 Copiar los estáticos byte a byte y repetir esta verificación hasta obtener 33.
+
+## Commit 2.7 — Copiar estáticos y verificar artefactos (CF-3, CF-6)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:43 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se copiaron byte a byte los 44 estáticos sin colisiones: ayuda, widget,
+vendor y lógica de planillas. Se validó B6 leyendo Markdown y CF-3 mediante la
+tabla completa de artefactos, con siete aprobaciones conservadas. CF-6 volvió
+a confirmar el SHA oficial.
+
+### Archivos modificados
+- `static/ayuda/` — 33 Markdown, CSS y JS del widget.
+- `static/vendor/` — Bootstrap, iconos y librerías del widget.
+- `static/js/planilla_logic.js` — lógica de planillas.
+- `README.md` — inventario de estáticos y CF-3 registrado.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance 2.7.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal 2.7.
+
+### Verificaciones ejecutadas
+
+```text
+=== 33 documentos de ayuda ===
+identicos
+33
+=== ayuda completa ===
+identica
+=== vendor ===
+identico
+=== planilla_logic.js ===
+identico
+
+=== SHA PDF oficial CF-6 ===
+bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4  apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+
+HELP_TEXTS_PATH : /Users/praguirre/ergocapacitacion/static/ayuda/help_texts
+Existe          : True
+Documentos .md  : 33 (esperado 33)
+  home               339 caracteres  OK
+  lmc               9051 caracteres  OK
+  guia_general     20103 caracteres  OK
+
+artefacto                                     data_version  approval     sha256
+--------------------------------------------------------------------------------------------------------------------------------------------
+lmc_tablas.json                               1.2.0         not_recorded 90e38e6733eeb94c07bdeee41950fa9c88b56922873de3c4db6c7a850355d30e
+empuje_inicial.json                           1.0.0         not_recorded 8d0077856b9e62889a83fb1cf4332ed48a005c86b280c67b0fe6696e3ba5df4d
+empuje_sostenida.json                         1.0.0         not_recorded 353be6b03afdc8bf1f31a3190a7ee890a1b850d72d28baea59a4e4f36ba660cc
+traccion_inicial.json                         1.1.0         approved     8f62137cac5a28789b3d4416e9e0fff2dfac1fd2abb29ac55926f9ae0423d26d
+traccion_sostenida.json                       1.0.0         not_recorded d32c4bc5315378d232909fdc47461e5b73e7f2131c1d5cf9eac67c35006996b7
+transporte_limites.json                       1.1.0         approved     d2d3b8e5c535268e429b2befd9ba9477e469637ddc7483da62d72558cc301543
+bipedestacion_limites.json                    1.1.0         approved     b7eb4b666b24758ae7855bb7d7cc12b12678834c2fb3016259c7e3fb578af527
+repetitivos_ms_limites.json                   1.1.0         not_recorded 95d58128660bcd6d363cbc44e21768cc85e86da3e44bff46b2f4f40cfb7e7b00
+posturas_forzadas_puntajes.json               1.0.0         not_recorded 0eed12472f8117c5d9fdb919314cccabf2ca64f3a67334a11c11215e9f25f796
+vibracion_mano_brazo_limites.json             1.1.0         approved     01a93bdc8d4b0a7463ed8bbd2ec0f72dae08901b1969e0807d8e2fdad04812b5
+vibracion_cuerpo_entero_limites.json          1.1.0         approved     4d045818cb2de8065153a328fead1c06c76e6b210270d6f141624a6430f8c963
+confort_termico_umbrales.json                 1.1.0         approved     0e1a2568ccc86cf9509d6d2ca62967d6837bb0bbcb15b875cdd63f535d361a72
+estres_contacto_criterios.json                1.1.0         approved     a51386d89aaf0d957b3fe986ce889907cf36935ebf19f49eee6bd729f6e6d0f4
+Total artefactos: 13 (esperado 13)
+Total approved  : 7 (esperado 7)
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py test apps.accounts apps.certificates apps.company apps.dashboard apps.ergobot_ai apps.landing apps.presencial apps.quiz apps.training --settings=config.test_settings
+----------------------------------------------------------------------
+Ran 36 tests in 0.151s
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8025 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8025/
+GET / -> 200
+```
+
+### Desvíos respecto del roadmap
+La primera importación de `calculators.py` falló porque las apps aún no están
+en `INSTALLED_APPS`, paso reservado a 2.8. Para no adelantar archivos, la
+verificación normativa agregó las cuatro configuraciones únicamente en
+memoria antes de `django.setup()`; así se cargaron los 13 artefactos reales.
+
+`git diff --cached --check` señala espacios finales heredados en varios
+Markdown y en `planilla_logic.js`. Se preservaron deliberadamente porque este
+commit exige integridad byte a byte y todos los `diff -r`/`cmp` resultaron
+idénticos; normalizarlos invalidaría esa evidencia.
+
+### Notas para el commit siguiente
+Registrar las cuatro apps y portar todos los settings previstos; recién desde
+2.8 la suite trasplantada debe poder inicializar el registro de modelos.
