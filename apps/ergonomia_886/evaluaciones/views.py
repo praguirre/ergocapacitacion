@@ -16,6 +16,10 @@ from django.utils.module_loading import import_string
 from django.views.generic import FormView, TemplateView
 from django.db import transaction
 from apps.ergonomia_886.planillas.models import Evaluacion  # <- app planillas
+from apps.ergonomia_886.planillas.querysets import (
+    evaluaciones_visibles_para,
+    obtener_evaluacion_o_404,
+)
 
 from .catalog import FACTOR_CATALOG, FACTOR_DEFINITIONS
 from .models import RiskEvaluation
@@ -46,7 +50,7 @@ def _get_riskeval_or_404_for_user(evaluacion_id: int, user) -> RiskEvaluation:
     return get_object_or_404(
         RiskEvaluation.objects.select_related("evaluacion"),
         pk=evaluacion_id,
-        evaluacion__usuario=user,  # exige que la Evaluacion (planillas) sea del usuario logueado
+        evaluacion__in=evaluaciones_visibles_para(user),
     )
 
 
@@ -678,7 +682,7 @@ class StartFactorRedirectView(LoginRequiredMixin, View):
 
     def get(self, request, plan_eval_id: int, factor: str):
         # 1) Verificar que la Evaluacion (planillas) sea del usuario
-        eval_obj = get_object_or_404(Evaluacion, pk=plan_eval_id, usuario=request.user)
+        eval_obj = obtener_evaluacion_o_404(plan_eval_id, request.user)
 
         # 2) Obtener/crear la RiskEvaluation OneToOne (núcleo post-Planilla 2)
         riskeval, _created = RiskEvaluation.objects.get_or_create(

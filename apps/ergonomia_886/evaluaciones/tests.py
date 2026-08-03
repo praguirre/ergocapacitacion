@@ -167,6 +167,7 @@ class QuantitativeEvaluationRegressionTests(TestCase):
             username="regression-user",
             email="regression-user@example.com",
             password="test-password",
+            user_type="professional",
         )
         cls.evaluacion = Evaluacion.objects.create(
             usuario=cls.user,

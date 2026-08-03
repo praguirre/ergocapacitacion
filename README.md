@@ -187,6 +187,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   contacto introducidos por la integración. Una prueba de regresión verifica
   que no sobrevivan claves ni valores personales, mientras conserva el contexto
   mínimo y los datos técnicos requeridos por el informe (CF-4).
+- **03/08/2026 — Commit 3.3:** la visibilidad de evaluaciones quedó centralizada
+  por tipo de usuario: cada profesional ve sólo las que creó, cada empresa ve
+  las vinculadas a su perfil y trainees/anónimos no ven ninguna. Los recursos
+  ajenos continúan respondiendo 404 y sólo profesionales activos pueden editar.
+  Cinco pruebas nuevas cubren directamente la decisión D-9.
 
 ### Registro de cambios documentales
 

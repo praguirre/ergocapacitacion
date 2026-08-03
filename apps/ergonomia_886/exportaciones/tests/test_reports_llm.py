@@ -276,8 +276,14 @@ class InformeEndpointTests(TestCase):
 
     def setUp(self):
         User = get_user_model()
-        self.duenio = User.objects.create_user(email="duenio@example.com", username="duenio", password="x")
-        self.intruso = User.objects.create_user(email="intruso@example.com", username="intruso", password="x")
+        self.duenio = User.objects.create_user(
+            email="duenio@example.com", username="duenio", password="x",
+            user_type="professional",
+        )
+        self.intruso = User.objects.create_user(
+            email="intruso@example.com", username="intruso", password="x",
+            user_type="professional",
+        )
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.duenio, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",

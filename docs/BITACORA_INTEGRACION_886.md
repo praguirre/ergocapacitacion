@@ -2609,7 +2609,7 @@ manteniendo CF-4 y `trace_include_sensitive_data=False`.
 | Fecha | 2026-08-03 01:26 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `f7f7ee8` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -2679,3 +2679,105 @@ conservó literalmente las doce claves originales y mantuvo
 ### Notas para el commit siguiente
 Implementar la propiedad mixta de evaluaciones sin ampliar el alcance de datos
 visible para profesionales ni empresas.
+
+---
+
+## Commit 3.3 — Propiedad mixta por tipo de usuario
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 01:32 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se centralizó la propiedad de evaluaciones en `planillas/querysets.py`. Un
+profesional activo ve y edita sólo lo que creó; una empresa ve todas las
+evaluaciones asociadas a su propio perfil, pero no edita; trainees, empresas
+sin perfil y anónimos obtienen un queryset vacío. La resolución de recursos
+continúa mediante 404 para impedir enumeración. Las vistas de planillas,
+factores y exportaciones consumen el mismo criterio.
+
+Se agregaron cinco casos directos para D-9. Las factorías heredadas que
+representaban profesionales fueron corregidas con `user_type="professional"`;
+no se cambió ninguna aserción ni objetivo de prueba.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/querysets.py` — autoridad central de visibilidad y edición.
+- `apps/ergonomia_886/planillas/views.py` — seis resoluciones migradas al helper.
+- `apps/ergonomia_886/evaluaciones/views.py` — propiedad indirecta y bridge migrados.
+- `apps/ergonomia_886/exportaciones/views.py` — mixin propietario migrado.
+- `apps/ergonomia_886/planillas/tests_querysets.py` — cinco pruebas directas de D-9.
+- `apps/ergonomia_886/planillas/tests.py` — fixture declarado profesional.
+- `apps/ergonomia_886/evaluaciones/tests.py` — fixture declarado profesional.
+- `apps/ergonomia_886/exportaciones/tests/test_permissions.py` — fixtures declarados profesionales; casos y aserciones intactos.
+- `apps/ergonomia_886/exportaciones/tests/test_reports_llm.py` — fixtures del endpoint declarados profesionales.
+- `README.md` — modelo de propiedad registrado.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance, criterios y H-N registrados.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — hallazgo H-N.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.2 y evidencia literal 3.3.
+
+### Verificaciones ejecutadas
+
+```text
+# Primera ejecución, antes de corregir los tipos de fixture:
+.venv/bin/python manage.py test apps.ergonomia_886.exportaciones.tests.test_permissions --settings=config.test_settings -v 2
+Found 21 test(s).
+Ran 21 tests in 0.092s
+FAILED (failures=46, errors=3)
+# Causa: create_user() sin user_type crea trainees en ErgoSolutions; D-9 los
+# excluyó correctamente.
+
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_querysets apps.ergonomia_886.exportaciones.tests.test_permissions --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 26 tests in 0.728s
+OK
+Destroying test database for alias 'default'...
+Found 26 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 202 tests in 1.554s
+OK
+Destroying test database for alias 'default'...
+Found 202 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+rg -n 'usuario=request\.user|usuario=self\.request\.user|evaluacion__usuario=' apps/ergonomia_886/*/views.py
+apps/ergonomia_886/exportaciones/views.py:286:                usuario=request.user,
+# Es el argumento del autor de GeneratedReport, no un filtro de propiedad.
+# No queda ninguna de esas expresiones en get_object_or_404/filter de vistas.
+
+.venv/bin/python manage.py shell --settings=config.test_settings -c '<smoke con Client>'
+51 objects imported automatically (use -v 2 for details).
+
+GET / -> 200
+GET /evaluacion-ergonomica/protocolo/crear/ -> 302
+```
+
+### Desvíos respecto del roadmap
+**H-N:** las pruebas trasplantadas creaban usuarios con el default de
+`CustomUserManager.create_user`, que en ErgoSolutions es `trainee`. El roadmap
+suponía que esos fixtures eran profesionales y exigía que permanecieran
+literalmente intactos, una combinación incompatible con D-9. Se corrigió sólo
+el tipo explícito de los fixtures profesionales; casos y aserciones quedaron
+intactos. Además se añadieron cinco pruebas que demuestran empresa,
+profesional, trainee, anónimo y empresa sin perfil.
+
+El grep literal del roadmap conserva un falso positivo: `usuario=request.user`
+es el autor enviado a `get_or_create_report`, no un filtro de propiedad. Se
+revisó en contexto y se mantuvo porque sostiene la auditoría del informe.
+
+### Notas para el commit siguiente
+Aplicar la defensa de autenticación y rol en todas las vistas, conservando la
+propiedad D-9 y separando consulta empresarial de edición profesional.

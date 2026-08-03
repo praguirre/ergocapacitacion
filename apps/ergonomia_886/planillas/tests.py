@@ -12,6 +12,7 @@ class Planilla2RouteSmokeTests(TestCase):
             username="planilla-route-user",
             email="planilla-route-user@example.com",
             password="test-password",
+            user_type="professional",
         )
         cls.evaluacion = Evaluacion.objects.create(
             usuario=cls.user,

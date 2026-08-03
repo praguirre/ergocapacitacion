@@ -19,6 +19,7 @@ from django.views.generic import TemplateView
 from apps.ergonomia_886.evaluaciones.catalog import FACTOR_CATALOG, FACTOR_DEFINITIONS
 from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
 from apps.ergonomia_886.planillas.models import Evaluacion
+from apps.ergonomia_886.planillas.querysets import obtener_evaluacion_o_404
 
 from . import serializers
 from .models import ExportAudit, TipoDocumento
@@ -50,10 +51,8 @@ class EvaluacionOwnerMixin(LoginRequiredMixin):
     @property
     def evaluacion(self) -> Evaluacion:
         if not hasattr(self, "_evaluacion"):
-            self._evaluacion = get_object_or_404(
-                Evaluacion,
-                pk=self.kwargs["evaluacion_id"],
-                usuario=self.request.user,
+            self._evaluacion = obtener_evaluacion_o_404(
+                self.kwargs["evaluacion_id"], self.request.user
             )
         return self._evaluacion
 

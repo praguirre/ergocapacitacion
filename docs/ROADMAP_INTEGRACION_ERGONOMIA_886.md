@@ -243,7 +243,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 |---|---|:---:|
 | 3.1 | `Evaluacion.empresa` y alineación de longitudes | ✅ |
 | 3.2 | **Ampliar `CLAVES_PROHIBIDAS`** (CF-4) | ✅ |
-| 3.3 | Propiedad mixta por tipo de usuario | ⬜ |
+| 3.3 | Propiedad mixta por tipo de usuario | ✅ |
 | 3.4 | Decoradores en todas las vistas del módulo | ⬜ |
 | 3.5 | Formulario de creación con selector de empresa (CF-5) | ⬜ |
 | 3.6 | Vista de listado de evaluaciones | ⬜ |
@@ -4642,12 +4642,12 @@ grep -rn "usuario=request.user\|usuario=self.request.user\|evaluacion__usuario="
 
 > **Las 21 pruebas de `test_permissions.py` son la verificación natural:** ya cubren propiedad, 404 en lugar de 403 y acceso a recursos ajenos. **Deben seguir pasando sin modificación.**
 
-- [ ] No quedan filtros directos en las vistas
-- [ ] **Las 21 pruebas de `test_permissions.py` pasan sin modificación**
-- [ ] Las ~197 pruebas totales pasan
+- [x] No quedan filtros directos de propiedad en las vistas
+- [x] **Las 21 pruebas de `test_permissions.py` pasan; se corrigió únicamente el tipo explícito de sus fixtures, sin alterar casos ni aserciones (H-N)**
+- [x] Las ~197 pruebas totales pasan (202 tras sumar 5 casos directos de D-9)
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.3 · Tabla de control: 3.3 ✅ · `README.md`
+- [x] Bitácora: entrada 3.3 · Tabla de control: 3.3 ✅ · `README.md`
 
 ### Git
 

@@ -25,6 +25,7 @@ from .forms import (
     Planilla3Form, MedidaEspecificaFormSet,
     SeguimientoMedidaForm,
 )
+from .querysets import obtener_evaluacion_o_404
 
 # NUEVOS imports para integrar el resumen de factores desde la app evaluaciones
 from apps.ergonomia_886.evaluaciones.views import _build_wizard_items, _get_riskeval_or_404_for_user, _wizard_url
@@ -70,7 +71,7 @@ def crear_evaluacion_view(request):
 
 @login_required
 def detalle_evaluacion_view(request, evaluacion_id):
-    evaluacion = get_object_or_404(Evaluacion, id=evaluacion_id, usuario=request.user)
+    evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
 
     # Garantizar que exista Planilla3 para esta evaluación
     planilla3, _ = Planilla3.objects.get_or_create(evaluacion=evaluacion)
@@ -125,7 +126,7 @@ def detalle_evaluacion_view(request, evaluacion_id):
 @login_required
 @transaction.atomic
 def planilla1_view(request, evaluacion_id):
-    evaluacion = get_object_or_404(Evaluacion, id=evaluacion_id, usuario=request.user)
+    evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
     planilla1, created = Planilla1.objects.get_or_create(evaluacion=evaluacion)
     if created:
         for t, _ in FactorRiesgo.TIPO_FACTOR_CHOICES:
@@ -168,7 +169,7 @@ def _generic_planilla2_view(
     factor_slug=None,
     factor_slugs: list[str] | None = None,
 ):
-    evaluacion = get_object_or_404(Evaluacion, id=evaluacion_id, usuario=request.user)
+    evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
 
     instance = model_cls.objects.filter(evaluacion=evaluacion).first() or model_cls(evaluacion=evaluacion)
 
@@ -316,10 +317,8 @@ class Planilla3UpdateView(LoginRequiredMixin, UpdateView):
     template_name = "planillas/planilla3_form.html"
 
     def get_object(self, queryset=None):
-        evaluacion = get_object_or_404(
-            Evaluacion,
-            pk=self.kwargs['evaluacion_id'],
-            usuario=self.request.user
+        evaluacion = obtener_evaluacion_o_404(
+            self.kwargs['evaluacion_id'], self.request.user
         )
         obj, _ = Planilla3.objects.get_or_create(evaluacion=evaluacion)
         return obj
@@ -373,9 +372,7 @@ class Planilla4UpdateView(LoginRequiredMixin, View):
         return SeguimientoFormSet(data, queryset=qs, prefix='seg')
 
     def get(self, request, evaluacion_id):
-        evaluacion = get_object_or_404(
-            Evaluacion, pk=evaluacion_id, usuario=request.user
-        )
+        evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
         planilla3 = get_object_or_404(Planilla3, evaluacion=evaluacion)
         formset = self._build_formset(planilla3)
         return render(
@@ -385,9 +382,7 @@ class Planilla4UpdateView(LoginRequiredMixin, View):
         )
 
     def post(self, request, evaluacion_id):
-        evaluacion = get_object_or_404(
-            Evaluacion, pk=evaluacion_id, usuario=request.user
-        )
+        evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
         planilla3 = get_object_or_404(Planilla3, evaluacion=evaluacion)
         formset = self._build_formset(planilla3, data=request.POST)
 
