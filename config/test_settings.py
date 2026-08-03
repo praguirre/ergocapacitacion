@@ -54,6 +54,10 @@ STORAGES = {
 # Ningun correo sale del proceso durante las pruebas.
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
+# La suite conserva la compuerta histórica que exige la cabecera bloqueante.
+# Los tests de config cubren por separado el modo Report-Only de observación.
+CSP_REPORT_ONLY = False
+
 # `testserver` debe estar permitido siempre, no solo con DEBUG=True.
 if "testserver" not in ALLOWED_HOSTS:  # noqa: F405
     ALLOWED_HOSTS.append("testserver")  # noqa: F405

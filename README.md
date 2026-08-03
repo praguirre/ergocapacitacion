@@ -279,6 +279,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   overflow, recursos e íconos locales y JavaScript interactivo operativo. Se
   corrigió el ícono inexistente `bi-weight` de LMC; CF-1 quedó validada con la
   guía VCE real y 24 pruebas conjuntas de ambos asistentes.
+- **03/08/2026 — Commit 6.5:** el middleware CSP soporta modo de observación y
+  bloqueante con la misma política y nonce por respuesta. `config.settings`
+  emite Report-Only por defecto; la suite conserva la compuerta bloqueante de
+  `help_ai`. Tres pruebas cubren headers, políticas y posición del middleware;
+  `.env.example` documenta la variable sin tocar el `.env` real.
 
 ### Registro de cambios documentales
 

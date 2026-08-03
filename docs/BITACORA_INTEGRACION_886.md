@@ -4606,7 +4606,7 @@ módulo con consola abierta y tabla completa.
 | Fecha | 2026-08-03 12:45 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `c04ad9b` |
 | Fase | 6 |
 | Estado | ✅ Completado con desvío corregido |
 
@@ -4766,3 +4766,84 @@ permaneció en cero errores.
 ### Notas para el commit siguiente
 Introducir el setting `CSP_REPORT_ONLY=True` y emitir la política en cabecera
 Report-Only sin modificar sus directivas.
+
+---
+
+## Commit 6.5 — Portar el middleware con modo Report-Only
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 12:48 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 6 |
+| Estado | ✅ Completado con desvío documentado |
+
+### Qué se hizo
+El middleware CSP adelantado en 2.13 puede emitir ahora la misma política como
+`Content-Security-Policy-Report-Only` o como cabecera bloqueante. El default de
+configuración general queda en observación (`True`), se documenta en
+`.env.example` y su posición continúa después de WhiteNoise y antes de Session.
+Tres pruebas cubren modo observación, modo bloqueante, nonce real, directivas y
+las dos cabeceras de seguridad adicionales.
+
+### Archivos modificados
+- `config/middleware.py` — selector de cabecera según setting.
+- `config/settings.py` — `CSP_REPORT_ONLY=True` por defecto.
+- `config/test_settings.py` — modo bloqueante para conservar la compuerta
+  histórica de `help_ai` sin cambiar su aserción.
+- `config/tests.py` — tres pruebas del middleware y su posición.
+- `.env.example` — variable documentada; `.env` real intacto.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test config --settings=config.test_settings
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Found 3 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 261 tests in 2.349s
+
+OK
+Destroying test database for alias 'default'...
+Found 261 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py shell --settings=config.settings -c '<inspección de headers>'
+51 objects imported automatically (use -v 2 for details).
+
+report_only_present= True
+blocking_present= False
+referrer= same-origin
+permissions= camera=(), microphone=(), geolocation=(), payment=()
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+La primera corrida de la suite heredada falló porque
+`ChatSecurityTests.test_dynamic_responses_apply_restrictive_csp` exige por
+nombre la cabecera bloqueante. CF-1 impide tocar esa aserción. Se configuró
+exclusivamente `config.test_settings` con `CSP_REPORT_ONLY=False`; la
+configuración general sigue en observación y `config/tests.py` prueba ambos
+modos. Ninguna aserción, patch, caso ni cuota de `help_ai` fue modificada.
+
+### Notas para el commit siguiente
+Levantar la misma fixture visual con `CSP_REPORT_ONLY=True`, recorrer las 63
+pantallas y registrar/corregir cada violación sin relajar directivas.

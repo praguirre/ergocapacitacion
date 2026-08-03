@@ -280,7 +280,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 6.2 | Extraer los 5 bloques `<script>` inline | ✅ |
 | 6.3 | Reemplazar los 3 manejadores en línea | ✅ |
 | 6.4 | Verificación visual de las 33 pantallas | ✅ |
-| 6.5 | Portar el middleware con modo `Report-Only` | ⬜ |
+| 6.5 | Portar el middleware con modo `Report-Only` | ✅ |
 | 6.6 | Período de observación | ⬜ |
 | 6.7 | Activar el CSP en modo bloqueante | ⬜ |
 

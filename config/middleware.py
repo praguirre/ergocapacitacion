@@ -1,10 +1,15 @@
-"""Cabeceras de seguridad comunes para las respuestas de ErgoSolutions."""
+"""Cabeceras de seguridad comunes para las respuestas de ErgoSolutions.
+
+Portado del módulo de Ergonomía SRT 886/15, con una extensión: la cabecera
+puede emitirse en modo Report-Only mediante el setting ``CSP_REPORT_ONLY``.
+"""
 
 from __future__ import annotations
 
 import secrets
 
 from asgiref.sync import iscoroutinefunction, markcoroutinefunction
+from django.conf import settings
 
 
 class ContentSecurityPolicyMiddleware:
@@ -26,7 +31,7 @@ class ContentSecurityPolicyMiddleware:
     @staticmethod
     def _finalize_response(request, response):
         nonce = request.csp_nonce
-        response["Content-Security-Policy"] = "; ".join((
+        politica = "; ".join((
             "default-src 'self'",
             f"script-src 'self' 'nonce-{nonce}'",
             "script-src-attr 'none'",
@@ -39,6 +44,12 @@ class ContentSecurityPolicyMiddleware:
             "frame-ancestors 'self'",
             "form-action 'self'",
         ))
+        cabecera = (
+            "Content-Security-Policy-Report-Only"
+            if getattr(settings, "CSP_REPORT_ONLY", False)
+            else "Content-Security-Policy"
+        )
+        response[cabecera] = politica
         response["Referrer-Policy"] = "same-origin"
         response["Permissions-Policy"] = (
             "camera=(), microphone=(), geolocation=(), payment=()"
