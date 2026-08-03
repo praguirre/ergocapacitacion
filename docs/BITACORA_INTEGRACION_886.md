@@ -4431,7 +4431,7 @@ Extraer los cinco bloques inline y pasar el contexto Django mediante `data-*`.
 | Fecha | 2026-08-03 12:35 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `2669cd6` |
 | Fase | 6 |
 | Estado | ✅ Completado con desvío documentado |
 
@@ -4515,3 +4515,84 @@ scripts inline reales del módulo.
 Reemplazar las cuatro asignaciones de propiedades `onclick`/`onkeypress` que
 la inspección real conserva en los dos scripts de chat; el listener de copia
 ya estaba adelantado desde 2.13.
+
+---
+
+## Commit 6.3 — Reemplazar los 3 manejadores en línea
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 12:38 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 6 |
+| Estado | ✅ Completado con desvío documentado |
+
+### Qué se hizo
+Se eliminaron todos los contratos `on*` de templates y JavaScript. Los cuatro
+manejadores de ambos chats y los tres manejadores del quiz de trabajadores se
+registran ahora mediante `addEventListener`; el botón de copia ya usaba listener
+desde 2.13. El resultado es compatible con `script-src-attr 'none'` y evita dos
+estilos distintos de vinculación de eventos.
+
+### Archivos modificados
+- `static/js/training_page.js` — click y Enter del chat del trabajador.
+- `static/js/presencial_capacitacion.js` — click y Enter del chat presencial.
+- `static/js/quiz.js` — inicio, elección y avance del examen.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+rg -n "\son(click|change|submit|load|input|keypress)=|\.(onclick|onchange|onsubmit|onload|oninput|onkeypress)\s*=" templates static/js
+(sin salida)
+
+rg -n "addEventListener\(" static/js/training_page.js static/js/presencial_capacitacion.js static/js/online_links.js static/js/quiz.js | wc -l
+       8
+
+node --check static/js/training_page.js
+node --check static/js/presencial_capacitacion.js
+node --check static/js/quiz.js
+(sin salida)
+
+.venv/bin/python manage.py test apps.dashboard apps.presencial apps.quiz apps.training apps.ergonomia_886.help_ai --settings=config.test_settings
+Creating test database for alias 'default'...
+............................................
+----------------------------------------------------------------------
+Ran 44 tests in 0.327s
+
+OK
+Destroying test database for alias 'default'...
+Found 44 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 261 tests in 2.337s
+
+OK
+Destroying test database for alias 'default'...
+Found 261 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+Los tres atributos HTML inventariados por el diseño ya se habían convertido a
+listener en 2.13. La inspección posterior a la extracción encontró siete
+asignaciones de propiedades DOM: cuatro en los chats y tres en `quiz.js`.
+Aunque no eran atributos inline, se migraron también para dejar cero contratos
+`on*` en toda la superficie del destino.
+
+### Notas para el commit siguiente
+Ejecutar el recorrido conjunto de las 33 pantallas del destino y las 30 del
+módulo con consola abierta y tabla completa.

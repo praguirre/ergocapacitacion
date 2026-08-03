@@ -270,6 +270,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   El navegador confirmó cero bloques inline, carga de los cinco archivos y
   ejecución del chat, widget, copia y quiz sin errores. CF-1 conserva intactas
   las aserciones de `help_ai`; sólo se corrigieron rutas anidadas de templates.
+- **03/08/2026 — Commit 6.3:** los siete manejadores `on*` remanentes en chats
+  y quiz se reemplazaron por `addEventListener`; el listener de copia ya estaba
+  adelantado. Templates y JavaScript quedan sin atributos ni propiedades
+  `on*`, listos para `script-src-attr 'none'`; pasan las 261 pruebas.
 
 ### Registro de cambios documentales
 

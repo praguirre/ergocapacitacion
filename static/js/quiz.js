@@ -10,7 +10,7 @@ let QUIZ = { attemptId: null, moduleSlug: null, order: 1 };
 function initQuiz(moduleSlug) {
   QUIZ.moduleSlug = moduleSlug;
   const btn = document.getElementById("quizStartBtn");
-  if (btn) btn.onclick = startQuiz;
+  if (btn) btn.addEventListener("click", startQuiz);
 }
 
 // --- 1. Iniciar Intento ---
@@ -84,7 +84,7 @@ function renderQuestion(q) {
     const btn = document.createElement("button");
     btn.className = "btn btn-outline-light text-start p-3 choice-btn";
     btn.innerHTML = `<span class="badge bg-secondary me-2">${c.label}</span> ${escapeHtml(c.text)}`;
-    btn.onclick = () => sendAnswer(q.question_id, c.choice_id, btn);
+    btn.addEventListener("click", () => sendAnswer(q.question_id, c.choice_id, btn));
     choices.appendChild(btn);
   });
 }
@@ -126,10 +126,10 @@ async function sendAnswer(questionId, choiceId, btnElement) {
       </div>
     `);
 
-    document.getElementById("nextBtn").onclick = async () => {
+    document.getElementById("nextBtn").addEventListener("click", async () => {
       if (data.done) return submitQuiz();
       await loadQuestion(data.next_order);
-    };
+    });
 
   } catch (e) {
     setFeedback(`<div class="alert alert-danger">Error de red.</div>`);

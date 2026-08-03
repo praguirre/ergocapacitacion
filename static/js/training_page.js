@@ -35,8 +35,8 @@
     }
   }
 
-  btn.onclick = handleSend;
-  input.onkeypress = (event) => {
+  btn.addEventListener("click", handleSend);
+  input.addEventListener("keypress", (event) => {
     if (event.key === "Enter") handleSend();
-  };
+  });
 })();
