@@ -126,6 +126,13 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   `ergobot_ai` y el include público `training_public` ahora declaran
   `app_name`; todas las referencias internas quedaron calificadas sin cambiar
   ningún path público ni el endpoint JavaScript de Ergobot.
+- **03/08/2026 — Fase 1:** el origen `ergonomia_srt` quedó preparado y
+  publicado con siete commits secuenciales: aprobaciones profesionales,
+  usuario swappable, namespaces propios, dependencias alineadas y locale
+  `es-ar`; sus 160 pruebas continúan en verde y no se generaron migraciones.
+- **03/08/2026 — Commit 2.1:** se creó `apps/ergonomia_886` como paquete
+  contenedor desmontable. Su docstring identifica las cuatro apps y deja
+  vinculadas las condiciones CF-1 a CF-6 antes del trasplante.
 
 ### Registro de cambios documentales
 

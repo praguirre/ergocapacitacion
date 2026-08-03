@@ -1801,9 +1801,16 @@ El middleware se porta **sin cambios funcionales**, a `config/middleware.py`. Su
  9      usuario = models.ForeignKey(
 10          settings.AUTH_USER_MODEL,
 11          on_delete=models.CASCADE,
-12          verbose_name="Profesional responsable",
-13      )
+12      )
 ```
+
+> **Hallazgo de ejecución — 03/08/2026.** La premisa de cero migraciones es
+> correcta solo para el reemplazo de `User` por `settings.AUTH_USER_MODEL`.
+> El `verbose_name` propuesto adicionalmente sí genera
+> `planillas.0002_alter_evaluacion_usuario`. Como no aporta compatibilidad y
+> contradice el criterio de aceptación, se retiró: el commit 1.1 cambia
+> exclusivamente la referencia swappable y `makemigrations --check --dry-run`
+> vuelve a informar `No changes detected`.
 
 `evaluaciones/models.py:48-49`, `exportaciones/models.py:71-72` y `exportaciones/models.py:111-112` **ya usan la forma correcta** y no requieren cambios **[VERIFICADO]**.
 
@@ -3378,7 +3385,7 @@ for url in ["/dashboard/", "/dashboard/empresa/nomina/", "/dashboard/empresa/age
 | Commit | Contenido | Archivos | Bloqueante |
 |---|---|---|---|
 | **1.1** | `Evaluacion.usuario` → `settings.AUTH_USER_MODEL` | `planillas/models.py:4,9` | **B1** |
-| **1.2** | `app_name = "planillas"` + calificar 24 referencias | `planillas/urls.py` + 19 templates + 5 `.py` | **B3** |
+| **1.2** | `app_name = "planillas"` + calificar 33 referencias | `planillas/urls.py` + 19 templates + 5 redirects + 9 nombres dinámicos en tests | **B3** |
 | **1.3** | `app_name = "help_ai"` + calificar 11 referencias | `help_ai/urls.py` + 2 templates + 9 en `tests.py` | **B3**, ⚠️ **H-J** |
 | **1.4** | Quitar `django-cors-headers` de `INSTALLED_APPS`, `MIDDLEWARE` y `requirements.txt` | `ergonomia_srt/settings.py:91,104,227-230`, `requirements.txt` | D-10 |
 | **1.5** | Quitar `sse-starlette` de `requirements.txt` (declarada, no usada); documentar el descarte de `weasyprint` | `requirements.txt` | D-7 |

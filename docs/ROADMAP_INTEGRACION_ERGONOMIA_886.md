@@ -211,19 +211,19 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 1.0 | **Registrar las 7 aprobaciones profesionales** (CF-3) | ⬜ |
-| 1.1 | `Evaluacion.usuario` → `settings.AUTH_USER_MODEL` (B1) | ⬜ |
-| 1.2 | `app_name` en `planillas` + 24 referencias (B3) | ⬜ |
-| 1.3 | `app_name` en `help_ai` + 11 referencias (B3, CF-1) | ⬜ |
-| 1.4 | Retirar `django-cors-headers` | ⬜ |
-| 1.5 | Limpiar dependencias no usadas | ⬜ |
-| 1.6 | `LANGUAGE_CODE = 'es-ar'` (D-8) | ⬜ |
+| 1.0 | **Registrar las 7 aprobaciones profesionales** (CF-3) | ✅ |
+| 1.1 | `Evaluacion.usuario` → `settings.AUTH_USER_MODEL` (B1) | ✅ |
+| 1.2 | `app_name` en `planillas` + 24 referencias (B3) | ✅ |
+| 1.3 | `app_name` en `help_ai` + 11 referencias (B3, CF-1) | ✅ |
+| 1.4 | Retirar `django-cors-headers` | ✅ |
+| 1.5 | Limpiar dependencias no usadas | ✅ |
+| 1.6 | `LANGUAGE_CODE = 'es-ar'` (D-8) | ✅ |
 
 ### Fase 2 — Trasplante · `ergocapacitacion`
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 2.1 | Crear el paquete contenedor `apps/ergonomia_886/` | ⬜ |
+| 2.1 | Crear el paquete contenedor `apps/ergonomia_886/` | ✅ |
 | 2.2 | Actualizar las 48 rutas declarativas **antes de mover** (B2) | ⬜ |
 | 2.3 | Copiar las 4 apps con migraciones y templates | ⬜ |
 | 2.4 | Actualizar `name` en los 4 `apps.py` | ⬜ |
@@ -1794,9 +1794,13 @@ class Evaluacion(models.Model):
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        verbose_name="Profesional responsable",
     )
 ```
+
+> **Hallazgo de ejecución 2026-08-03:** agregar `verbose_name` sí produce
+> `AlterField`. Para conservar la premisa verificada de cero migraciones, el
+> commit 1.1 cambia exclusivamente la referencia al modelo de usuario y no
+> agrega ese atributo cosmético.
 
 > **El nombre del campo NO se renombra.** Se evaluó pasarlo a `profesional`, pero aparece **38 veces** en el código, **22 de ellas dentro de las suites de prueba**. Contaminar las suites con un cambio cosmético degrada la señal del criterio de aceptación de la Fase 2. El `verbose_name` aporta la claridad buscada sin ninguno de esos costes.
 
@@ -1872,6 +1876,11 @@ urlpatterns = [
 ```
 
 ### Paso 2 — Calificar las 24 referencias **[VERIFICADO]**
+
+> **Hallazgo de ejecución 2026-08-03:** el inventario estático omitía nueve
+> referencias construidas dinámicamente en `planillas/tests.py` mediante
+> `f"planilla2{suffix}"`. El total real es 33: 19 templates, 5 redirects y
+> 9 nombres de prueba. Se calificaron sin modificar aserciones ni cobertura.
 
 **En templates — 19 referencias:**
 
