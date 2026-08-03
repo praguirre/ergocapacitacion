@@ -293,7 +293,7 @@ Ninguna.
 | Fecha | 2026-08-02 23:35 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `9123f54` |
 | Fase | 0 |
 | Estado | ✅ Completado |
 
@@ -336,6 +336,67 @@ Starting development server at http://127.0.0.1:8004/
 
 curl -s -o /dev/null -w 'GET /auth/login/ -> HTTP %{http_code}\n' http://127.0.0.1:8004/auth/login/
 GET /auth/login/ -> HTTP 200
+```
+
+### Desvíos respecto del roadmap
+Ninguno.
+
+### Notas para el commit siguiente
+Ninguna.
+
+## Commit 0.5 — Corregir `QuizState.is_approved` inexistente (N2)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:37 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+La ficha del trabajador ahora toma la aprobación desde `QuizState.last_passed`
+y la vigencia desde `Certificate.is_valid`. Se retiró el import de `timezone`
+ubicado dentro del bucle.
+
+### Archivos modificados
+- `apps/company/views.py` — corrección de N2 y simplificación de vigencia.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada y evidencia del commit.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.5 marcado como completado.
+- `README.md` — registro de la corrección N2.
+
+### Verificaciones ejecutadas
+
+```text
+grep -n "is_approved\\|is_valid" apps/company/views.py
+205:            # QuizState no tiene `is_approved`: el campo con esa semantica
+207:            'is_approved': bool(qs.last_passed) if qs else False,
+208:            # El modelo Certificate ya expone la propiedad `is_valid`.
+209:            'is_valid': cert.is_valid if cert else False,
+
+rg -n 'qs\\.is_approved|^[[:space:]]+from django\\.utils import timezone' apps/company/views.py
+<sin salida>
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps
+................................
+----------------------------------------------------------------------
+Ran 32 tests in 4.057s
+
+OK
+Destroying test database for alias 'default'...
+Found 32 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8005 --noreload
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8005/
+
+curl -s -o /dev/null -w 'GET /dashboard/empresa/nomina/ -> HTTP %{http_code}\n' http://127.0.0.1:8005/dashboard/empresa/nomina/
+GET /dashboard/empresa/nomina/ -> HTTP 302
 ```
 
 ### Desvíos respecto del roadmap

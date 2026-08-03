@@ -103,6 +103,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **02/08/2026 — Commit 0.4:** se calificaron los settings profesionales de
   login y redirección con sus namespaces reales. Los cuatro settings de
   autenticación resuelven correctamente y el login profesional responde 200.
+- **02/08/2026 — Commit 0.5:** se corrigió la ficha del trabajador para usar
+  `QuizState.last_passed` y `Certificate.is_valid`, eliminando el atributo
+  inexistente que causaba la regresión N2.
 
 ### Registro de cambios documentales
 

@@ -198,13 +198,15 @@ def nomina_detail(request, worker_id):
     for mod in modules:
         qs = QuizState.objects.filter(user=worker, module=mod).first()
         cert = Certificate.objects.filter(user=worker, module=mod).first()
-        from django.utils import timezone
         module_status.append({
             'module': mod,
             'quiz_state': qs,
             'certificate': cert,
-            'is_approved': qs.is_approved if qs else False,
-            'is_valid': cert and cert.valid_until and cert.valid_until > timezone.now() if cert else False,
+            # QuizState no tiene `is_approved`: el campo con esa semantica
+            # es `last_passed`.
+            'is_approved': bool(qs.last_passed) if qs else False,
+            # El modelo Certificate ya expone la propiedad `is_valid`.
+            'is_valid': cert.is_valid if cert else False,
         })
 
     return render(request, "company/nomina_detail.html", {
