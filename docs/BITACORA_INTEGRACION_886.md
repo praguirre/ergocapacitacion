@@ -3174,7 +3174,7 @@ los índices antes de cerrar la Fase 3.
 | Fecha | 2026-08-03 10:47 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `d608c51` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -3242,3 +3242,72 @@ anónimo, CF-4, CF-5 e índices. Por eso el total final es 224 y no ~205.
 
 ### Notas para el commit siguiente
 Fase 3 cerrada. No iniciar Fase 4 sin instrucción explícita del usuario.
+
+---
+
+## Commit 4.1 — Activar la tarjeta «Evaluaciones»
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 10:54 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+La tarjeta «Evaluaciones» dejó el estado deshabilitado y «Próximamente». Ahora
+es un enlace azul al listado del módulo, muestra «Disponible» y describe sólo
+el Protocolo de Ergonomía SRT 886/15. Se añadió una regresión que verifica el
+destino, la promesa de producto y que Capacitaciones conserva su enlace.
+
+### Archivos modificados
+- `templates/dashboard/home.html` — tarjeta activa y descripción precisa.
+- `apps/dashboard/tests.py` — regresión del objetivo de negocio.
+- `README.md` — activación registrada.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.9 y evidencia literal 4.1.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.dashboard apps.company --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 27 tests in 0.142s
+OK
+Destroying test database for alias 'default'...
+Found 27 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 225 tests in 1.675s
+OK
+Destroying test database for alias 'default'...
+Found 225 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py shell -c '<smoke autenticado transaccional>'
+51 objects imported automatically (use -v 2 for details).
+
+dashboard professional -> 200
+Disponible -> True
+href modulo -> True
+Proximamente -> False
+Capacitaciones -> True
+rollback -> OK
+```
+
+### Desvíos respecto del roadmap
+Se agregó una prueba automatizada específica del hito de negocio. El dashboard
+de empresa se verificó con su suite existente porque usa un template separado;
+el ambiente persistente no tiene usuarios empresa y no se creó ninguno (P-2).
+
+### Notas para el commit siguiente
+Agregar la entrada «Evaluaciones» al navbar compartido del backoffice.

@@ -47,6 +47,18 @@ class DashboardTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Dashboard')
 
+    def test_tarjeta_evaluaciones_esta_disponible_y_navega_al_modulo(self):
+        self.client.force_login(self.professional)
+        response = self.client.get(reverse('dashboard:home'))
+
+        self.assertContains(response, 'Evaluaciones')
+        self.assertContains(response, 'Disponible')
+        self.assertContains(response, reverse('ergonomia_886:evaluacion_list'))
+        self.assertNotContains(response, 'Próximamente')
+        self.assertNotContains(response, 'iluminación')
+        self.assertNotContains(response, 'ruido')
+        self.assertContains(response, reverse('dashboard:capacitaciones_menu'))
+
     def test_capacitaciones_menu(self):
         """Menú de capacitaciones lista los módulos."""
         self.client.force_login(self.professional)

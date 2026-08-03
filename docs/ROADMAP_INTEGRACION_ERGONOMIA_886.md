@@ -255,7 +255,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 4.1 | **Activar la tarjeta «Evaluaciones»** | ⬜ |
+| 4.1 | **Activar la tarjeta «Evaluaciones»** | ✅ |
 | 4.2 | Entrada de navegación en el navbar | ⬜ |
 | 4.3 | Cuarta stat del dashboard con import diferido | ⬜ |
 | 4.4 | Ajustes de contraste al tema oscuro | ⬜ |
@@ -5397,14 +5397,14 @@ git push
 # Entrar a /dashboard/ con un usuario profesional
 ```
 
-- [ ] La tarjeta dice **«Disponible»**, no «Próximamente»
-- [ ] Al hacer clic navega a `/evaluacion-ergonomica/`
-- [ ] El texto **no promete iluminación ni ruido**
-- [ ] La tarjeta de Capacitaciones sigue funcionando igual
-- [ ] El dashboard de empresa no se rompió
+- [x] La tarjeta dice **«Disponible»**, no «Próximamente»
+- [x] Al hacer clic navega a `/evaluacion-ergonomica/`
+- [x] El texto **no promete iluminación ni ruido**
+- [x] La tarjeta de Capacitaciones sigue funcionando igual
+- [x] El dashboard de empresa no se rompió
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 4.1 · Tabla de control: 4.1 ✅ · `README.md`
+- [x] Bitácora: entrada 4.1 · Tabla de control: 4.1 ✅ · `README.md`
 
 ### Git
 

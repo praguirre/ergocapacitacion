@@ -76,23 +76,25 @@
     </div>
 
     <div class="row g-4 justify-content-center">
-        <!-- Card EVALUACIONES (desactivado) -->
+        <!-- Card EVALUACIONES (activo) -->
         <div class="col-md-6 col-lg-5">
-            <div class="card dashboard-card disabled-card bg-dark border-secondary h-100">
-                <div class="card-body text-center py-5 px-4">
-                    <div class="card-icon text-secondary">
-                        <i class="bi bi-clipboard-check"></i>
+            <a href="{% url 'ergonomia_886:evaluacion_list' %}" class="text-decoration-none">
+                <div class="card dashboard-card bg-dark border-primary h-100">
+                    <div class="card-body text-center py-5 px-4">
+                        <div class="card-icon text-primary">
+                            <i class="bi bi-clipboard-check"></i>
+                        </div>
+                        <h3 class="card-title text-white">Evaluaciones</h3>
+                        <p class="card-text text-secondary mb-4">
+                            Protocolo de Ergonomía SRT 886/15: identificación de factores,
+                            evaluación de 13 riesgos y planillas en el formulario oficial.
+                        </p>
+                        <span class="badge bg-primary fs-6 px-3 py-2">
+                            <i class="bi bi-check-circle me-1"></i>Disponible
+                        </span>
                     </div>
-                    <h3 class="card-title text-secondary">Evaluaciones</h3>
-                    <p class="card-text text-muted mb-4">
-                        Evaluaciones de riesgos ergonómicos, iluminación, ruido y más.
-                        Todo según normativa vigente.
-                    </p>
-                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
-                        <i class="bi bi-clock me-1"></i>Próximamente
-                    </span>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Card CAPACITACIONES (activo) -->

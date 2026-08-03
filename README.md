@@ -214,6 +214,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   propiedad mixta D-9, 404 contra enumeración, ausencia de HTTP 500 anónimo,
   edición profesional, saneamiento CF-4, snapshots CF-5 e índices. La fase
   cierra con 224 pruebas OK, checks limpios y smoke autenticado con rollback.
+- **03/08/2026 — Commit 4.1:** la tarjeta «Evaluaciones» del dashboard está
+  activa, indica «Disponible» y navega a `/evaluacion-ergonomica/`. Su texto
+  describe exclusivamente Ergonomía SRT 886/15, sin prometer iluminación ni
+  ruido; la tarjeta de Capacitaciones permanece intacta.
 
 ### Registro de cambios documentales
 
