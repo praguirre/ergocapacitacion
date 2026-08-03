@@ -113,6 +113,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   efímero, `LocMemCache`, hashing rápido, storage estático no manifestado y
   correo en memoria. Ejecutar: `.venv/bin/python manage.py test apps
   --settings=config.test_settings`.
+- **02/08/2026 — Commit 0.8:** producción y desarrollo usan `DatabaseCache`
+  sobre la tabla `ergosolutions_cache` para compartir cuotas y cerrojos entre
+  workers. Tras migrar, ejecutar el paso idempotente
+  `.venv/bin/python manage.py createcachetable`; la suite aislada conserva
+  `LocMemCache`.
 
 ### Registro de cambios documentales
 

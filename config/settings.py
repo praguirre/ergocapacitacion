@@ -86,6 +86,26 @@ DATABASES = {
     "default": env.db("DATABASE_URL")
 }
 
+# =====================================================
+# CACHÉ COMPARTIDA ENTRE PROCESOS
+# =====================================================
+# Imprescindible para que las cuotas del módulo de Ergonomía 886 (chat de
+# ayuda, informes profesionales y descargas de documentos) sean globales y
+# no por worker. Con LocMemCache cada proceso tendría su propio contador y
+# las cuotas se multiplicarían por la cantidad de workers, sin ningún
+# síntoma visible.
+#
+# ⚠️ PASO DE DESPLIEGUE OBLIGATORIO: la tabla NO se crea por migración.
+#     python manage.py createcachetable
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "ergosolutions_cache",
+        "TIMEOUT": 300,
+        "OPTIONS": {"MAX_ENTRIES": 5000},
+    }
+}
+
 # CRÍTICO (antes del primer migrate)
 AUTH_USER_MODEL = "accounts.CustomUser"
 

@@ -497,7 +497,7 @@ storage que esta regresión necesita localmente.
 | Fecha | 2026-08-02 23:43 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `1d7542a` |
 | Fase | 0 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -557,3 +557,77 @@ emitió una vez `Error in the HTTP2 framing layer`; el reintento confirmó
 
 ### Notas para el commit siguiente
 Se usó el plan A (SQLite); no fue necesario solicitar permisos de PostgreSQL.
+
+## Commit 0.8 — Configurar `CACHES` con `DatabaseCache` (B4)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:46 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se configuró `DatabaseCache` para compartir cuotas y cerrojos entre procesos,
+se creó idempotentemente la tabla `ergosolutions_cache` en desarrollo y se
+documentó `createcachetable` antes del arranque de procesos en el runbook.
+
+### Archivos modificados
+- `config/settings.py` — backend `DatabaseCache` compartido.
+- `docs/DEPLOY_CLAUDE_RUNBOOK.md` — paso obligatorio `createcachetable`.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada y evidencia del commit.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.8 marcado como completado.
+- `README.md` — registro operativo de caché.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py createcachetable
+<sin salida; ejecución exitosa e idempotente>
+
+.venv/bin/python -c "<script de cerrojo del roadmap>"
+Backend : ConnectionProxy
+Lectura : ok
+add()   : False (False = el cerrojo funciona)
+
+.venv/bin/python -c "<inspección del backend real>"
+Backend real: DatabaseCache
+Tabla       : ergosolutions_cache
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run
+RuntimeWarning: Got an error checking a consistent migration history ... Operation not permitted
+No changes detected
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+....................................
+----------------------------------------------------------------------
+Ran 36 tests in 0.182s
+
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8008 --noreload
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8008/
+
+curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://127.0.0.1:8008/
+GET / -> HTTP 200
+```
+
+### Desvíos respecto del roadmap
+El script propuesto imprime la clase del proxy global de Django y por eso
+mostró `ConnectionProxy`, no la implementación. La inspección de
+`caches['default']` confirmó `DatabaseCache` y la tabla correcta. La primera
+ejecución de `createcachetable` dentro de la sandbox no pudo conectar a
+PostgreSQL; repetida con permiso de conexión local, completó sin salida.
+
+### Notas para el commit siguiente
+La tabla de caché de desarrollo existe; producción deberá ejecutar el paso
+documentado durante el despliegue.

@@ -120,6 +120,18 @@ Claude debe verificar en el proyecto:
 - `python manage.py collectstatic --noinput`
 - (si aplica) `python manage.py createsuperuser` (opcional)
 
+### Caché de aplicación
+
+`CACHES` usa `DatabaseCache`, cuya tabla **no se crea por migración**.
+Ejecutar en cada despliegue (es idempotente):
+
+```bash
+python manage.py createcachetable
+```
+
+Sin esta tabla, la primera consulta al chat de ayuda del módulo de Ergonomía
+falla — y falla **en tiempo de request**, no al arrancar.
+
 ### 3.10 Gunicorn
 - Definir comando:
   - `gunicorn config.wsgi:application --bind unix:/srv/ergocapacitacion/gunicorn.sock`
