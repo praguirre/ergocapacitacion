@@ -248,7 +248,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 3.5 | Formulario de creación con selector de empresa (CF-5) | ✅ |
 | 3.6 | Vista de listado de evaluaciones | ✅ |
 | 3.7 | Vista de eliminación de evaluación | ✅ |
-| 3.8 | Índices de consulta | ⬜ |
+| 3.8 | Índices de consulta | ✅ |
 | 3.9 | Pruebas de propiedad, saneamiento y no regresión | ⬜ |
 
 ### Fase 4 — Integración de UI · `ergocapacitacion`
@@ -5198,7 +5198,7 @@ class Evaluacion(models.Model):
 > ⚠️ **Los nombres de índice tienen tope de 30 caracteres en Django.** Verificar que los tres nombres elegidos no lo excedan.
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.8 · Tabla de control: 3.8 ✅ · `README.md`
+- [x] Bitácora: entrada 3.8 · Tabla de control: 3.8 ✅ · `README.md`
 
 ### Git
 

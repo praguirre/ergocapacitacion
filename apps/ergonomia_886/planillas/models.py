@@ -38,6 +38,21 @@ class Evaluacion(models.Model):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_modificacion = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "Evaluación ergonómica"
+        verbose_name_plural = "Evaluaciones ergonómicas"
+        indexes = [
+            models.Index(
+                fields=["usuario", "-fecha_modificacion"],
+                name="idx_eval_usuario_fmod",
+            ),
+            models.Index(
+                fields=["empresa", "-fecha_modificacion"],
+                name="idx_eval_empresa_fmod",
+            ),
+            models.Index(fields=["cuit"], name="idx_eval_cuit"),
+        ]
+
     def __str__(self):
         return f"Evaluación para {self.razon_social} - {self.fecha_creacion.strftime('%d/%m/%Y')}"
 

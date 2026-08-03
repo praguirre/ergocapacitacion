@@ -207,6 +207,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **03/08/2026 — Commit 3.7:** la eliminación exige POST y queda restringida
   al profesional autor. Empresas y otros profesionales reciben 404 para no
   confirmar la existencia del protocolo; GET nunca elimina.
+- **03/08/2026 — Commit 3.8:** `Evaluacion` incorpora índices compuestos para
+  listar por profesional o empresa y última modificación, más un índice por
+  CUIT. La migración aditiva fue probada desde cero y aplicada en PostgreSQL.
 
 ### Registro de cambios documentales
 

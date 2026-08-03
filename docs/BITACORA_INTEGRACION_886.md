@@ -3021,7 +3021,7 @@ manteniendo 404 contra enumeración.
 | Fecha | 2026-08-03 10:41 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `bf06a4e` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -3078,3 +3078,89 @@ planos.
 
 ### Notas para el commit siguiente
 Agregar los tres índices que cubren los patrones reales de listado y búsqueda.
+
+---
+
+## Commit 3.8 — Índices de consulta
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 10:44 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se agregaron tres índices a `Evaluacion`: propietario profesional más última
+modificación, empresa más última modificación y CUIT. La migración 0003 fue
+generada, leída completa, probada al crear la base de tests, aplicada sobre
+PostgreSQL de desarrollo y verificada contra `pg_indexes`.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/models.py` — metadatos e índices.
+- `apps/ergonomia_886/planillas/migrations/0003_indices_consulta.py` — migración aditiva.
+- `README.md` — optimización registrada.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance marcado.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.7 y evidencia literal 3.8.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py makemigrations planillas --name indices_consulta
+Migrations for 'planillas':
+  apps/ergonomia_886/planillas/migrations/0003_indices_consulta.py
+    ~ Change Meta options on evaluacion
+    + Create index idx_eval_usuario_fmod on field(s) usuario, -fecha_modificacion of model evaluacion
+    + Create index idx_eval_empresa_fmod on field(s) empresa, -fecha_modificacion of model evaluacion
+    + Create index idx_eval_cuit on field(s) cuit of model evaluacion
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 215 tests in 1.673s
+OK
+Destroying test database for alias 'default'...
+Found 215 test(s).
+System check identified no issues (0 silenced).
+
+# Primer intento dentro del sandbox:
+.venv/bin/python manage.py migrate --noinput
+django.db.utils.OperationalError: connection to server at "127.0.0.1", port 5432 failed: Operation not permitted
+
+# Reintento autorizado contra PostgreSQL de desarrollo:
+.venv/bin/python manage.py migrate --noinput
+Operations to perform:
+  Apply all migrations: accounts, admin, auth, certificates, company, contenttypes, evaluaciones, exportaciones, planillas, presencial, quiz, sessions, training
+Running migrations:
+  Applying planillas.0003_indices_consulta... OK
+
+.venv/bin/python manage.py migrate --check
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+.venv/bin/python manage.py shell -c '<consulta read-only a pg_indexes>'
+51 objects imported automatically (use -v 2 for details).
+
+['idx_eval_cuit', 'idx_eval_empresa_fmod', 'idx_eval_usuario_fmod']
+
+.venv/bin/python manage.py runserver 127.0.0.1:8038 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8038/
+GET /evaluacion-ergonomica/ -> 302
+```
+
+### Desvíos respecto del roadmap
+El primer intento de acceso a PostgreSQL fue bloqueado por el sandbox; se
+repitió con autorización y la migración se aplicó correctamente. Django agregó
+dependencias explícitas a `company.0004` y al usuario swappable porque los
+índices incluyen ambas FK; la operación sigue siendo estrictamente aditiva.
+
+### Notas para el commit siguiente
+Consolidar en una suite de integración propiedad, no enumeración, CF-4, CF-5 y
+los índices antes de cerrar la Fase 3.
