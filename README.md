@@ -192,6 +192,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   las vinculadas a su perfil y trainees/anónimos no ven ninguna. Los recursos
   ajenos continúan respondiendo 404 y sólo profesionales activos pueden editar.
   Cinco pruebas nuevas cubren directamente la decisión D-9.
+- **03/08/2026 — Commit 3.4:** las vistas funcionales del módulo aplican
+  `login_required` antes de `backoffice_required`; las vistas de clase ya
+  heredan `LoginRequiredMixin`. Una regresión recorre doce rutas anónimas y
+  descarta HTTP 500. El chat conserva su contrato 401 y separación CF-1.
 
 ### Registro de cambios documentales
 

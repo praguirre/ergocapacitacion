@@ -8,6 +8,7 @@ from django.db import transaction
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.forms import modelformset_factory
+from apps.accounts.decorators import backoffice_required
 from .models import (
     Evaluacion,
     Planilla1,
@@ -53,6 +54,7 @@ FACTOR_LABELS = {
 # EVALUACIÓN – alta inicial
 # ─────────────────────────────────────────────────────────────────────
 @login_required
+@backoffice_required
 def crear_evaluacion_view(request):
     if request.method == 'POST':
         form = EvaluacionForm(request.POST)
@@ -70,6 +72,7 @@ def crear_evaluacion_view(request):
 # ─────────────────────────────────────────────────────────────────────
 
 @login_required
+@backoffice_required
 def detalle_evaluacion_view(request, evaluacion_id):
     evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
 
@@ -124,6 +127,7 @@ def detalle_evaluacion_view(request, evaluacion_id):
 # PLANILLA 1 (con formset de factores de riesgo)
 # ─────────────────────────────────────────────────────────────────────
 @login_required
+@backoffice_required
 @transaction.atomic
 def planilla1_view(request, evaluacion_id):
     evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
@@ -210,6 +214,7 @@ def _generic_planilla2_view(
 # ─────────────────────────────────────────────────────────────────────
 
 @login_required
+@backoffice_required
 def planilla2a_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -220,6 +225,7 @@ def planilla2a_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2b_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -235,6 +241,7 @@ def planilla2b_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2c_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -245,6 +252,7 @@ def planilla2c_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2d_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -255,6 +263,7 @@ def planilla2d_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2e_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -265,6 +274,7 @@ def planilla2e_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2f_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -275,6 +285,7 @@ def planilla2f_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2g_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -288,6 +299,7 @@ def planilla2g_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2h_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,
@@ -298,6 +310,7 @@ def planilla2h_view(request, evaluacion_id):
     )
 
 @login_required
+@backoffice_required
 def planilla2i_view(request, evaluacion_id):
     return _generic_planilla2_view(
         request, evaluacion_id,

@@ -4140,6 +4140,7 @@ Adicionalmente, dos precisiones sobre `app_label` y rutas de archivo:
 | **H-L** | Los `app_label` no colisionan → migraciones intactas, sin `SeparateDatabaseAndState` | ✅ Simplifica B2 |
 | **H-M** | `help_ai/prompts.py:14-15` sube dos niveles y se rompe al anidar la app | 🔴 **Nuevo bloqueante B6** |
 | **H-N** | Las factorías heredadas del módulo crean usuarios con `create_user()` sin `user_type`; en ErgoSolutions eso produce `trainee`, no `professional` | Roadmap 3.3 («21 pruebas sin modificación») | ⚠️ Se declaró `user_type="professional"` sólo en los fixtures que ejercitan actos profesionales, sin cambiar casos ni aserciones; D-9 permanece estricta |
+| **H-O** | `help_ai.chat_view` es async y su prueba de seguridad exige conservar HTTP 401; el `backoffice_required` síncrono y `login_required` cambiarían o romperían ese contrato | Roadmap 3.4 y decisión vinculante sobre las 22 pruebas de `help_ai` | ⚠️ El chat conserva su validación autenticada previa; la guía usa `login_required`; las 22 pruebas pasan intactas y CF-1 no se relaja |
 
 ---
 

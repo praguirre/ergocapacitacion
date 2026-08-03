@@ -244,7 +244,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 3.1 | `Evaluacion.empresa` y alineación de longitudes | ✅ |
 | 3.2 | **Ampliar `CLAVES_PROHIBIDAS`** (CF-4) | ✅ |
 | 3.3 | Propiedad mixta por tipo de usuario | ✅ |
-| 3.4 | Decoradores en todas las vistas del módulo | ⬜ |
+| 3.4 | Decoradores en todas las vistas del módulo | ✅ |
 | 3.5 | Formulario de creación con selector de empresa (CF-5) | ⬜ |
 | 3.6 | Vista de listado de evaluaciones | ⬜ |
 | 3.7 | Vista de eliminación de evaluación | ⬜ |
@@ -4761,11 +4761,11 @@ class AccesoAnonimoModuloTests(TestCase):
 .venv/bin/python manage.py test --settings=config.test_settings
 ```
 
-- [ ] Ninguna ruta del módulo devuelve 500 a un anónimo
-- [ ] Las ~198 pruebas pasan
+- [x] Ninguna ruta del módulo devuelve 500 a un anónimo
+- [x] Las ~198 pruebas pasan (203 con las regresiones agregadas)
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.4 · Tabla de control: 3.4 ✅ · `README.md`
+- [x] Bitácora: entrada 3.4 · Tabla de control: 3.4 ✅ · `README.md`
 
 ### Git
 

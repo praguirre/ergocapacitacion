@@ -2689,7 +2689,7 @@ visible para profesionales ni empresas.
 | Fecha | 2026-08-03 01:32 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `58249e8` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -2781,3 +2781,84 @@ revisó en contexto y se mantuvo porque sostiene la auditoría del informe.
 ### Notas para el commit siguiente
 Aplicar la defensa de autenticación y rol en todas las vistas, conservando la
 propiedad D-9 y separando consulta empresarial de edición profesional.
+
+---
+
+## Commit 3.4 — Decoradores en todas las vistas del módulo
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 10:30 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se aplicó `login_required` como defensa exterior y `backoffice_required` como
+control interior a las doce vistas funcionales de planillas. Las vistas de
+factores, resumen, inicio y exportación ya heredaban `LoginRequiredMixin` y se
+conservaron. La guía contextual ahora redirige anónimos antes de leer contenido.
+Se agregó una regresión que recorre doce rutas del módulo contra HTTP 500.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/views.py` — decoradores en las vistas funcionales.
+- `apps/ergonomia_886/help_ai/views.py` — `login_required` en la guía.
+- `apps/ergonomia_886/planillas/tests_permisos.py` — regresión N1 sobre doce rutas.
+- `README.md` — defensa de acceso registrada.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — hallazgo H-O.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.3 y evidencia literal 3.4.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_permisos --settings=config.test_settings -v 2
+Found 1 test(s).
+test_ninguna_ruta_del_modulo_devuelve_500_a_un_anonimo ... ok
+Ran 1 test in 0.016s
+OK
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.help_ai apps.ergonomia_886.planillas.tests_permisos --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 23 tests in 0.214s
+OK
+Destroying test database for alias 'default'...
+Found 23 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 203 tests in 1.660s
+OK
+Destroying test database for alias 'default'...
+Found 203 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py shell --settings=config.test_settings -c '<smoke con Client>'
+51 objects imported automatically (use -v 2 for details).
+
+GET / -> 200
+GET crear -> 302
+GET guide -> 302
+POST chat -> 401
+```
+
+### Desvíos respecto del roadmap
+**H-O:** el roadmap proponía decorar también el chat async, pero el decorador
+de rol existente es síncrono y la prueba vinculante exige conservar HTTP 401
+para anónimos. Se mantuvo la validación autenticada propia del chat y no se
+modificó ninguna de las 22 pruebas de `help_ai`. `guide_view` sí incorporó la
+redirección previa. La referencia a una función independiente `review_factor`
+tampoco aplica: la revisión real vive en `WizardResumenView.post`, ya protegida
+por `LoginRequiredMixin`.
+
+### Notas para el commit siguiente
+Incorporar el selector de empresa y el poblado no destructivo exigido por CF-5.

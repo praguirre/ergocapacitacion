@@ -6,6 +6,7 @@ import logging
 
 from asgiref.sync import sync_to_async
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -15,6 +16,7 @@ from django.http import (
 )
 from agents import Runner, RunConfig, ItemHelpers
 from openai.types.responses import ResponseTextDeltaEvent
+
 
 from .agents import page_agent
 from .catalog import ALLOWED_HELP_SLUGS
@@ -30,6 +32,7 @@ from .prompts import HelpContentError, page_help_context
 logger = logging.getLogger(__name__)
 
 
+@login_required
 def guide_view(request: HttpRequest, slug: str):
     """Sirve el Markdown y la versión exacta que debe usar el Chat."""
     if not request.user.is_authenticated:
