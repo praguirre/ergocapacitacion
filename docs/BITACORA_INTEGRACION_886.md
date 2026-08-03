@@ -1456,7 +1456,7 @@ el origen independiente.
 | Fecha | 2026-08-03 00:26 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `9b6f577` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -1552,3 +1552,71 @@ limpieza sería un cambio separado, ajeno al trasplante byte a byte.
 ### Notas para el commit siguiente
 Actualizar únicamente los cuatro `AppConfig.name`; no registrar todavía las
 apps en settings.
+
+## Commit 2.4 — Actualizar `name` en los 4 `apps.py`
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:28 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Los cuatro `AppConfig.name` se actualizaron a su ruta punteada bajo
+`apps.ergonomia_886`. Se agregaron nombres administrativos descriptivos y se
+documentó por qué no se declara `label`, preservando migraciones y CF-1.
+
+### Archivos modificados
+- `apps/ergonomia_886/{planillas,evaluaciones,exportaciones,help_ai}/apps.py` — rutas y nombres administrativos.
+- `README.md` — labels preservados documentados.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance 2.4.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal 2.4.
+
+### Verificaciones ejecutadas
+
+```text
+grep -n 'name = ' apps/ergonomia_886/*/apps.py
+apps/ergonomia_886/evaluaciones/apps.py:7:    name = 'apps.ergonomia_886.evaluaciones'
+apps/ergonomia_886/exportaciones/apps.py:6:    name = "apps.ergonomia_886.exportaciones"
+apps/ergonomia_886/help_ai/apps.py:6:    name = 'apps.ergonomia_886.help_ai'
+apps/ergonomia_886/planillas/apps.py:6:    name = 'apps.ergonomia_886.planillas'
+
+grep -n '^[[:space:]]*label = ' apps/ergonomia_886/*/apps.py
+label explicito: ninguno
+
+AppConfig.create(...)
+apps.ergonomia_886.planillas -> label=planillas
+apps.ergonomia_886.evaluaciones -> label=evaluaciones
+apps.ergonomia_886.exportaciones -> label=exportaciones
+apps.ergonomia_886.help_ai -> label=help_ai
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py test apps.accounts apps.certificates apps.company apps.dashboard apps.ergobot_ai apps.landing apps.presencial apps.quiz apps.training --settings=config.test_settings
+----------------------------------------------------------------------
+Ran 36 tests in 0.165s
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8019 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8019/
+GET / -> 200
+```
+
+### Desvíos respecto del roadmap
+Ninguno. La suite amplia `test apps` conserva el estado intermedio ya
+documentado en 2.3 hasta reescribir imports y registrar las apps.
+
+### Notas para el commit siguiente
+Reescribir los imports absolutos con inventario antes/después, sin modificar
+las migraciones.

@@ -137,6 +137,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   `evaluaciones`, `exportaciones` y `help_ai`, con 10 migraciones, 24
   templates, 13 artefactos normativos y 12 mapas. El PDF oficial conserva el
   SHA-256 `bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4`.
+- **03/08/2026 — Commit 2.4:** los cuatro `AppConfig.name` apuntan a su ruta
+  punteada bajo `apps.ergonomia_886`; se mantienen los labels finales
+  `planillas`, `evaluaciones`, `exportaciones` y `help_ai` sin declararlos ni
+  alterar las diez migraciones copiadas.
 
 ### Registro de cambios documentales
 

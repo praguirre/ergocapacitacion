@@ -226,7 +226,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.1 | Crear el paquete contenedor `apps/ergonomia_886/` | ✅ |
 | 2.2 | Actualizar las 48 rutas declarativas **antes de mover** (B2) | ✅ |
 | 2.3 | Copiar las 4 apps con migraciones y templates | ✅ |
-| 2.4 | Actualizar `name` en los 4 `apps.py` | ⬜ |
+| 2.4 | Actualizar `name` en los 4 `apps.py` | ✅ |
 | 2.5 | Reescribir los 102 imports absolutos (B2) | ⬜ |
 | 2.6 | Corregir la ruta de los documentos de ayuda (B6) | ⬜ |
 | 2.7 | Copiar estáticos y artefactos byte a byte (CF-3, CF-6) | ⬜ |
