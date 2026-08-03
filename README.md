@@ -165,6 +165,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   con el dashboard y declara inline el bloque `help_slug`; nueve templates
   trasplantados cambiaron su herencia y el décimo (`core/dashboard.html`)
   permanece diferido a su reimplementación en 3.6.
+- **03/08/2026 — Commit 2.11:** el cuerpo del offcanvas de ayuda contextual se
+  extrajo a `_help_widget_body.html`, conservando el token CSRF del chat y los
+  identificadores consumidos por `help_widget.js`; el widget sigue perteneciendo
+  exclusivamente a `help_ai` conforme a CF-1.
 
 ### Registro de cambios documentales
 

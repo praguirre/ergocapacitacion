@@ -233,7 +233,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.8 | Registrar apps y settings del módulo | ✅ |
 | 2.9 | URLconf del módulo y montaje | ✅ |
 | 2.10 | Plantilla base del módulo y adaptación de 10 templates | ✅ |
-| 2.11 | Extraer el widget de ayuda contextual | ⬜ |
+| 2.11 | Extraer el widget de ayuda contextual | ✅ |
 | 2.12 | `checks.py` — validación de las 48 rutas declarativas | ⬜ |
 | 2.13 | Aplicar migraciones y prueba de humo | ⬜ |
 
@@ -3794,12 +3794,12 @@ grep -rn "help_ai:help_guide\|help_ai:chat_ai" templates/ergonomia_886/
 .venv/bin/python manage.py check
 ```
 
-- [ ] El `{% csrf_token %}` está presente
-- [ ] Las URLs están calificadas con `help_ai:`
-- [ ] Los `id` coinciden con los que espera `static/ayuda/js/help_widget.js`
+- [x] El `{% csrf_token %}` está presente
+- [x] Las URLs están calificadas con `help_ai:`
+- [x] Los `id` coinciden con los que espera `static/ayuda/js/help_widget.js`
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 2.11 · Tabla de control: 2.11 ✅ · `README.md`
+- [x] Bitácora: entrada 2.11 · Tabla de control: 2.11 ✅ · `README.md`
 
 ### Git
 

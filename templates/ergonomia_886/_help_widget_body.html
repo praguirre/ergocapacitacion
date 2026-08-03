@@ -1,0 +1,58 @@
+{# templates/ergonomia_886/_help_widget_body.html #}
+{#                                                                        #}
+{# Cuerpo del panel de ayuda contextual del módulo SRT 886/15.            #}
+{# Se incluye desde base_886.html, dentro del div#helpWidget que aporta   #}
+{# los atributos data-page-slug, data-guide-url-template y                #}
+{# data-chat-url-template.                                                #}
+{#                                                                        #}
+{# ⚠️ CF-1: pertenece a help_ai. No tiene relación con apps.ergobot_ai.   #}
+
+<div class="offcanvas-header border-bottom">
+  <h5 class="offcanvas-title">
+    <i class="bi bi-life-preserver me-2"></i>Ayuda Contextual
+  </h5>
+  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+</div>
+
+<div class="offcanvas-body d-flex flex-column p-0">
+  <ul class="nav nav-tabs px-3" id="helpTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="guide-tab" data-bs-toggle="tab"
+              data-bs-target="#tabGuide" type="button" role="tab"
+              aria-controls="tabGuide" aria-selected="true">Guía</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="chat-ia-tab" data-bs-toggle="tab"
+              data-bs-target="#chat-ia-tab-pane" type="button" role="tab"
+              aria-controls="chat-ia-tab-pane" aria-selected="false">Chat IA</button>
+    </li>
+  </ul>
+
+  <div class="tab-content flex-grow-1 d-flex flex-column">
+    {# ---------- Pestaña Guía ---------- #}
+    <div class="tab-pane fade show active p-3 h-100" id="tabGuide" role="tabpanel"
+         aria-labelledby="guide-tab" style="overflow-y:auto;">
+      {# El contenido lo carga help_widget.js desde data-guide-url-template #}
+    </div>
+
+    {# ---------- Pestaña Chat IA ---------- #}
+    <div class="tab-pane fade p-3 h-100" id="chat-ia-tab-pane" role="tabpanel"
+         aria-labelledby="chat-ia-tab">
+      <div id="chat-messages" class="flex-grow-1 mb-3"></div>
+
+      <form id="chat-form" class="mt-auto">
+        {% csrf_token %}
+        <div class="input-group">
+          <input type="text" id="chat-input" class="form-control"
+                 placeholder="Escribí tu consulta acá..." required autocomplete="off" />
+          <button class="btn btn-primary" type="submit" id="chat-submit-btn">
+            <i class="bi bi-send"></i>
+          </button>
+        </div>
+        <div id="ai-typing-indicator" class="form-text mt-1" style="display:none;">
+          El asistente está escribiendo...
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

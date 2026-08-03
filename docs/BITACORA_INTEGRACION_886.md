@@ -2095,7 +2095,7 @@ Extraer el cuerpo del offcanvas a `_help_widget_body.html`, sin mover el bloque
 | Fecha | 2026-08-03 00:59 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | pendiente hasta crear el commit |
+| Hash | `c6f5fdd` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -2177,6 +2177,91 @@ hubo cambios de código para ocultar la incidencia.
 ### Notas para el commit siguiente
 Crear `_help_widget_body.html` y validar el render completo del offcanvas; en
 2.10 el include se deja deliberadamente preparado para ese paso inmediato.
+
+## Commit 2.11 — Extraer el cuerpo del widget de ayuda contextual
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 01:02 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | pendiente hasta crear el commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se trasladó el cuerpo del offcanvas del origen a
+`templates/ergonomia_886/_help_widget_body.html`. El contenedor, el slug y las
+URLs permanecen en `base_886.html`; el parcial conserva el token CSRF y los IDs
+que consume `help_widget.js`. CF-1 permanece explícita en el encabezado.
+
+### Archivos modificados
+- `templates/ergonomia_886/_help_widget_body.html` — cuerpo del widget de ayuda.
+- `README.md` — extracción, CSRF, IDs y CF-1 registrados.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 2.10 y evidencia literal 2.11.
+
+### Verificaciones ejecutadas
+
+```text
+grep -n "csrf_token" templates/ergonomia_886/_help_widget_body.html
+44:        {% csrf_token %}
+
+rg -n "help_ai:help_guide|help_ai:chat_ai" templates/ergonomia_886/
+templates/ergonomia_886/base_886.html:22: data-guide-url-template="{% url 'help_ai:help_guide' slug='__slug__' %}"
+templates/ergonomia_886/base_886.html:23: data-chat-url-template="{% url 'help_ai:chat_ai' slug='__slug__' %}
+
+helpToggle -> OK
+helpWidget -> OK
+helpTabs -> OK
+tabGuide -> OK
+chat-form -> OK
+chat-input -> OK
+chat-messages -> OK
+chat-submit-btn -> OK
+ai-typing-indicator -> OK
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+# Render de una plantilla hija real, con RequestFactory
+Render widget: slug=lmc, csrf_token e IDs -> OK
+
+# Suite preexistente aislada por sus nueve labels
+Ran 36 tests in 0.144s
+OK
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+# Suite help_ai focalizada
+Ran 22 tests in 0.216s
+FAILED (failures=1, errors=1)
+Found 22 test(s).
+System check identified no issues (0 silenced).
+ERROR: test_dynamic_responses_apply_restrictive_csp
+KeyError: 'content-security-policy'
+FAIL: test_templates_do_not_depend_on_cdn_or_inline_event_handlers
+AssertionError: 'cdn.jsdelivr.net' unexpectedly found
+Pendientes planificados: cabecera CSP y retiro global de CDN en Fase 6.
+
+.venv/bin/python manage.py runserver 127.0.0.1:8029 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8029/
+GET / -> 200
+GET /evaluacion-ergonomica/protocolo/crear/ -> 302
+```
+
+### Desvíos respecto del roadmap
+Ninguno. Se tomó el texto recomendado del roadmap, que además traduce el
+`aria-label` de cierre y mantiene la separación contenedor/cuerpo definida en
+2.10. Los dos fallos focalizados no pertenecen a este commit y su estado no
+cambió respecto del cierre anterior.
+
+### Notas para el commit siguiente
+Implementar los checks de sistema del módulo y hacer que validen rutas
+declarativas, CF-1, CF-3 y CF-6 sin ejecutar lógica de negocio.
 
 ### Notas para el commit siguiente
 Crear la base intermedia del módulo y adaptar los templates previstos sin
