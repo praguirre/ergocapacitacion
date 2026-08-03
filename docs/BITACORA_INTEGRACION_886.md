@@ -4043,7 +4043,7 @@ signals y sin recalcular niveles de riesgo.
 | Fecha | 2026-08-03 11:55 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `9f34042` |
 | Fase | 5 |
 | Estado | ✅ Completado |
 
@@ -4120,3 +4120,90 @@ exactamente la medianoche consciente de zona horaria.
 ### Notas para el commit siguiente
 Agregar desde la agenda un enlace autorizado hacia la Planilla 4 sin imports de
 Ergonomía en Python bajo `apps.company`.
+
+---
+
+## Commit 5.5 — Enlace desde la agenda hacia la Planilla 4
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:57 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Los eventos de tipo `ergonomia_886.SeguimientoMedida` muestran «Ver medida en
+el protocolo». Un templatetag propiedad del módulo resuelve el seguimiento a su
+evaluación, aplica D-9 y recién entonces construye la URL de Planilla 4. El
+template de agenda no presupone que el ID del seguimiento sea el ID de la
+evaluación y ningún archivo Python de `apps.company` importa Ergonomía.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/templatetags/ergonomia_886_agenda.py` —
+  resolución autorizada seguimiento → evaluación → Planilla 4.
+- `templates/company/agenda_list.html` — enlace condicional.
+- `apps/ergonomia_886/planillas/tests_agenda_link.py` — enlace, aislamiento D-9
+  y auditoría de imports.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_agenda_link --settings=config.test_settings
+Creating test database for alias 'default'...
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.031s
+
+OK
+Destroying test database for alias 'default'...
+Found 3 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.company apps.ergonomia_886.planillas --settings=config.test_settings
+Creating test database for alias 'default'...
+........................................................
+----------------------------------------------------------------------
+Ran 56 tests in 0.263s
+
+OK
+Destroying test database for alias 'default'...
+Found 56 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+.................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 257 tests in 2.264s
+
+OK
+Destroying test database for alias 'default'...
+Found 257 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+.venv/bin/python manage.py migrate --check --settings=config.settings
+(sin salida)
+
+rg -n "apps\.ergonomia_886|from apps\.ergonomia_886|import apps\.ergonomia_886" apps/company -g '*.py' -g '!tests*.py' -g '!migrations/*.py'
+(sin salida)
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+Sin desvíos. `related_object_id` identifica al `SeguimientoMedida`, no a la
+`Evaluacion`; por eso se aplicó la alternativa prevista del templatetag propio
+del módulo. Además de resolver la URL correcta, oculta el enlace si D-9 no
+autoriza la evaluación y tolera IDs malformados sin producir HTTP 500.
+
+### Notas para el commit siguiente
+Consumir niveles ya persistidos para sugerir capacitaciones activas, sin llamar
+al motor de cálculo ni agregar imports del módulo en `apps.training`.

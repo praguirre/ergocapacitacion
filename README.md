@@ -251,6 +251,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   ergonómico en la agenda de la empresa, sin duplicados. El cierre se refleja
   como completado y la prioridad sólo mapea el nivel persistido, sin recalcular
   ni modificarlo (CF-2). La proyección es unidireccional y pasan 254 pruebas.
+- **03/08/2026 — Commit 5.5:** los vencimientos ergonómicos de la agenda enlazan
+  a la Planilla 4 correcta. La resolución vive en un templatetag del módulo,
+  vuelve a aplicar D-9 y no introduce imports de Ergonomía en `apps.company`;
+  una empresa ajena no obtiene URL. Pasan 257 pruebas.
 
 ### Registro de cambios documentales
 
