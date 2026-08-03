@@ -5091,3 +5091,81 @@ cero issues.
 La Fase 6 y los 58 commits del roadmap quedan completos. El siguiente paso es
 el despliegue, que requiere la detención P-1 prevista para variables del `.env`
 de producción; no se ejecuta sin una instrucción posterior del usuario.
+
+---
+
+## Auditoría previa al despliegue — corrección de `.gitignore`
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 |
+| Repositorio | ergocapacitacion |
+| Rama | feature/ergonomia-886 |
+| Hash | <se completa después del commit> |
+| Fase | posterior a la 6 (previa al despliegue) |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Auditoría independiente de la rama antes del despliegue en DonWeb. Se
+reprodujeron las compuertas del roadmap y se verificaron las seis condiciones
+fundamentales sobre el código, no sobre la bitácora. Del único hallazgo con
+acción se deriva este commit: `private_media/` no estaba cubierto por
+`.gitignore`.
+
+### Archivos modificados
+- `.gitignore` — se ignora `private_media/`, donde el módulo guarda fotos de
+  montaje y certificados de calibración. `media/` ya estaba ignorado, pero la
+  evidencia del 886 vive deliberadamente fuera de `MEDIA_ROOT` y quedaba sin
+  cubrir: el directorio está hoy vacío, de modo que no hubo filtración, pero un
+  `git add -A` habría versionado documentación legal de terceros en cuanto se
+  cargara el primer archivo.
+- `README.md` — registro del cambio.
+
+### Verificaciones ejecutadas
+```
+git check-ignore -v private_media/ergonomia_886/foto.jpg
+.gitignore:21:private_media/	private_media/ergonomia_886/foto.jpg
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+.venv/bin/python manage.py migrate --check
+(sin salida; código 0)
+
+.venv/bin/python manage.py test --settings=config.test_settings
+Ran 264 tests in 2.224s
+OK
+
+collectstatic con el storage manifestado de WhiteNoise (STATIC_ROOT temporal)
+collectstatic OK — staticfiles.json generado
+
+humo anónimo
+200  /
+302  /dashboard/
+302  /evaluacion-ergonomica/
+200  /acceso/
+CSP: default-src 'self'; script-src 'self' 'nonce-...'  (bloqueante)
+```
+
+### Desvíos respecto del roadmap
+Ninguno. Este commit no pertenece a los 58 del roadmap: es la corrección de un
+hallazgo de auditoría posterior al cierre de la Fase 6.
+
+### Notas para el commit siguiente
+Quedan dos pendientes reportados y no resueltos, ambos previos al módulo 886 y
+sujetos a decisión de producción:
+
+1. `config/settings.py` no define `SECURE_HSTS_SECONDS`, `SECURE_SSL_REDIRECT`,
+   `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, `CSRF_TRUSTED_ORIGINS` ni
+   `SECURE_PROXY_SSL_HEADER`. `check --deploy` los reporta aunque `DEBUG=False`.
+   La redirección y HSTS se pueden mitigar en nginx; las cookies sin flag
+   `Secure` requieren un cambio de código.
+2. `django-bootstrap5`, `django-environ` y `whitenoise` no tienen cota superior
+   en `requirements.txt`. Conviene fijar `pip freeze` en el servidor como
+   registro de lo que quedó corriendo.
+
+El despliegue requiere la detención P-1 prevista para las variables del `.env`
+de producción (`CSP_REPORT_ONLY=False` y, opcionalmente, `CHAT_AI_MODEL`).

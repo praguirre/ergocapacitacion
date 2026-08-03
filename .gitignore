@@ -15,6 +15,11 @@ staticfiles/
 media/
 *.egg-info/
 
+# Evidencia privada del modulo de Ergonomia SRT 886/15.
+# Fotos de montaje y certificados de calibracion: documentacion legal de
+# terceros que vive fuera de MEDIA_ROOT y nunca se versiona.
+private_media/
+
 # OS / IDE
 .DS_Store
 .vscode/

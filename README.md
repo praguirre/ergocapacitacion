@@ -295,6 +295,16 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   sin violaciones; se corrigió la inicialización temprana del filtro de fuerza.
   La integración cierra con 264 pruebas, migraciones limpias y el SHA-256
   oficial intacto.
+- **03/08/2026 — Auditoría previa al despliegue:** la revisión independiente de
+  la rama reprodujo las compuertas (264 pruebas, `check`, migraciones,
+  `collectstatic` manifestado, humo anónimo y CSP bloqueante) y verificó las
+  seis condiciones fundamentales sobre el código. Único hallazgo con acción:
+  `private_media/` no estaba en `.gitignore`, de modo que la evidencia
+  documental del módulo —fotos de montaje y certificados de calibración— podía
+  versionarse en cuanto se cargara la primera. Corregido en este commit. Quedan
+  reportadas sin resolver, por ser previas al módulo y requerir decisión de
+  producción: las cabeceras y cookies de HTTPS ausentes en `config/settings.py`
+  y la falta de cotas superiores en tres dependencias.
 
 ### Registro de cambios documentales
 
