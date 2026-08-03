@@ -289,6 +289,12 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   módulo. Los dos `iframe` de YouTube preexistentes se reemplazaron por enlaces
   externos explícitos para no abrir orígenes remotos en la política; pasan las
   261 pruebas y CF-1 conserva intactas sus aserciones de seguridad.
+- **03/08/2026 — Commit 6.7 / cierre de Fase 6:** CSP queda bloqueante por
+  defecto, con nonce por respuesta, `script-src-attr 'none'`, Referrer-Policy y
+  Permissions-Policy. Las 63 pantallas y cinco formularios interactivos pasan
+  sin violaciones; se corrigió la inicialización temprana del filtro de fuerza.
+  La integración cierra con 264 pruebas, migraciones limpias y el SHA-256
+  oficial intacto.
 
 ### Registro de cambios documentales
 

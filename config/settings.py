@@ -59,9 +59,9 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-# CSP en modo observación: registra violaciones sin bloquear recursos.
-# El commit 6.7 cambia el default a False tras completar el recorrido.
-CSP_REPORT_ONLY = env.bool("CSP_REPORT_ONLY", default=True)
+# CSP bloqueante tras completar el recorrido Report-Only de la Fase 6.
+# Puede volver temporalmente a observación mediante la variable de entorno.
+CSP_REPORT_ONLY = env.bool("CSP_REPORT_ONLY", default=False)
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

@@ -26,7 +26,7 @@
 </div>
 
 <script nonce="{{ request.csp_nonce }}">
-  (() => {
+  document.addEventListener("DOMContentLoaded", () => {
     const distance = document.getElementById("id_distancia_m");
     const frequency = document.getElementById("id_frecuencia_opcion");
     if (!distance || !frequency) return;
@@ -53,5 +53,5 @@
 
     distance.addEventListener("change", () => syncOptions(true));
     syncOptions(false);
-  })();
+  });
 </script>

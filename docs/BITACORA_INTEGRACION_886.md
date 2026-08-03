@@ -4857,7 +4857,7 @@ pantallas y registrar/corregir cada violación sin relajar directivas.
 | Fecha | 2026-08-03 12:55 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `2d029ed` |
 | Fase | 6 |
 | Estado | ✅ Completado con desvío documentado |
 
@@ -4952,3 +4952,142 @@ acceso al video se conserva como enlace `target="_blank" rel="noopener"`.
 ### Notas para el commit siguiente
 Cambiar el default general a `CSP_REPORT_ONLY=False`, reiniciar la fixture y
 repetir las 63 pantallas bajo la cabecera bloqueante.
+
+---
+
+## Commit 6.7 — Activar el CSP en modo bloqueante
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 13:01 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 6 |
+| Estado | ✅ Completado con desvío documentado |
+
+### Qué se hizo
+`CSP_REPORT_ONLY` queda en `False` por defecto tanto en settings como en el
+ejemplo de entorno. La cabecera efectiva es bloqueante y conserva sin cambios
+la política observada. Se recorrieron nuevamente las 63 pantallas, se probaron
+los cinco formularios JavaScript y ambos asistentes. La verificación integral
+cerró las condiciones fundamentales, bloqueantes, regresiones y objetivo de
+negocio del roadmap.
+
+### Archivos modificados
+- `config/settings.py` — CSP bloqueante por defecto.
+- `.env.example` — valor de despliegue documentado; `.env` real intacto.
+- `_force_scope_checklist.html` — inicialización diferida hasta
+  `DOMContentLoaded`.
+- documentación de trazabilidad, diseño y cierre de integración.
+
+### Verificaciones ejecutadas
+
+```text
+Cabeceras con config.settings:
+status= 302
+blocking_present= True
+report_only_present= False
+policy= default-src 'self'; script-src 'self' 'nonce--QNYq0zv9RzJgkxxH7StHjAx'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'
+referrer= same-origin
+permissions= camera=(), microphone=(), geolocation=(), payment=()
+
+Auditoría final en navegador con CSP bloqueante:
+{
+  "count": 63,
+  "failures": []
+}
+
+Interacciones JavaScript:
+{
+  "empuje": {
+    "distance": "60",
+    "disabled": 5,
+    "enabled": ["1_cada_2_min", "1_cada_5_min", "1_cada_8_h"]
+  },
+  "bipedestacion": {"display": "", "value": "deambulacion"},
+  "posturas": {"mas60": false, "mas60Disabled": true, "sedente": true},
+  "vmb": {"multiple": "", "simple": "none", "value": "multiple"},
+  "vce": {"before": "1", "after": "2"},
+  "logs": []
+}
+
+Asistentes:
+help_ai={"containsGuide":true,"length":10971,"panel":true}
+ergobot={"input":true,"module":"ergonomia","send":true}
+logs=[]
+
+.venv/bin/python manage.py test --settings=config.test_settings
+Creating test database for alias 'default'...
+........................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 264 tests in 2.374s
+
+OK
+Destroying test database for alias 'default'...
+Found 264 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergobot_ai apps.ergonomia_886.help_ai --settings=config.test_settings
+........................
+----------------------------------------------------------------------
+Ran 24 tests in 0.227s
+
+OK
+Destroying test database for alias 'default'...
+Found 24 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --deploy
+System check identified some issues:
+
+WARNINGS:
+?: (security.W004) You have not set a value for the SECURE_HSTS_SECONDS setting. If your entire site is served only over SSL, you may want to consider setting a value and enabling HTTP Strict Transport Security. Be sure to read the documentation first; enabling HSTS carelessly can cause serious, irreversible problems.
+?: (security.W008) Your SECURE_SSL_REDIRECT setting is not set to True. Unless your site should be available over both SSL and non-SSL connections, you may want to either set this setting True or configure a load balancer or reverse-proxy server to redirect all connections to HTTPS.
+?: (security.W009) Your SECRET_KEY has less than 50 characters, less than 5 unique characters, or it's prefixed with 'django-insecure-' indicating that it was generated automatically by Django. Please generate a long and random value, otherwise many of Django's security-critical features will be vulnerable to attack.
+?: (security.W012) SESSION_COOKIE_SECURE is not set to True. Using a secure-only session cookie makes it more difficult for network traffic sniffers to hijack user sessions.
+?: (security.W016) You have 'django.middleware.csrf.CsrfViewMiddleware' in your MIDDLEWARE, but you have not set CSRF_COOKIE_SECURE to True. Using a secure-only CSRF cookie makes it more difficult for network traffic sniffers to steal the CSRF token.
+?: (security.W018) You should not have DEBUG set to True in deployment.
+
+System check identified 6 issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+.venv/bin/python manage.py migrate --check
+(sin salida; código 0)
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+shasum -a 256 apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4  apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+
+rg -n "from apps\\.ergobot_ai|import apps\\.ergobot_ai" apps/ergonomia_886
+(sin salida)
+rg -n "from apps\\.ergonomia_886\\.help_ai|import apps\\.ergonomia_886\\.help_ai" apps/ergobot_ai
+(sin salida)
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+El CSP bloqueante expuso que `_force_scope_checklist.html` se renderiza antes
+de los selects de distancia y frecuencia. Su IIFE no encontraba los campos y
+terminaba sin listeners: no era una violación de CSP, sino una falla funcional
+silenciosa que la compuerta interactiva hizo visible. Se cambió únicamente el
+momento de inicialización a `DOMContentLoaded`; la fórmula, los datos y CF-2 no
+se tocaron. La prueba repetida confirmó 5 opciones deshabilitadas y las 3
+frecuencias normativamente válidas para 60 m.
+
+`check --deploy` reporta seis advertencias esperables de la configuración local
+de desarrollo (HTTPS, cookies, DEBUG y fortaleza de la clave). Resolverlas
+depende del entorno de producción y de P-1; no se alteró `.env` ni se amplió el
+alcance de esta fase. `check` normal y los cuatro chequeos del módulo quedan en
+cero issues.
+
+### Notas para el commit siguiente
+La Fase 6 y los 58 commits del roadmap quedan completos. El siguiente paso es
+el despliegue, que requiere la detención P-1 prevista para variables del `.env`
+de producción; no se ejecuta sin una instrucción posterior del usuario.

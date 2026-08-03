@@ -282,7 +282,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 6.4 | Verificación visual de las 33 pantallas | ✅ |
 | 6.5 | Portar el middleware con modo `Report-Only` | ✅ |
 | 6.6 | Período de observación | ✅ |
-| 6.7 | Activar el CSP en modo bloqueante | ⬜ |
+| 6.7 | Activar el CSP en modo bloqueante | ✅ |
 
 ## 0.10 Comandos de verificación de referencia
 
@@ -6410,10 +6410,16 @@ CSP_REPORT_ONLY = env.bool("CSP_REPORT_ONLY", default=False)   # ← el defecto 
 curl -sI http://127.0.0.1:8000/dashboard/ | grep -i "content-security\|referrer\|permissions"
 ```
 
-- [ ] La cabecera es `Content-Security-Policy`, ya no `Report-Only`
-- [ ] Las 63 pantallas funcionan con cero violaciones
-- [ ] **El chatbot Ergobot y el widget de ayuda responden (CF-1)**
-- [ ] Los 5 formularios de factor con JavaScript funcionan
+- [x] La cabecera es `Content-Security-Policy`, ya no `Report-Only`
+- [x] Las 63 pantallas funcionan con cero violaciones
+- [x] **El chatbot Ergobot y el widget de ayuda responden (CF-1)**
+- [x] Los 5 formularios de factor con JavaScript funcionan
+
+> **Desvío de ejecución (03/08/2026):** la interacción bloqueante descubrió
+> que `_force_scope_checklist.html` inicializaba antes de que los selects
+> posteriores existieran. Se difirió su inicialización a `DOMContentLoaded` y
+> se comprobó que a 60 m quedan habilitadas exactamente las tres frecuencias
+> admitidas. No se modificó ninguna directiva CSP.
 
 ### 🔴 REGLA DE ORO · Git
 
@@ -6456,33 +6462,33 @@ grep -ri "help_ai" apps/ergobot_ai/     || echo "OK CF-1"
 
 ### Condiciones fundamentales
 
-- [ ] **CF-1** · `help_ai` y `ergobot_ai` coexisten; ninguna importa de la otra; las 22 pruebas pasan; ambos asistentes responden
-- [ ] **CF-2** · Ningún nivel de riesgo se calcula fuera de `calculators.py`
-- [ ] **CF-3** · `calc_data` íntegro; los 13 artefactos con su SHA-256; 7 en `approved`
-- [ ] **CF-4** · `CLAVES_PROHIBIDAS` ampliada; `trace_include_sensitive_data=False`; verificado con la relación real
-- [ ] **CF-5** · Planilla no completada sale en blanco; recuadro médico siempre vacío; poblado no destructivo
-- [ ] **CF-6** · SHA-256 del PDF coincide; curva de Fanger y escala de Borg íntegras; sin dependencias de Excel
+- [x] **CF-1** · `help_ai` y `ergobot_ai` coexisten; ninguna importa de la otra; las 22 pruebas pasan; ambos asistentes responden
+- [x] **CF-2** · Ningún nivel de riesgo se calcula fuera de `calculators.py`
+- [x] **CF-3** · `calc_data` íntegro; los 13 artefactos con su SHA-256; 7 en `approved`
+- [x] **CF-4** · `CLAVES_PROHIBIDAS` ampliada; `trace_include_sensitive_data=False`; verificado con la relación real
+- [x] **CF-5** · Planilla no completada sale en blanco; recuadro médico siempre vacío; poblado no destructivo
+- [x] **CF-6** · SHA-256 del PDF coincide; curva de Fanger y escala de Borg íntegras; sin dependencias de Excel
 
 ### Bloqueantes
 
-- [ ] **B1** · `AUTH_USER_MODEL`, sin migración generada
-- [ ] **B2** · 4 apps bajo `apps/ergonomia_886/`; 102 imports y 48 rutas reescritos
-- [ ] **B3** · `app_name` en `planillas` y `help_ai`; 35 referencias calificadas
-- [ ] **B4** · `DatabaseCache` y `createcachetable`
-- [ ] **B5** · CSP activo (o registrado como deuda con fecha)
-- [ ] **B6** · Ruta de documentos de ayuda anclada a `BASE_DIR`
-- [ ] **B7** · `pypdf` y `pillow` declarados
-- [ ] **B8** · `config/test_settings.py`
+- [x] **B1** · `AUTH_USER_MODEL`, sin migración generada
+- [x] **B2** · 4 apps bajo `apps/ergonomia_886/`; 102 imports y 48 rutas reescritos
+- [x] **B3** · `app_name` en `planillas` y `help_ai`; 35 referencias calificadas
+- [x] **B4** · `DatabaseCache` y `createcachetable`
+- [x] **B5** · CSP activo (o registrado como deuda con fecha)
+- [x] **B6** · Ruta de documentos de ayuda anclada a `BASE_DIR`
+- [x] **B7** · `pypdf` y `pillow` declarados
+- [x] **B8** · `config/test_settings.py`
 
 ### Regresiones del destino
 
-- [ ] **N1** · Ninguna ruta devuelve 500 a un anónimo
-- [ ] **N2** · La ficha del trabajador renderiza con `QuizState`
-- [ ] **H-D**, **H-F** · Namespaces y settings de login corregidos
+- [x] **N1** · Ninguna ruta devuelve 500 a un anónimo
+- [x] **N2** · La ficha del trabajador renderiza con `QuizState`
+- [x] **H-D**, **H-F** · Namespaces y settings de login corregidos
 
 ### Objetivo de negocio
 
-- [ ] 🎯 **La tarjeta «Evaluaciones» dice «Disponible» y es el acceso al módulo**
+- [x] 🎯 **La tarjeta «Evaluaciones» dice «Disponible» y es el acceso al módulo**
 
 ## Preparación del despliegue
 

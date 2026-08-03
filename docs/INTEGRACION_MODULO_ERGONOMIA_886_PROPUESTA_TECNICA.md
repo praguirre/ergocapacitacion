@@ -1661,6 +1661,12 @@ reemplazaron ambos `iframe` por tarjetas con enlace externo explícito. El video
 sigue accesible bajo una acción consciente del usuario y el CSP queda sin
 excepciones remotas.
 
+La prueba interactiva posterior encontró además que el filtro de frecuencias
+de Empuje/Tracción se inicializaba antes de que sus selects existieran en el
+DOM. El listener se registra ahora en `DOMContentLoaded`; esta corrección no
+altera el cálculo ni la política y evita una degradación silenciosa al activar
+el modo bloqueante.
+
 ### Decisión
 
 **Se adopta el middleware del origen, pero NO como prerrequisito de la integración: como una fase posterior e independiente, precedida por la remediación del frontend del destino (Área 9).**
