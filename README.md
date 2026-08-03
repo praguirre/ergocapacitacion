@@ -200,6 +200,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   activas y snapshots documentales no destructivos. Los datos registrados sólo
   completan valores vacíos al crear; lo escrito por el profesional prevalece y
   futuras ediciones del perfil no alteran evaluaciones emitidas (CF-5).
+- **03/08/2026 — Commit 3.6:** `/evaluacion-ergonomica/` es la pantalla de
+  aterrizaje del módulo. Conserva búsqueda sobre seis campos, tres filtros,
+  seis órdenes permitidos, paginación de veinte y precarga optimizada; aplica
+  D-9 y oculta el alta a usuarios empresa.
 
 ### Registro de cambios documentales
 

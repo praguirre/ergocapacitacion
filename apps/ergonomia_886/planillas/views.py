@@ -8,6 +8,8 @@ from django.db import transaction
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.forms import modelformset_factory
+from django.core.paginator import Paginator
+from django.db.models import Prefetch, Q
 from apps.accounts.decorators import backoffice_required
 from .models import (
     Evaluacion,
@@ -26,7 +28,11 @@ from .forms import (
     Planilla3Form, MedidaEspecificaFormSet,
     SeguimientoMedidaForm,
 )
-from .querysets import obtener_evaluacion_o_404
+from .querysets import (
+    evaluaciones_visibles_para,
+    obtener_evaluacion_o_404,
+    puede_editar_evaluaciones,
+)
 
 # NUEVOS imports para integrar el resumen de factores desde la app evaluaciones
 from apps.ergonomia_886.evaluaciones.views import _build_wizard_items, _get_riskeval_or_404_for_user, _wizard_url
@@ -48,6 +54,78 @@ FACTOR_LABELS = {
     "confort_termico": "Confort térmico",
     "estres_contacto": "Estrés de contacto",
 }
+
+
+@login_required
+@backoffice_required
+def evaluacion_list_view(request):
+    """Pantalla de aterrizaje del módulo con propiedad mixta D-9."""
+    evaluaciones_qs = (
+        evaluaciones_visibles_para(request.user)
+        .select_related("usuario", "empresa")
+        .prefetch_related(Prefetch("planilla1", queryset=Planilla1.objects.all()))
+    )
+
+    search_query = request.GET.get("search", "").strip()
+    if search_query:
+        evaluaciones_qs = evaluaciones_qs.filter(
+            Q(razon_social__icontains=search_query)
+            | Q(cuit__icontains=search_query)
+            | Q(provincia__icontains=search_query)
+            | Q(direccion_establecimiento__icontains=search_query)
+            | Q(planilla1__area_sector__icontains=search_query)
+            | Q(planilla1__puesto_trabajo__icontains=search_query)
+        ).distinct()
+
+    provincia_filter = request.GET.get("provincia", "").strip()
+    if provincia_filter:
+        evaluaciones_qs = evaluaciones_qs.filter(
+            provincia__iexact=provincia_filter
+        )
+
+    fecha_desde = request.GET.get("fecha_desde", "").strip()
+    if fecha_desde:
+        evaluaciones_qs = evaluaciones_qs.filter(
+            fecha_creacion__date__gte=fecha_desde
+        )
+
+    fecha_hasta = request.GET.get("fecha_hasta", "").strip()
+    if fecha_hasta:
+        evaluaciones_qs = evaluaciones_qs.filter(
+            fecha_creacion__date__lte=fecha_hasta
+        )
+
+    orden = request.GET.get("orden", "-fecha_modificacion")
+    ordenes_validos = [
+        "-fecha_modificacion", "fecha_modificacion",
+        "-fecha_creacion", "fecha_creacion",
+        "razon_social", "-razon_social",
+    ]
+    if orden not in ordenes_validos:
+        orden = "-fecha_modificacion"
+    evaluaciones_qs = evaluaciones_qs.order_by(orden)
+
+    paginator = Paginator(evaluaciones_qs, 20)
+    evaluaciones_page = paginator.get_page(request.GET.get("page"))
+
+    provincias_disponibles = (
+        evaluaciones_visibles_para(request.user)
+        .values_list("provincia", flat=True)
+        .distinct()
+        .order_by("provincia")
+    )
+
+    return render(request, "planillas/evaluacion_list.html", {
+        "evaluaciones": evaluaciones_page,
+        "provincias_disponibles": provincias_disponibles,
+        "total_resultados": evaluaciones_qs.count(),
+        "current_search": search_query,
+        "current_provincia": provincia_filter,
+        "current_fecha_desde": fecha_desde,
+        "current_fecha_hasta": fecha_hasta,
+        "current_orden": orden,
+        "puede_crear": puede_editar_evaluaciones(request.user),
+    })
 
 
 # ─────────────────────────────────────────────────────────────────────

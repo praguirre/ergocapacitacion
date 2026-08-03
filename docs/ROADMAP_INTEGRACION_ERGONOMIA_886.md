@@ -246,7 +246,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 3.3 | Propiedad mixta por tipo de usuario | ✅ |
 | 3.4 | Decoradores en todas las vistas del módulo | ✅ |
 | 3.5 | Formulario de creación con selector de empresa (CF-5) | ✅ |
-| 3.6 | Vista de listado de evaluaciones | ⬜ |
+| 3.6 | Vista de listado de evaluaciones | ✅ |
 | 3.7 | Vista de eliminación de evaluación | ⬜ |
 | 3.8 | Índices de consulta | ⬜ |
 | 3.9 | Pruebas de propiedad, saneamiento y no regresión | ⬜ |
@@ -5064,13 +5064,13 @@ print(reverse('ergonomia_886:evaluacion_list'))   # → /evaluacion-ergonomica/
 
 Verificación funcional con el servidor: entrar a `/evaluacion-ergonomica/` y probar búsqueda, cada filtro, cada opción de orden y la paginación.
 
-- [ ] La ruta resuelve a `/evaluacion-ergonomica/`
-- [ ] Búsqueda por los 6 campos, 3 filtros, 6 ordenamientos y paginación funcionan
-- [ ] El widget de ayuda carga el slug `dashboard`
-- [ ] Un usuario `company` **no** ve el botón «Nueva Evaluación»
+- [x] La ruta resuelve a `/evaluacion-ergonomica/`
+- [x] Búsqueda por los 6 campos, 3 filtros, 6 ordenamientos y paginación funcionan
+- [x] El widget de ayuda carga el slug `dashboard`
+- [x] Un usuario `company` **no** ve el botón «Nueva Evaluación»
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.6 · Tabla de control: 3.6 ✅ · `README.md`
+- [x] Bitácora: entrada 3.6 · Tabla de control: 3.6 ✅ · `README.md`
 
 ### Git
 

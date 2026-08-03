@@ -1,0 +1,162 @@
+{% extends "ergonomia_886/base_886.html" %}
+
+{% block title %}Evaluaciones ergonómicas{% endblock %}
+{% block help_slug %}dashboard{% endblock %}
+
+{% block content_886 %}
+<div class="container-fluid py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 text-light mb-1">Evaluaciones ergonómicas</h1>
+      <p class="text-secondary mb-0">Protocolos SRT 886/15 disponibles para tu cuenta.</p>
+    </div>
+    {% if puede_crear %}
+      <a href="{% url 'planillas:crear_evaluacion' %}" class="btn btn-primary shadow-sm">
+        <i class="bi bi-plus-lg me-2"></i>Nueva Evaluación
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="card border-secondary bg-dark text-light shadow-sm mb-4">
+    <div class="card-header border-secondary py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="h6 m-0 text-info"><i class="bi bi-sliders me-2"></i>Búsqueda avanzada</h2>
+        {% if current_search or current_provincia or current_fecha_desde or current_fecha_hasta %}
+          <a href="{% url 'ergonomia_886:evaluacion_list' %}" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-x-circle me-1"></i>Limpiar todo
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card-body bg-body-tertiary">
+      <form method="get" class="row g-3">
+        <div class="col-lg-4">
+          <label class="form-label small fw-bold" for="id_search">Buscar</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input id="id_search" type="text" name="search" class="form-control"
+                   placeholder="Empresa, CUIT, puesto…" value="{{ current_search }}">
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <label class="form-label small fw-bold" for="id_provincia">Provincia</label>
+          <select id="id_provincia" name="provincia" class="form-select">
+            <option value="">Todas</option>
+            {% for prov in provincias_disponibles %}
+              <option value="{{ prov }}" {% if current_provincia == prov %}selected{% endif %}>{{ prov }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <label class="form-label small fw-bold" for="id_desde">Desde</label>
+          <input id="id_desde" type="date" name="fecha_desde" class="form-control" value="{{ current_fecha_desde }}">
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <label class="form-label small fw-bold" for="id_hasta">Hasta</label>
+          <input id="id_hasta" type="date" name="fecha_hasta" class="form-control" value="{{ current_fecha_hasta }}">
+        </div>
+        <div class="col-md-6 col-lg-2">
+          <label class="form-label small fw-bold" for="id_orden">Ordenar por</label>
+          <select id="id_orden" name="orden" class="form-select">
+            <option value="-fecha_modificacion" {% if current_orden == '-fecha_modificacion' %}selected{% endif %}>Modificación reciente</option>
+            <option value="fecha_modificacion" {% if current_orden == 'fecha_modificacion' %}selected{% endif %}>Modificación antigua</option>
+            <option value="-fecha_creacion" {% if current_orden == '-fecha_creacion' %}selected{% endif %}>Creación reciente</option>
+            <option value="fecha_creacion" {% if current_orden == 'fecha_creacion' %}selected{% endif %}>Creación antigua</option>
+            <option value="razon_social" {% if current_orden == 'razon_social' %}selected{% endif %}>Empresa A–Z</option>
+            <option value="-razon_social" {% if current_orden == '-razon_social' %}selected{% endif %}>Empresa Z–A</option>
+          </select>
+        </div>
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-outline-info"><i class="bi bi-funnel-fill me-1"></i>Aplicar filtros</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <p class="text-secondary mb-3">Se encontraron <strong class="text-light">{{ total_resultados }}</strong> evaluaciones.</p>
+
+  {% if evaluaciones %}
+    <div class="card border-secondary bg-dark text-light shadow-sm mb-4">
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4">Empresa / CUIT</th>
+              <th>Cuenta vinculada</th>
+              <th>Ubicación</th>
+              <th>Puesto (Planilla 1)</th>
+              <th>Fechas</th>
+              <th class="text-end pe-4">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for evaluacion in evaluaciones %}
+              <tr>
+                <td class="ps-4">
+                  <div class="fw-bold">{{ evaluacion.razon_social }}</div>
+                  <div class="small text-secondary">{{ evaluacion.cuit }}</div>
+                </td>
+                <td>
+                  {% if evaluacion.empresa %}{{ evaluacion.empresa.display_name }}{% else %}<span class="text-secondary">Carga manual</span>{% endif %}
+                </td>
+                <td><span class="badge text-bg-secondary"><i class="bi bi-geo-alt-fill me-1"></i>{{ evaluacion.provincia }}</span></td>
+                <td>
+                  {% if evaluacion.planilla1.puesto_trabajo %}
+                    <span class="text-info fw-bold">{{ evaluacion.planilla1.puesto_trabajo }}</span>
+                    <div class="small text-secondary">{{ evaluacion.planilla1.area_sector }}</div>
+                  {% else %}
+                    <span class="badge text-bg-warning">Sin definir</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="small">Creado: {{ evaluacion.fecha_creacion|date:"d/m/Y" }}</div>
+                  <div class="small text-secondary">Modif.: {{ evaluacion.fecha_modificacion|date:"d/m/Y" }}</div>
+                </td>
+                <td class="text-end pe-4">
+                  <div class="d-flex justify-content-end gap-2">
+                    <a href="{% url 'planillas:detalle_evaluacion' evaluacion.id %}" class="btn btn-sm btn-outline-info" title="Ver detalle">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    {% if puede_crear %}
+                      {% url 'ergonomia_886:eliminar_evaluacion' evaluacion.id as eliminar_url %}
+                      {% if eliminar_url %}
+                        <form action="{{ eliminar_url }}" method="post" class="d-inline"
+                              data-confirm-message="¿Eliminar la evaluación de {{ evaluacion.razon_social }}? Esta acción no se puede deshacer.">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar evaluación"><i class="bi bi-trash"></i></button>
+                        </form>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% if evaluaciones.has_other_pages %}
+        <div class="card-footer border-secondary py-3">
+          <nav aria-label="Paginación de evaluaciones">
+            <ul class="pagination justify-content-center mb-0">
+              {% if evaluaciones.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ evaluaciones.previous_page_number }}&search={{ current_search|urlencode }}&provincia={{ current_provincia|urlencode }}&fecha_desde={{ current_fecha_desde }}&fecha_hasta={{ current_fecha_hasta }}&orden={{ current_orden }}">Anterior</a></li>
+              {% endif %}
+              <li class="page-item disabled"><span class="page-link">Página {{ evaluaciones.number }} de {{ evaluaciones.paginator.num_pages }}</span></li>
+              {% if evaluaciones.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ evaluaciones.next_page_number }}&search={{ current_search|urlencode }}&provincia={{ current_provincia|urlencode }}&fecha_desde={{ current_fecha_desde }}&fecha_hasta={{ current_fecha_hasta }}&orden={{ current_orden }}">Siguiente</a></li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center py-5">
+      <i class="bi bi-inbox fs-1"></i>
+      <h2 class="h4 mt-3">No se encontraron evaluaciones</h2>
+      <p class="mb-0">Probá ajustar los filtros de búsqueda.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

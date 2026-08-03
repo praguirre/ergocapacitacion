@@ -4142,6 +4142,7 @@ Adicionalmente, dos precisiones sobre `app_label` y rutas de archivo:
 | **H-N** | Las factorías heredadas del módulo crean usuarios con `create_user()` sin `user_type`; en ErgoSolutions eso produce `trainee`, no `professional` | Roadmap 3.3 («21 pruebas sin modificación») | ⚠️ Se declaró `user_type="professional"` sólo en los fixtures que ejercitan actos profesionales, sin cambiar casos ni aserciones; D-9 permanece estricta |
 | **H-O** | `help_ai.chat_view` es async y su prueba de seguridad exige conservar HTTP 401; el `backoffice_required` síncrono y `login_required` cambiarían o romperían ese contrato | Roadmap 3.4 y decisión vinculante sobre las 22 pruebas de `help_ai` | ⚠️ El chat conserva su validación autenticada previa; la guía usa `login_required`; las 22 pruebas pasan intactas y CF-1 no se relaja |
 | **H-P** | Los cuatro snapshots de `Evaluacion` tienen `blank=False`; el código propuesto para poblarlos en `save()` no alcanza porque `ModelForm.is_valid()` falla antes | Roadmap 3.5 | ⚠️ El formulario los completa en `clean()` sólo al crear y conserva una validación obligatoria explícita; `save()` mantiene la defensa CF-5 |
+| **H-Q** | El roadmap requiere `ergonomia_886:evaluacion_list`, pero el URLconf padre no puede adquirir ese namespace sin anidar y romper los namespaces planos de 2.9 | Roadmap 3.6 y decisión de namespaces planos | ⚠️ Se creó un include vacío con namespace sólo para rutas raíz; `planillas:`, `evaluaciones:`, `exportaciones:` y `help_ai:` permanecen planos |
 
 ---
 

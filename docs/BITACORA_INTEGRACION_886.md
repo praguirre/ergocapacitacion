@@ -2872,7 +2872,7 @@ Incorporar el selector de empresa y el poblado no destructivo exigido por CF-5.
 | Fecha | 2026-08-03 10:33 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `a3904ec` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -2927,3 +2927,87 @@ segunda defensa. Sin empresa, los cuatro campos siguen siendo obligatorios.
 ### Notas para el commit siguiente
 Reimplantar el listado completo con propiedad mixta, filtros, orden seguro y
 paginación sin degradar la consulta original.
+
+---
+
+## Commit 3.6 — Vista de listado de evaluaciones
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 10:39 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se reimplantó el dashboard del origen como pantalla raíz del módulo, usando el
+queryset mixto D-9. Conserva búsqueda en seis campos, filtros de provincia y
+fechas, lista blanca de seis órdenes, paginación de veinte, `select_related` y
+`Prefetch`. El template oscuro muestra empresa vinculada, slug de ayuda
+`dashboard` y oculta el alta a usuarios empresa.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/views.py` — listado completo y optimizado.
+- `apps/ergonomia_886/urls.py` — ruta raíz con namespace aislado.
+- `apps/ergonomia_886/planillas/templates/planillas/evaluacion_list.html` — aterrizaje integrado.
+- `apps/ergonomia_886/planillas/tests_listado.py` — cinco pruebas funcionales.
+- `README.md` — capacidades del listado registradas.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — hallazgo H-Q.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.5 y evidencia literal 3.6.
+
+### Verificaciones ejecutadas
+
+```text
+# Primera ejecución: dos aserciones buscaban registros fuera de la página 1.
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_listado --settings=config.test_settings -v 2
+Found 5 test(s).
+Ran 5 tests in 0.092s
+FAILED (failures=2)
+# Se ajustó la prueba para localizar esos registros mediante la búsqueda que
+# precisamente está verificando; no se alteró el código funcional.
+
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_listado --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 5 tests in 0.095s
+OK
+Destroying test database for alias 'default'...
+Found 5 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python -c '<django.setup y reverse>'
+/evaluacion-ergonomica/
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 211 tests in 1.634s
+OK
+Destroying test database for alias 'default'...
+Found 211 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py runserver 127.0.0.1:8036 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8036/
+GET /evaluacion-ergonomica/ -> 302
+```
+
+### Desvíos respecto del roadmap
+**H-Q:** para cumplir simultáneamente el reverse raíz namespaced y los cuatro
+namespaces planos, sólo las rutas raíz se incluyen en `ergonomia_886`. Anidar
+todo el módulo habría roto referencias ya verificadas.
+
+La URL de eliminación pertenece al commit siguiente. El template usa `{% url
+... as eliminar_url %}` para no producir `NoReverseMatch` durante este commit;
+el formulario aparecerá automáticamente cuando 3.7 registre la ruta.
+
+### Notas para el commit siguiente
+Agregar eliminación exclusivamente por POST y sólo para el profesional creador,
+manteniendo 404 contra enumeración.

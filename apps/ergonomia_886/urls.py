@@ -22,11 +22,24 @@ from django.urls import include, path
 from .planillas import views as planillas_views
 
 
+root_urlpatterns = [
+    path("", planillas_views.evaluacion_list_view, name="evaluacion_list"),
+]
+
+
 urlpatterns = [
     # Aterrizaje del módulo: listado de evaluaciones ergonómicas del usuario.
     # Reimplanta core.dashboard_view con su búsqueda, filtros y paginación.
     # Se implementa en el commit 3.6; hasta entonces la ruta no existe.
-    # path("", planillas_views.evaluacion_list_view, name="evaluacion_list"),
+    # El namespace sólo envuelve las rutas raíz. Los namespaces de las cuatro
+    # sub-apps permanecen planos por la decisión de integración 2.9.
+    path(
+        "",
+        include(
+            (root_urlpatterns, "ergonomia_886"),
+            namespace="ergonomia_886",
+        ),
+    ),
 
     path("protocolo/", include("apps.ergonomia_886.planillas.urls")),
     path("factores/", include("apps.ergonomia_886.evaluaciones.urls")),
