@@ -80,9 +80,9 @@ class HelpContentCoverageTests(SimpleTestCase):
     def test_templates_do_not_depend_on_cdn_or_inline_event_handlers(self):
         template_roots = (
             Path(settings.BASE_DIR) / "templates",
-            Path(settings.BASE_DIR) / "core" / "templates",
-            Path(settings.BASE_DIR) / "planillas" / "templates",
-            Path(settings.BASE_DIR) / "evaluaciones" / "templates",
+            Path(settings.BASE_DIR) / "apps" / "ergonomia_886" / "core" / "templates",
+            Path(settings.BASE_DIR) / "apps" / "ergonomia_886" / "planillas" / "templates",
+            Path(settings.BASE_DIR) / "apps" / "ergonomia_886" / "evaluaciones" / "templates",
         )
         templates = "\n".join(
             path.read_text(encoding="utf-8")

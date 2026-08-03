@@ -265,6 +265,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   descubrió y eliminó dos CDN generados por `django_bootstrap5` que no figuraban
   como URLs literales; las 33 pantallas cargan recursos locales, sin íconos
   vacíos, overflow ni errores de consola.
+- **03/08/2026 — Commit 6.2:** los cinco scripts inline del destino se
+  extrajeron a `static/js/`; slug, preguntas y endpoint se pasan con `data-*`.
+  El navegador confirmó cero bloques inline, carga de los cinco archivos y
+  ejecución del chat, widget, copia y quiz sin errores. CF-1 conserva intactas
+  las aserciones de `help_ai`; sólo se corrigieron rutas anidadas de templates.
 
 ### Registro de cambios documentales
 

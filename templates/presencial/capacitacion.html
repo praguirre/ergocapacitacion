@@ -47,7 +47,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-3 px-4">
+<div class="container-fluid py-3 px-4" id="presencial-capacitacion"
+     data-module-slug="{{ module.slug }}">
 
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
@@ -136,45 +137,5 @@
 
 {% block extra_js %}
 <script src="{% static 'js/ergobot_chat.js' %}"></script>
-<script nonce="{{ request.csp_nonce }}">
-(function() {
-    const moduleSlug = "{{ module.slug }}";
-    const log = document.getElementById("chatLog");
-    const input = document.getElementById("chatInput");
-    const btn = document.getElementById("chatSend");
-
-    log.innerHTML = `<div><strong>🤖 Ergobot:</strong><br>¡Hola! Soy Ergobot, tu asistente de ergonomía. Podés hacerme preguntas sobre el contenido de la capacitación.</div>`;
-
-    async function handleSend() {
-        const text = input.value.trim();
-        if (!text) return;
-
-        input.value = "";
-        input.disabled = true;
-        btn.disabled = true;
-
-        log.innerHTML += `<div class="mt-2"><strong>👤 Usuario:</strong><br>${text}</div>`;
-        log.innerHTML += `<div class="mt-2"><strong>🤖 Ergobot:</strong><br><span id="currentDelta"></span></div>`;
-        const deltaSpan = document.getElementById("currentDelta");
-        log.scrollTop = log.scrollHeight;
-
-        try {
-            await sendErgobotMessage(moduleSlug, text, (delta) => {
-                deltaSpan.textContent += delta;
-                log.scrollTop = log.scrollHeight;
-            });
-            deltaSpan.removeAttribute("id");
-        } catch (err) {
-            log.innerHTML += `<div class="text-danger mt-1">Error al conectar con Ergobot. Intenta de nuevo.</div>`;
-        } finally {
-            input.disabled = false;
-            btn.disabled = false;
-            input.focus();
-        }
-    }
-
-    btn.onclick = handleSend;
-    input.onkeypress = (e) => { if (e.key === "Enter") handleSend(); };
-})();
-</script>
+<script src="{% static 'js/presencial_capacitacion.js' %}"></script>
 {% endblock %}

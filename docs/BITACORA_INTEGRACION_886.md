@@ -4324,7 +4324,7 @@ No iniciar la Fase 6 sin instrucción explícita del usuario.
 | Fecha | 2026-08-03 12:29 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `34d8926` |
 | Fase | 6 |
 | Estado | ✅ Completado con desvío documentado |
 
@@ -4421,3 +4421,97 @@ permanece instalada para su uso legítimo en renderizado de formularios.
 
 ### Notas para el commit siguiente
 Extraer los cinco bloques inline y pasar el contexto Django mediante `data-*`.
+
+---
+
+## Commit 6.2 — Extraer los 5 bloques `<script>` inline
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 12:35 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 6 |
+| Estado | ✅ Completado con desvío documentado |
+
+### Qué se hizo
+Los cinco bloques inline del destino se movieron a archivos estáticos. Slug,
+preguntas serializadas y URL de submit se entregan mediante `data-*`; ningún
+archivo JavaScript depende ya del render del template. Los scripts continúan
+preservando la funcionalidad de ambos chats, el widget de quiz, la copia de
+links y el quiz presencial.
+
+### Archivos modificados
+- `templates/training/training_page.html` y `static/js/training_page.js`.
+- `templates/quiz/quiz_widget.html` y `static/js/quiz_widget.js`.
+- `templates/dashboard/online_links.html` y `static/js/online_links.js`.
+- `templates/presencial/capacitacion.html` y
+  `static/js/presencial_capacitacion.js`.
+- `templates/presencial/quiz.html` y `static/js/presencial_quiz.js`.
+- `apps/ergonomia_886/help_ai/tests.py` — sólo actualización de namespaces de
+  rutas de templates; ninguna aserción, patch, caso ni cuota fue modificada.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+node --check static/js/{training_page,quiz_widget,online_links,presencial_capacitacion,presencial_quiz}.js
+(cinco ejecuciones sin salida)
+
+rg -n "<script nonce=|<script>([[:space:]]*)$|</script>" <los cinco templates>
+(sólo las etiquetas externas con atributo src; cero bloques inline)
+
+Auditoría funcional en navegador:
+{
+  "results": [
+    {"screen":"Capacitación trabajador","inlineScripts":0,"moduleSlug":"ergonomia","quizReady":true,"scripts":["quiz.js","quiz_widget.js","ergobot_chat.js","training_page.js","bootstrap.bundle-5.3.3.min.js"]},
+    {"screen":"Links online","inlineScripts":0,"scripts":["bootstrap.bundle-5.3.3.min.js","online_links.js"]},
+    {"screen":"Capacitación presencial","inlineScripts":0,"moduleSlug":"ergonomia","chatGreeting":true,"scripts":["bootstrap.bundle-5.3.3.min.js","ergobot_chat.js","presencial_capacitacion.js"]},
+    {"screen":"Quiz presencial","inlineScripts":0,"questionsPayload":true,"questionRendered":true,"scripts":["bootstrap.bundle-5.3.3.min.js","presencial_quiz.js"]}
+  ],
+  "errors": []
+}
+
+.venv/bin/python manage.py test apps.ergonomia_886.help_ai apps.dashboard apps.presencial apps.quiz apps.training --settings=config.test_settings
+Creating test database for alias 'default'...
+............................................
+----------------------------------------------------------------------
+Ran 44 tests in 0.330s
+
+OK
+Destroying test database for alias 'default'...
+Found 44 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+.....................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 261 tests in 2.356s
+
+OK
+Destroying test database for alias 'default'...
+Found 261 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+La prueba de seguridad de `help_ai` aún buscaba los templates del módulo en
+las rutas anteriores al anidamiento y dejó de encontrar scripts inline al
+extraer los cinco del destino. Conforme a CF-1, no se tocó ninguna aserción:
+sólo se actualizaron los tres namespaces de filesystem a
+`apps/ergonomia_886/...`. La misma aserción sigue exigiendo nonce en los seis
+scripts inline reales del módulo.
+
+### Notas para el commit siguiente
+Reemplazar las cuatro asignaciones de propiedades `onclick`/`onkeypress` que
+la inspección real conserva en los dos scripts de chat; el listener de copia
+ya estaba adelantado desde 2.13.
