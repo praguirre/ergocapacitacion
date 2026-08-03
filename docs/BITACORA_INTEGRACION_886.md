@@ -3088,7 +3088,7 @@ Agregar los tres índices que cubren los patrones reales de listado y búsqueda.
 | Fecha | 2026-08-03 10:44 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `2db0c3b` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -3164,3 +3164,81 @@ dependencias explícitas a `company.0004` y al usuario swappable porque los
 ### Notas para el commit siguiente
 Consolidar en una suite de integración propiedad, no enumeración, CF-4, CF-5 y
 los índices antes de cerrar la Fase 3.
+
+---
+
+## Commit 3.9 — Pruebas de propiedad, saneamiento y no regresión
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 10:47 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se creó la suite consolidada de cierre de fase. Cubre visibilidad profesional y
+empresarial, exclusión de trainees, 404 para recursos ajenos, ausencia de 500
+anónimo, capacidad de edición exclusiva, saneamiento recursivo CF-4, poblado
+no destructivo CF-5 y declaración de los tres índices. El smoke final reutilizó
+un profesional existente dentro de una transacción revertida íntegramente.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/tests_integracion.py` — nueve pruebas consolidadas.
+- `README.md` — cierre profesional de Fase 3.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 3.9 y fase completos.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.8 y evidencia literal 3.9.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_integracion --settings=config.test_settings -v 2
+Found 9 test(s).
+test_cf4_sanea_claves_y_valores_personales ... ok
+test_cf5_el_poblado_conserva_lo_declarado ... ok
+test_indices_de_consulta_declarados ... ok
+test_ninguna_ruta_clave_devuelve_500_a_un_anonimo ... ok
+test_un_profesional_solo_ve_las_suyas ... ok
+test_un_trainee_no_ve_ninguna ... ok
+test_una_empresa_no_puede_crear_evaluaciones ... ok
+test_una_empresa_ve_las_de_su_empresa ... ok
+test_una_evaluacion_ajena_responde_404_y_no_403 ... ok
+Ran 9 tests in 0.059s
+OK
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 224 tests in 2.036s
+OK
+Destroying test database for alias 'default'...
+Found 224 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+.venv/bin/python manage.py migrate --check
+
+.venv/bin/python manage.py shell -c '<smoke autenticado transaccional>'
+51 objects imported automatically (use -v 2 for details).
+
+usuarios disponibles: True False
+professional listado -> 200 puede_crear= True template= ['planillas/evaluacion_list.html']
+rollback autenticado -> OK
+```
+
+### Desvíos respecto del roadmap
+El ambiente de desarrollo tiene profesionales activos pero no un usuario
+empresa persistente. No se creó ninguno (P-2): la rama empresarial se verificó
+en fixtures aislados, incluido el listado HTTP 200 sin botón de alta. El smoke
+persistente se hizo con un profesional existente y rollback total.
+
+La suite consolidada suma cuatro verificaciones sobre el ejemplo mínimo:
+anónimo, CF-4, CF-5 e índices. Por eso el total final es 224 y no ~205.
+
+### Notas para el commit siguiente
+Fase 3 cerrada. No iniciar Fase 4 sin instrucción explícita del usuario.

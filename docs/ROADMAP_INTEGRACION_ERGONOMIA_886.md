@@ -249,7 +249,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 3.6 | Vista de listado de evaluaciones | ✅ |
 | 3.7 | Vista de eliminación de evaluación | ✅ |
 | 3.8 | Índices de consulta | ✅ |
-| 3.9 | Pruebas de propiedad, saneamiento y no regresión | ⬜ |
+| 3.9 | Pruebas de propiedad, saneamiento y no regresión | ✅ |
 
 ### Fase 4 — Integración de UI · `ergocapacitacion`
 
@@ -5289,7 +5289,7 @@ class PropiedadMixtaTests(TestCase):
 **Total esperado: ~205 pruebas.**
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.9, con el total de pruebas · Tabla de control: 3.9 ✅ · `README.md`
+- [x] Bitácora: entrada 3.9, con el total de pruebas · Tabla de control: 3.9 ✅ · `README.md`
 
 ### Git
 

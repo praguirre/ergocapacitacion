@@ -210,6 +210,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **03/08/2026 — Commit 3.8:** `Evaluacion` incorpora índices compuestos para
   listar por profesional o empresa y última modificación, más un índice por
   CUIT. La migración aditiva fue probada desde cero y aplicada en PostgreSQL.
+- **03/08/2026 — Commit 3.9 / cierre de Fase 3:** una suite consolidada cubre
+  propiedad mixta D-9, 404 contra enumeración, ausencia de HTTP 500 anónimo,
+  edición profesional, saneamiento CF-4, snapshots CF-5 e índices. La fase
+  cierra con 224 pruebas OK, checks limpios y smoke autenticado con rollback.
 
 ### Registro de cambios documentales
 
