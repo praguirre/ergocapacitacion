@@ -95,6 +95,23 @@ def build_evaluation_package(evaluacion) -> bytes:
                     ),
                 )
 
+            # 3) Evidencia privada adjunta. Se copia desde el storage; nunca se
+            # expone ni se resuelve mediante una URL bajo /media/.
+            for vce in risk_eval.vibracion_ce_evals.all():
+                for field_name, label in (
+                    ("foto_montaje", "foto-montaje"),
+                    ("certificado_calibracion", "certificado-calibracion"),
+                ):
+                    archivo = getattr(vce, field_name)
+                    if not archivo or not archivo.name:
+                        continue
+                    with archivo.open("rb") as contenido:
+                        nombre = archivo.name.rsplit("/", 1)[-1]
+                        zf.writestr(
+                            f"03-evidencia/vce-{vce.pk}-{label}-{nombre}",
+                            contenido.read(),
+                        )
+
     return buffer.getvalue()
 
 

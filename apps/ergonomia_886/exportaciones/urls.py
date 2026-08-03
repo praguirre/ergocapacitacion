@@ -40,4 +40,9 @@ urlpatterns = [
         views.PaqueteZipView.as_view(),
         name="paquete_zip",
     ),
+    path(
+        "<int:evaluacion_id>/evidencia/vce/<int:vce_id>/<slug:tipo>/",
+        views.EvidenciaVCEView.as_view(),
+        name="evidencia_vce",
+    ),
 ]

@@ -3617,7 +3617,7 @@ Agregar los loggers del módulo y ejecutar la verificación integral de CF-1.
 | Fecha | 2026-08-03 11:53 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `3cf6f9a` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -3724,3 +3724,115 @@ la prueba al contrato real de `login_required` sin tocar la vista.
 
 ### Notas para el commit siguiente
 Fase 4 cerrada. No iniciar Fase 5 sin instrucción explícita del usuario.
+
+---
+
+## Commit 5.1 — Evidencia de vibración adjuntable (O-5, D-1)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:39 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+La foto de montaje y el certificado de calibración de VCE ahora se almacenan
+fuera de `MEDIA_ROOT`, sin URL pública. Una vista autenticada comprueba la
+propiedad mixta D-9 antes de entregarlos con caché deshabilitada. El paquete ZIP
+incorpora ambos archivos bajo `03-evidencia/` y CF-4 continúa excluyéndolos del
+payload enviado al modelo.
+
+### Archivos modificados
+- `config/settings.py` — raíz privada fuera de `/media/`.
+- `apps/ergonomia_886/evaluaciones/storage.py` — storage sin URL pública.
+- `apps/ergonomia_886/evaluaciones/models.py` — campos VCE en storage privado.
+- `apps/ergonomia_886/evaluaciones/migrations/0008_*.py` — estado de storage.
+- `apps/ergonomia_886/exportaciones/views.py` y `urls.py` — descarga segura.
+- `apps/ergonomia_886/exportaciones/packaging.py` — evidencia dentro del ZIP.
+- `apps/ergonomia_886/exportaciones/tests/test_evidencia.py` — cinco regresiones.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py makemigrations evaluaciones --settings=config.test_settings
+Migrations for 'evaluaciones':
+  apps/ergonomia_886/evaluaciones/migrations/0008_alter_vibracionce_eval_certificado_calibracion_and_more.py
+    ~ Alter field certificado_calibracion on vibracionce_eval
+    ~ Alter field foto_montaje on vibracionce_eval
+
+.venv/bin/python manage.py test apps.ergonomia_886.exportaciones.tests.test_evidencia --settings=config.test_settings
+Creating test database for alias 'default'...
+....
+----------------------------------------------------------------------
+Ran 5 tests in 0.204s
+
+OK
+Destroying test database for alias 'default'...
+Found 5 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.exportaciones --settings=config.test_settings
+Creating test database for alias 'default'...
+..................................................................................................
+----------------------------------------------------------------------
+Ran 98 tests in 1.240s
+
+OK
+Destroying test database for alias 'default'...
+Found 98 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+...............................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 239 tests in 2.185s
+
+OK
+Destroying test database for alias 'default'...
+Found 239 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py migrate evaluaciones --settings=config.settings
+Operations to perform:
+  Apply all migrations: evaluaciones
+Running migrations:
+  Applying evaluaciones.0008_alter_vibracionce_eval_certificado_calibracion_and_more... OK
+
+.venv/bin/python manage.py migrate --check --settings=config.settings
+(sin salida)
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py shell --settings=config.settings -c '<smoke autenticado de solo lectura>'
+51 objects imported automatically (use -v 2 for details).
+
+profesional_existente= True
+evaluacion_existente= False
+smoke_listado_status= 200
+smoke_panel_status= NO_EJECUTADO
+```
+
+### Desvíos respecto del roadmap
+El roadmap proponía usar el `MEDIA_ROOT` existente y una vista segura, pero en
+`DEBUG` la ruta comodín `/media/` habría seguido entregando el mismo archivo sin
+autorización; en producción podría ocurrir lo mismo en el servidor web. Ganó la
+realidad: se creó un storage privado fuera de `MEDIA_ROOT`. Esto produjo una
+migración de estado no anticipada, leída completa y validada con el protocolo
+de seis pasos. Se registró H-T en la propuesta técnica.
+
+La primera ejecución de `migrate` dentro de la sandbox fue rechazada al abrir
+PostgreSQL local (`OperationalError: ... 127.0.0.1 ... Operation not permitted`).
+Se repitió con el permiso administrado y finalizó OK. No había evaluaciones del
+profesional de desarrollo para fumar el panel sin crear datos; el listado sí
+respondió 200 y la descarga quedó cubierta con base fresca por cinco pruebas.
+
+### Notas para el commit siguiente
+Implementar las aclaraciones impresas de firma bajo CF-5 e inspeccionar
+visualmente el PDF oficial sin alterar el artefacto base.

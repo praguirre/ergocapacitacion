@@ -9,7 +9,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import (
+    FileResponse, Http404, HttpRequest, HttpResponse, JsonResponse,
+)
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.text import slugify
@@ -325,6 +327,49 @@ class PaqueteZipView(EvaluacionOwnerMixin, ExportRateLimitMixin, View):
         respuesta["Content-Disposition"] = (
             f'attachment; filename="{_nombre_archivo(evaluacion, "paquete", "zip")}"'
         )
+        respuesta["X-Content-Type-Options"] = "nosniff"
+        respuesta["Cache-Control"] = "private, no-store"
+        return respuesta
+
+
+class EvidenciaVCEView(EvaluacionOwnerMixin, View):
+    """Entrega evidencia privada después de verificar la propiedad D-9."""
+
+    CAMPOS_PERMITIDOS = {
+        "foto-montaje": "foto_montaje",
+        "certificado-calibracion": "certificado_calibracion",
+    }
+
+    def get(
+        self, request: HttpRequest, evaluacion_id: int, vce_id: int, tipo: str
+    ):
+        from pathlib import Path
+
+        from django.shortcuts import get_object_or_404
+
+        from apps.ergonomia_886.evaluaciones.models import VibracionCE_Eval
+
+        campo = self.CAMPOS_PERMITIDOS.get(tipo)
+        if campo is None:
+            raise Http404("Evidencia desconocida.")
+
+        vce = get_object_or_404(
+            VibracionCE_Eval,
+            pk=vce_id,
+            risk_evaluation__evaluacion=self.evaluacion,
+        )
+        archivo = getattr(vce, campo)
+        if not archivo or not archivo.name:
+            raise Http404("La evidencia no existe.")
+
+        try:
+            respuesta = FileResponse(
+                archivo.open("rb"),
+                as_attachment=True,
+                filename=Path(archivo.name).name,
+            )
+        except FileNotFoundError as exc:
+            raise Http404("La evidencia no existe.") from exc
         respuesta["X-Content-Type-Options"] = "nosniff"
         respuesta["Cache-Control"] = "private, no-store"
         return respuesta

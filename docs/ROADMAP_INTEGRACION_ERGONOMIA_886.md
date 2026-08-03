@@ -265,7 +265,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 5.1 | Evidencia de vibración adjuntable (O-5, D-1) | ⬜ |
+| 5.1 | Evidencia de vibración adjuntable (O-5, D-1) | ✅ |
 | 5.2 | Aclaración de firma en planillas oficiales (O-2, CF-5) | ⬜ |
 | 5.3 | Trabajadores estructurados (O-3, CF-4, CF-5) | ⬜ |
 | 5.4 | Sincronización con la agenda (O-4, CF-2) | ⬜ |
@@ -5725,10 +5725,10 @@ Cerrar la deuda D-1: `VibracionCE_Eval` declara dos campos de archivo (`evaluaci
 
 ### Verificación
 
-- [ ] Se puede cargar una foto y un certificado en un factor de VCE
-- [ ] **Un usuario ajeno no puede descargarlos por URL directa**
-- [ ] El ZIP los incluye
-- [ ] `sanitize_payload()` los sigue excluyendo (CF-4)
+- [x] Se puede cargar una foto y un certificado en un factor de VCE
+- [x] **Un usuario ajeno no puede descargarlos por URL directa**
+- [x] El ZIP los incluye
+- [x] `sanitize_payload()` los sigue excluyendo (CF-4)
 
 ### 🔴 REGLA DE ORO · Git
 

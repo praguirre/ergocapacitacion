@@ -178,6 +178,10 @@ STORAGES = {
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Evidencia sensible del módulo SRT 886/15. Vive fuera de MEDIA_ROOT para que
+# ni Django en DEBUG ni el servidor web puedan entregarla por /media/.
+PRIVATE_ERGONOMIA_886_ROOT = BASE_DIR / "private_media" / "ergonomia_886"
+
 # =====================================================
 # ✅ COMMIT 7: EMAIL CONFIGURATION
 # =====================================================

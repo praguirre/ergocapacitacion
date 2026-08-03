@@ -234,6 +234,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   jerárquicos sin payload, sin datos personales ni propagación duplicada. CF-1
   queda verificada por AST, 22 pruebas intactas de `help_ai`, URLs separadas y
   pruebas funcionales de ambos asistentes. La fase cierra con 234 pruebas OK.
+- **03/08/2026 — Commit 5.1:** las fotos de montaje y certificados de
+  calibración VCE se guardan fuera de `MEDIA_ROOT`, carecen de URL pública y
+  sólo se descargan mediante autorización D-9. El ZIP incorpora la evidencia y
+  el saneamiento CF-4 continúa excluyéndola; 239 pruebas pasan.
 
 ### Registro de cambios documentales
 

@@ -1,7 +1,7 @@
 # evaluaciones/models.py
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 # Importamos Evaluacion del dominio de planillas
 from apps.ergonomia_886.planillas.models import Evaluacion
@@ -18,6 +18,7 @@ from .choices import (
     FrecuenciaMovimiento,
     FactorSlug,
 )
+from .storage import private_evidence_storage
 
 # =========================
 # Núcleo de Evaluaciones
@@ -380,8 +381,14 @@ class VibracionCE_Eval(BaseFactorEvaluation):
     )
     
     # Evidencia (Requerido por auditoría)
-    foto_montaje = models.ImageField(upload_to='evidencia_vce/', blank=True, null=True)
-    certificado_calibracion = models.FileField(upload_to='certificados_vce/', blank=True, null=True)
+    foto_montaje = models.ImageField(
+        upload_to="evidencia_vce/", storage=private_evidence_storage,
+        blank=True, null=True,
+    )
+    certificado_calibracion = models.FileField(
+        upload_to="certificados_vce/", storage=private_evidence_storage,
+        blank=True, null=True,
+    )
 
     # --------------------------------------------------------------------------
     # 3. RESULTADOS GLOBALES (Calculados)
