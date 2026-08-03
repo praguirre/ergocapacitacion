@@ -16,6 +16,6 @@ def home(request):
     if request.user.is_authenticated:
         if request.user.is_professional:
             return redirect("dashboard:home")
-        return redirect("training_home")
+        return redirect("training:training_home")
 
     return render(request, "landing/home.html")

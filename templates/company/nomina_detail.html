@@ -165,7 +165,7 @@
                             <td>{{ cert.valid_until|date:"d/m/Y" }}</td>
                             <td>
                                 {% if cert.pdf_file %}
-                                    <a href="{% url 'certificate_download' cert.id %}" class="btn btn-sm btn-outline-info">
+                                    <a href="{% url 'certificates:certificate_download' cert.id %}" class="btn btn-sm btn-outline-info">
                                         <i class="bi bi-download me-1"></i>Descargar
                                     </a>
                                 {% else %}

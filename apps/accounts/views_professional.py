@@ -21,7 +21,7 @@ def register(request):
         if request.user.is_professional:
             return redirect("dashboard:home")
         # Si es trainee logueado -> capacitación
-        return redirect("training_home")
+        return redirect("training:training_home")
 
     if request.method == "POST":
         form = ProfessionalRegisterForm(request.POST)
@@ -55,7 +55,7 @@ def login_view(request):
     if request.user.is_authenticated:
         if request.user.is_professional:
             return redirect("dashboard:home")
-        return redirect("training_home")
+        return redirect("training:training_home")
 
     # Preservar next tanto por GET (primer acceso) como por POST (submit)
     next_url = request.POST.get("next") or request.GET.get("next", "")

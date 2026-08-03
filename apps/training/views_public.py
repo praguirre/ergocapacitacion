@@ -29,6 +29,6 @@ def public_landing(request, module_slug):
             pass
 
     if request.user.is_authenticated and getattr(request.user, "is_trainee", False):
-        return redirect("training_home")
+        return redirect("training:training_home")
 
-    return redirect("trainee_landing")
+    return redirect("accounts:trainee_landing")

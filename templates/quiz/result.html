@@ -25,11 +25,11 @@
             {% endcomment %}
             {% if certificate and certificate.pdf_file %}
               <div class="d-grid gap-2 mb-4">
-                <a href="{% url 'certificate_download' certificate.id %}" 
+                <a href="{% url 'certificates:certificate_download' certificate.id %}"
                    class="btn btn-success btn-lg">
                   <i class="bi bi-download me-2"></i>Descargar Certificado PDF
                 </a>
-                <a href="{% url 'certificate_view' certificate.id %}" 
+                <a href="{% url 'certificates:certificate_view' certificate.id %}"
                    class="btn btn-outline-success"
                    target="_blank">
                   <i class="bi bi-eye me-2"></i>Ver Certificado
@@ -96,7 +96,7 @@
           {% endif %}
           
           <div class="d-grid gap-2 mt-3">
-            <a class="btn btn-outline-light" href="{% url 'training_home' %}">
+            <a class="btn btn-outline-light" href="{% url 'training:training_home' %}">
               <i class="bi bi-arrow-left me-2"></i>Volver a la capacitación
             </a>
 
@@ -107,7 +107,7 @@
             
             CÓDIGO ELIMINADO (PARA REFERENCIA):
             {% if not locked_now %}
-              <form action="{% url 'quiz_retake' module.slug %}" method="POST" class="d-grid">
+              <form action="{% url 'quiz:quiz_retake' module.slug %}" method="POST" class="d-grid">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-primary">
                   <i class="bi bi-arrow-repeat me-2"></i>Intentar nuevamente

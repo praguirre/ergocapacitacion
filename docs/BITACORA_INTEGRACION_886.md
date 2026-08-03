@@ -639,7 +639,7 @@ documentado durante el despliegue.
 | Fecha | 2026-08-02 23:48 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `5494a53` |
 | Fase | 0 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -705,3 +705,111 @@ con el roadmap.
 
 ### Notas para el commit siguiente
 Ninguna.
+
+## Commit 0.10 — Agregar `app_name` a los 5 includes sin namespace (H-D)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:53 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se declararon namespaces para `accounts`, `training`, `quiz`, `certificates` y
+`ergobot_ai`, calificando sus referencias Python, templates, tests y settings.
+También se aisló `training_public`; sus paths `/c/` permanecen byte por byte.
+
+### Archivos modificados
+- `apps/accounts/urls.py` y referencias — namespace `accounts` (19 referencias calificadas).
+- `apps/training/urls.py` y referencias — namespace `training` (10 referencias calificadas).
+- `apps/quiz/urls.py` y referencias — namespace `quiz` (3 referencias calificadas; las cuatro URLs construidas por JS mantienen su path).
+- `apps/certificates/urls.py` y referencias — namespace `certificates` (3 referencias calificadas).
+- `apps/ergobot_ai/urls.py` — namespace `ergobot_ai`; el JS conserva `/ai/ergobot/<slug>/stream/`.
+- `apps/training/urls_public.py` — namespace adicional `training_public`, sin cambiar `/c/`.
+- `docs/BITACORA_INTEGRACION_886.md` — inventario, decisión y verificaciones.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.10 marcado como completado.
+- `README.md` — registro de los namespaces.
+
+### Verificaciones ejecutadas
+
+```text
+# Suite ejecutada después de cada app
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 36 tests in 0.145s — OK  # accounts
+Ran 36 tests in 0.142s — OK  # training
+Ran 36 tests in 0.142s — OK  # quiz
+Ran 36 tests in 0.142s — OK  # certificates
+Ran 36 tests in 0.142s — OK  # ergobot_ai
+
+.venv/bin/python -c "<resolución de namespaces>"
+ergobot_ai:ergobot_stream                     -> /ai/ergobot/ergonomia/stream/
+accounts:trainee_landing                      -> /acceso/
+training:training_home                        -> /capacitacion/
+quiz:quiz_start                               -> /quiz/ergonomia/start/
+certificates:certificates_list                -> /certificados/
+training_public:training_public               -> /c/ergonomia/
+accounts_professional:professional_login      -> /auth/login/
+accounts_company:company_login                -> /empresa/auth/login/
+dashboard:home                                -> /dashboard/
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+....................................
+----------------------------------------------------------------------
+Ran 36 tests in 0.157s
+
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+# Respuesta local del view Ergobot, sin invocar al proveedor
+Status      : 200
+Content-Type: text/event-stream
+SSE         : data: {"error": "empty"}
+
+.venv/bin/python manage.py runserver 127.0.0.1:8010 --noreload
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8010/
+
+GET /capacitacion/ -> HTTP 302
+GET /ai/ergobot/ergonomia/stream/ -> HTTP 302
+
+# Compuerta de cierre de Fase 0
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+.venv/bin/python manage.py migrate --check
+<sin salida; código 0>
+.venv/bin/python manage.py createcachetable
+Cache table 'ergosolutions_cache' already exists.
+
+/dashboard/                                   -> 302
+/dashboard/capacitaciones/                    -> 302
+/dashboard/perfil/                            -> 302
+/dashboard/empresa/nomina/                    -> 302
+/dashboard/empresa/nomina/agregar/            -> 302
+/dashboard/empresa/nomina/exportar/           -> 302
+/dashboard/empresa/agenda/                    -> 302
+/dashboard/empresa/agenda/crear/              -> 302
+/dashboard/empresa/directorio/                -> 302
+/dashboard/solicitudes-contacto/              -> 302
+```
+
+### Desvíos respecto del roadmap
+Se agregó `app_name = "training_public"`: no existe ninguna referencia interna
+al nombre plano y los enlaces enviados se construyen por path en
+`CapacitacionLink.get_absolute_url`, por lo que el namespace elimina otra
+posible colisión sin cambiar URLs externas. La prueba funcional no envió una
+consulta real a OpenAI porque requeriría una credencial P-1 y generaría consumo;
+se verificaron el reverse, el path JS sin cambios, la protección HTTP y una
+respuesta SSE 200 de la vista antes de la rama que llama al proveedor.
+
+### Notas para el commit siguiente
+Fase 0 lista para ejecutar su compuerta completa de aceptación.

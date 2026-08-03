@@ -3,6 +3,8 @@
 from django.urls import path
 from . import views
 
+app_name = "quiz"
+
 urlpatterns = [
     # Pantalla inicial "Comenzar Quiz" (instrucciones y botón Start)
     path("<slug:module_slug>/start/", views.start, name="quiz_start"),

@@ -122,6 +122,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   sobre el PDF oficial (CF-6) y `pillow>=10,<14` para los `ImageField`; además
   se fijaron cotas superiores compatibles para Django, PostgreSQL, ReportLab,
   OpenAI, Agents y Uvicorn.
+- **02/08/2026 — Commit 0.10:** `accounts`, `training`, `quiz`, `certificates`,
+  `ergobot_ai` y el include público `training_public` ahora declaran
+  `app_name`; todas las referencias internas quedaron calificadas sin cambiar
+  ningún path público ni el endpoint JavaScript de Ergobot.
 
 ### Registro de cambios documentales
 

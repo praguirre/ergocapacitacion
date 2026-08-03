@@ -26,9 +26,9 @@
     </ul>
 
     <div class="d-flex gap-2">
-      <a href="{% url 'trainee_landing' %}" class="btn btn-outline-light">Volver</a>
+      <a href="{% url 'accounts:trainee_landing' %}" class="btn btn-outline-light">Volver</a>
 
-      <form method="post" action="{% url 'confirm_post' %}">
+      <form method="post" action="{% url 'accounts:confirm_post' %}">
         {% csrf_token %}
         <button class="btn btn-success">Confirmar y entrar</button>
       </form>

@@ -146,7 +146,7 @@ def submit(request, module_slug):
         return JsonResponse({
             "score": attempt.score,
             "passed": attempt.passed,
-            "result_url": reverse("quiz_result", kwargs={"module_slug": module.slug, "attempt_id": attempt.id}),
+            "result_url": reverse("quiz:quiz_result", kwargs={"module_slug": module.slug, "attempt_id": attempt.id}),
             "certificate": certificate_payload,
         })
 
@@ -189,7 +189,7 @@ def submit(request, module_slug):
     return JsonResponse({
         "score": score,
         "passed": passed,
-        "result_url": reverse("quiz_result", kwargs={"module_slug": module.slug, "attempt_id": attempt.id}),
+        "result_url": reverse("quiz:quiz_result", kwargs={"module_slug": module.slug, "attempt_id": attempt.id}),
         "certificate": certificate_payload,
     })
 

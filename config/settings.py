@@ -122,8 +122,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # URLs de login por defecto (trainees)
-LOGIN_URL = "trainee_landing"
-LOGIN_REDIRECT_URL = "training_home"
+LOGIN_URL = "accounts:trainee_landing"
+LOGIN_REDIRECT_URL = "training:training_home"
 
 # URLs de login profesionales (para usar en decoradores/mixins/vistas).
 # Deben ser nombres calificados: los planos no resuelven porque los includes

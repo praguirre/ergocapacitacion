@@ -24,7 +24,7 @@
             <button class="btn btn-outline-light btn-sm">Salir</button>
           </form>
         {% else %}
-          <form method="post" action="{% url 'logout_post' %}">
+          <form method="post" action="{% url 'accounts:logout_post' %}">
             {% csrf_token %}
             <button class="btn btn-outline-light btn-sm">Salir</button>
           </form>

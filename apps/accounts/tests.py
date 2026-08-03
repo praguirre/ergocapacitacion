@@ -29,7 +29,7 @@ class TraineeAuthTests(TestCase):
 
     def test_trainee_login_with_cuil_email(self):
         """Login de trainee con CUIL y email."""
-        response = self.client.post(reverse('login_post'), {
+        response = self.client.post(reverse('accounts:login_post'), {
             'cuil': '20123456789',
             'email': 'trainee@test.com',
         })

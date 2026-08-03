@@ -51,7 +51,7 @@ def trainee_required(function=None, redirect_url=None, login_url=None):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                url = login_url or reverse('trainee_landing')
+                url = login_url or reverse('accounts:trainee_landing')
                 return redirect(f"{url}?next={request.get_full_path()}")
 
             # Defensa extra (como propuso el senior)

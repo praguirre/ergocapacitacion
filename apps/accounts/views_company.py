@@ -20,7 +20,7 @@ def company_register(request):
     if request.user.is_authenticated:
         if request.user.is_backoffice_user:
             return redirect("dashboard:home")
-        return redirect("training_home")
+        return redirect("training:training_home")
 
     if request.method == "POST":
         form = CompanyRegisterForm(request.POST)
@@ -75,7 +75,7 @@ def company_login(request):
     if request.user.is_authenticated:
         if request.user.is_backoffice_user:
             return redirect("dashboard:home")
-        return redirect("training_home")
+        return redirect("training:training_home")
 
     if request.method == "POST":
         form = ProfessionalLoginForm(request.POST)

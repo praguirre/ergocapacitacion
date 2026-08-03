@@ -25,7 +25,7 @@ def _post_login_redirect():
     Determina a dónde enviar al usuario tras un registro o login exitoso.
     Actualizado en Commit 3 para redirigir a la capacitación.
     """
-    return reverse("training_home")
+    return reverse("training:training_home")
 
 
 @require_GET
@@ -61,11 +61,11 @@ def register_post(request):
     # Validación de duplicados
     if User.objects.filter(cuil=data["cuil"]).exists() or User.objects.filter(email__iexact=data["email"]).exists():
         messages.warning(request, "Ese CUIL o email ya está registrado. Ingresá desde Login.")
-        return redirect("trainee_landing")
+        return redirect("accounts:trainee_landing")
 
     request.session[PENDING_KEY] = data
     request.session.modified = True
-    return redirect("confirm")
+    return redirect("accounts:confirm")
 
 
 @require_GET
@@ -73,7 +73,7 @@ def confirm_get(request):
     data = request.session.get(PENDING_KEY)
     if not data:
         messages.info(request, "No hay datos para confirmar. Completá el registro.")
-        return redirect("trainee_landing")
+        return redirect("accounts:trainee_landing")
     return render(request, "accounts/confirm.html", {"data": data})
 
 
@@ -82,7 +82,7 @@ def confirm_post(request):
     data = request.session.get(PENDING_KEY)
     if not data:
         messages.info(request, "No hay datos para confirmar. Completá el registro.")
-        return redirect("trainee_landing")
+        return redirect("accounts:trainee_landing")
 
     # =========================================================================
     # ✅ COMMIT 8: Crear usuario incluyendo los nuevos campos de email
@@ -129,7 +129,7 @@ def login_post(request):
 
     if user is None:
         messages.error(request, "CUIL o email incorrectos, o usuario no registrado.")
-        return redirect("trainee_landing")
+        return redirect("accounts:trainee_landing")
 
     login(request, user)
     messages.success(request, "Ingreso exitoso.")
@@ -140,4 +140,4 @@ def login_post(request):
 def logout_post(request):
     logout(request)
     messages.info(request, "Sesión cerrada.")
-    return redirect("trainee_landing")
+    return redirect("accounts:trainee_landing")
