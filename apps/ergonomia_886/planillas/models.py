@@ -59,11 +59,23 @@ class Evaluacion(models.Model):
 # Modelo para la Planilla 1
 class Planilla1(models.Model):
     evaluacion = models.OneToOneField(Evaluacion, on_delete=models.CASCADE, primary_key=True)
+    trabajadores = models.ManyToManyField(
+        "company.CompanyWorker",
+        blank=True,
+        related_name="planillas_ergonomicas",
+        verbose_name="Trabajadores relevados",
+        help_text=(
+            "Trabajadores de la nómina alcanzados por este relevamiento. "
+            "La selección se copia al respaldo histórico sólo si éste está vacío."
+        ),
+    )
     area_sector = models.CharField(max_length=200, verbose_name="Área y Sector en estudio", blank=True, default='')
     puesto_trabajo = models.CharField(max_length=200, verbose_name="Puesto de trabajo", blank=True, default='')
     nro_trabajadores = models.PositiveIntegerField(verbose_name="Nº de trabajadores", default=0)
     procedimiento_escrito = models.BooleanField(default=False, verbose_name="Procedimiento de trabajo escrito")
     capacitacion = models.BooleanField(default=False, verbose_name="Capacitación")
+    # CF-5: respaldo histórico y única fuente de los documentos oficiales. Una
+    # modificación posterior de la nómina nunca cambia un protocolo emitido.
     nombres_trabajadores = models.TextField(blank=True, verbose_name="Nombre del trabajador/es")
     manifestacion_temprana = models.BooleanField(default=False, verbose_name="Manifestación temprana")
     ubicacion_sintoma = models.CharField(max_length=255, blank=True, verbose_name="Ubicación del síntoma")

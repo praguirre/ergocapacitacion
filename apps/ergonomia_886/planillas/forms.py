@@ -2,7 +2,7 @@
 from django import forms
 from django.db import models
 from django.forms import inlineformset_factory
-from apps.company.models import CompanyProfile
+from apps.company.models import CompanyProfile, CompanyWorker
 from .models import *
 
 # --- MIXIN DE LÓGICA REUTILIZABLE ---
@@ -118,6 +118,32 @@ class Planilla1Form(forms.ModelForm):
     class Meta:
         model = Planilla1
         exclude = ['evaluacion']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        empresa = getattr(getattr(self.instance, "evaluacion", None), "empresa", None)
+        if empresa is None:
+            # Una evaluación manual no debe exponer una nómina ajena ni un
+            # selector vacío: el respaldo de texto continúa operativo.
+            self.fields.pop("trabajadores", None)
+        else:
+            self.fields["trabajadores"].queryset = (
+                CompanyWorker.objects.filter(company=empresa, is_active=True)
+                .select_related("worker")
+                .order_by("worker__last_name", "worker__first_name", "worker__email")
+            )
+            self.fields["trabajadores"].widget.attrs["class"] = "form-select"
+
+    def save(self, commit=True):
+        planilla = super().save(commit=commit)
+        if commit and "trabajadores" in self.cleaned_data:
+            seleccionados = list(self.cleaned_data["trabajadores"])
+            if seleccionados and not (planilla.nombres_trabajadores or "").strip():
+                planilla.nombres_trabajadores = "\n".join(
+                    relacion.worker.display_name for relacion in seleccionados
+                )
+                planilla.save(update_fields=["nombres_trabajadores"])
+        return planilla
 
 class FactorRiesgoForm(forms.ModelForm):
     presente = forms.BooleanField(required=False, widget=forms.CheckboxInput())

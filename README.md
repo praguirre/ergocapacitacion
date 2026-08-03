@@ -242,6 +242,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   aclaraciones impresas de empleador y profesional sólo cuando las fuentes
   están completas. Medicina Laboral queda siempre vacía por CF-5; el render de
   las doce páginas preserva Borg, Fanger y el SHA-256 oficial. Pasan 242 tests.
+- **03/08/2026 — Commit 5.3:** Planilla 1 puede seleccionar trabajadores activos
+  de la nómina vinculada. La selección sólo completa un snapshot vacío; el
+  texto profesional y el total del puesto prevalecen. El PDF nunca consulta la
+  relación y un reporte real excluye CUIL, DNI, email y legajo por CF-4. La
+  migración aditiva quedó aplicada y pasan 248 pruebas.
 
 ### Registro de cambios documentales
 

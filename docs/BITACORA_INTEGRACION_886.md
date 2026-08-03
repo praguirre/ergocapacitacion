@@ -3846,7 +3846,7 @@ visualmente el PDF oficial sin alterar el artefacto base.
 | Fecha | 2026-08-03 11:48 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `986401a` |
 | Fase | 5 |
 | Estado | ✅ Completado |
 
@@ -3932,3 +3932,104 @@ cero; en el PDF de doce páginas corresponden a las páginas físicas 6 (Borg) y
 ### Notas para el commit siguiente
 Agregar la relación opcional de Planilla 1 con la nómina y conservar el snapshot
 `nombres_trabajadores` como única fuente documental.
+
+---
+
+## Commit 5.3 — Trabajadores estructurados (O-3, CF-4, CF-5)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:52 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+`Planilla1` incorporó una relación M2M opcional con `CompanyWorker`. El selector
+sólo ofrece trabajadores activos de la empresa vinculada; sin empresa no se
+renderiza. Si hay selección y el respaldo histórico está vacío, el formulario
+copia los nombres. El texto profesional nunca se sobrescribe y el total del
+puesto no se deriva de la selección. Los documentos oficiales siguen leyendo
+exclusivamente `nombres_trabajadores`.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/models.py` — relación M2M y contrato CF-5.
+- `apps/ergonomia_886/planillas/forms.py` — filtrado y derivación no destructiva.
+- `apps/ergonomia_886/planillas/migrations/0004_planilla1_trabajadores.py` —
+  migración aditiva, revisada completa.
+- `apps/ergonomia_886/planillas/tests_trabajadores.py` — seis pruebas de
+  selección, snapshot, exportación y saneamiento real CF-4.
+- documentación de trazabilidad del commit.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py makemigrations planillas --settings=config.test_settings
+Migrations for 'planillas':
+  apps/ergonomia_886/planillas/migrations/0004_planilla1_trabajadores.py
+    + Add field trabajadores to planilla1
+
+.venv/bin/python manage.py test apps.ergonomia_886.planillas.tests_trabajadores --settings=config.test_settings
+Creating test database for alias 'default'...
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.013s
+
+OK
+Destroying test database for alias 'default'...
+Found 6 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.planillas apps.ergonomia_886.exportaciones --settings=config.test_settings
+Creating test database for alias 'default'...
+.......................................................................................................................................
+----------------------------------------------------------------------
+Ran 135 tests in 1.342s
+
+OK
+Destroying test database for alias 'default'...
+Found 135 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Creating test database for alias 'default'...
+........................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 248 tests in 2.031s
+
+OK
+Destroying test database for alias 'default'...
+Found 248 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py migrate planillas --settings=config.settings
+Operations to perform:
+  Apply all migrations: planillas
+Running migrations:
+  Applying planillas.0004_planilla1_trabajadores... OK
+
+.venv/bin/python manage.py migrate --check --settings=config.settings
+(sin salida)
+.venv/bin/python manage.py check --settings=config.settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+```
+
+### Evidencia CF-4 / CF-5
+La prueba puebla la relación real con un `CompanyWorker` que contiene CUIL,
+DNI, email y legajo, ejecuta `sanitize_payload()`, persiste el resultado en un
+`GeneratedReport.payload_json` real y verifica literalmente la ausencia de los
+cinco valores/claves sensibles. Otra prueba construye las operaciones del PDF:
+aparece `Snapshot declarado` y no aparece el nombre actual de la relación.
+
+### Desvíos respecto del roadmap
+Sin desvíos. El protocolo de migraciones se completó: archivo leído completo,
+base fresca por la suite, aplicación local, `migrate --check`, proceso de prueba
+nuevo por cada suite y humo funcional cubierto con formularios/exports reales.
+
+### Notas para el commit siguiente
+Proyectar explícitamente las medidas de Planilla 4 hacia `AgendaEvent`, sin
+signals y sin recalcular niveles de riesgo.
