@@ -162,7 +162,7 @@ Ninguna.
 | Fecha | 2026-08-02 23:31 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `ce5ebd3` |
 | Fase | 0 |
 | Estado | ✅ Completado |
 
@@ -208,6 +208,76 @@ Starting development server at http://127.0.0.1:8002/
 
 curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://127.0.0.1:8002/
 GET / -> HTTP 200
+```
+
+### Desvíos respecto del roadmap
+Ninguno.
+
+### Notas para el commit siguiente
+Ninguna.
+
+## Commit 0.3 — Restaurar `@login_required` en 13 vistas de backoffice (N1)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:33 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se restauró `@login_required` antes del decorador de rol en once vistas de
+empresa y dos vistas profesionales. La capa exterior intercepta al usuario
+anónimo antes de evaluar permisos específicos y refuerza la corrección N1.
+
+### Archivos modificados
+- `apps/company/views.py` — `@login_required` en once vistas de empresa.
+- `apps/dashboard/views.py` — `@login_required` en dos vistas profesionales.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada y evidencia del commit.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.3 marcado como completado.
+- `README.md` — registro de la corrección N1, parte 2.
+
+### Verificaciones ejecutadas
+
+```text
+grep -c "@login_required" apps/company/views.py
+11
+grep -c "@company_required" apps/company/views.py
+11
+
+.venv/bin/python -c "<script de acceso anónimo del roadmap>"
+OK  /dashboard/                                   -> 302
+OK  /dashboard/empresa/nomina/                    -> 302
+OK  /dashboard/empresa/nomina/agregar/            -> 302
+OK  /dashboard/empresa/nomina/exportar/           -> 302
+OK  /dashboard/empresa/agenda/                    -> 302
+OK  /dashboard/empresa/agenda/crear/              -> 302
+OK  /dashboard/empresa/directorio/                -> 302
+OK  /dashboard/solicitudes-contacto/              -> 302
+
+RESULTADO: SIN 500
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps
+................................
+----------------------------------------------------------------------
+Ran 32 tests in 4.146s
+
+OK
+Destroying test database for alias 'default'...
+Found 32 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8003 --noreload
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8003/
+
+curl -s -o /dev/null -w 'GET /dashboard/empresa/nomina/ -> HTTP %{http_code}\n' http://127.0.0.1:8003/dashboard/empresa/nomina/
+GET /dashboard/empresa/nomina/ -> HTTP 302
 ```
 
 ### Desvíos respecto del roadmap

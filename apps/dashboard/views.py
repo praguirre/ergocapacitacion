@@ -370,6 +370,7 @@ def _company_profile_view(request):
     })
 
 
+@login_required
 @professional_required
 def my_contact_requests(request):
     """Profesional ve solicitudes pendientes."""
@@ -383,6 +384,7 @@ def my_contact_requests(request):
     })
 
 
+@login_required
 @professional_required
 def respond_contact_request(request, request_id):
     """Profesional acepta o rechaza solicitud."""

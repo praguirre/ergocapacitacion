@@ -5,6 +5,7 @@
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -30,6 +31,7 @@ def _get_company_profile(request):
         return None
 
 
+@login_required
 @company_required
 def nomina_list(request):
     """Listado de trabajadores de la empresa con búsqueda y filtros."""
@@ -93,6 +95,7 @@ def nomina_list(request):
     })
 
 
+@login_required
 @company_required
 def nomina_add_worker(request):
     """Agregar un trabajador a la nómina."""
@@ -165,6 +168,7 @@ def nomina_add_worker(request):
     return render(request, "company/nomina_add.html", {"form": form})
 
 
+@login_required
 @company_required
 def nomina_detail(request, worker_id):
     """Ficha individual de un trabajador con historial de capacitaciones."""
@@ -212,6 +216,7 @@ def nomina_detail(request, worker_id):
     })
 
 
+@login_required
 @company_required
 def nomina_edit(request, worker_id):
     """Editar datos laborales de un trabajador."""
@@ -244,6 +249,7 @@ def nomina_edit(request, worker_id):
     })
 
 
+@login_required
 @company_required
 def nomina_export_csv(request):
     """Exportar nómina completa a CSV."""
@@ -282,6 +288,7 @@ def nomina_export_csv(request):
     return response
 
 
+@login_required
 @company_required
 def agenda_list(request):
     """Listado de eventos de agenda con filtros."""
@@ -335,6 +342,7 @@ def agenda_list(request):
     })
 
 
+@login_required
 @company_required
 def agenda_create(request):
     """Crear un evento de agenda."""
@@ -375,6 +383,7 @@ def agenda_create(request):
     })
 
 
+@login_required
 @company_required
 def agenda_edit(request, event_id):
     """Editar un evento de agenda."""
@@ -405,6 +414,7 @@ def agenda_edit(request, event_id):
     })
 
 
+@login_required
 @company_required
 def agenda_complete(request, event_id):
     """Marcar un evento como completado."""
@@ -419,6 +429,7 @@ def agenda_complete(request, event_id):
     return redirect("dashboard:company:agenda_list")
 
 
+@login_required
 @company_required
 def directorio_profesionales(request):
     """Directorio de profesionales visible para empresas."""
@@ -451,6 +462,7 @@ def directorio_profesionales(request):
     })
 
 
+@login_required
 @company_required
 def send_contact_request(request, professional_id):
     """Empresa envía solicitud de contacto a un profesional."""

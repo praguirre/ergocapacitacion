@@ -97,6 +97,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   en los decoradores de cuentas. Los accesos anónimos de profesionales,
   empresas y trabajadores ahora resuelven al login correspondiente, cerrando
   la causa raíz de la regresión N1.
+- **02/08/2026 — Commit 0.3:** se restauró `@login_required` como capa exterior
+  en once vistas de empresa y dos profesionales. Las ocho rutas anónimas
+  verificadas redirigen con HTTP 302 y ninguna devuelve 500.
 
 ### Registro de cambios documentales
 

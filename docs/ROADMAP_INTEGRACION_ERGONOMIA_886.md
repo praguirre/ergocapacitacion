@@ -198,7 +198,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 0.0 | Crear rama de integración y bitácora | ✅ |
 | 0.1 | Consolidar el árbol de trabajo pendiente | ✅ |
 | 0.2 | Corregir nombres de URL rotos en los decoradores (N1) | ✅ |
-| 0.3 | Restaurar `@login_required` en 13 vistas de backoffice (N1) | ⬜ |
+| 0.3 | Restaurar `@login_required` en 13 vistas de backoffice (N1) | ✅ |
 | 0.4 | Corregir los settings de redirección profesional (H-F) | ⬜ |
 | 0.5 | Corregir `QuizState.is_approved` inexistente (N2) | ⬜ |
 | 0.6 | Tests de regresión de N1 y N2 | ⬜ |
