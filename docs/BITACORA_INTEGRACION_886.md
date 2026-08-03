@@ -565,7 +565,7 @@ Se usó el plan A (SQLite); no fue necesario solicitar permisos de PostgreSQL.
 | Fecha | 2026-08-02 23:46 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `6d4e05d` |
 | Fase | 0 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -631,3 +631,77 @@ PostgreSQL; repetida con permiso de conexión local, completó sin salida.
 ### Notas para el commit siguiente
 La tabla de caché de desarrollo existe; producción deberá ejecutar el paso
 documentado durante el despliegue.
+
+## Commit 0.9 — Declarar `pypdf` y `pillow` (B7, N8)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:48 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se declararon `pypdf` y `pillow`, se fijaron cotas superiores para las
+dependencias verificadas y se instaló `pypdf 6.14.2`. También se confirmó la
+API de `openai-agents` que sostiene CF-4.
+
+### Archivos modificados
+- `requirements.txt` — dependencias nuevas y cotas superiores.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada y versiones verificadas.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.9 marcado como completado.
+- `README.md` — registro de dependencias del módulo.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/pip install -r requirements.txt
+Collecting pypdf<7.0,>=5.0
+Downloading pypdf-6.14.2-py3-none-any.whl (349 kB)
+Installing collected packages: pypdf
+Successfully installed pypdf-6.14.2
+
+.venv/bin/python -c "<script de API del roadmap>"
+pypdf     : 6.14.2
+pillow    : 12.1.0
+reportlab : 4.4.9
+
+agents.Agent        OK
+agents.Runner       OK
+agents.RunConfig    OK
+agents.ItemHelpers  OK
+
+trace_include_sensitive_data (CF-4): OK
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+....................................
+----------------------------------------------------------------------
+Ran 36 tests in 0.166s
+
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8009 --noreload
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8009/
+
+curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://127.0.0.1:8009/
+GET / -> HTTP 200
+```
+
+### Desvíos respecto del roadmap
+El primer `pip install` no pudo resolver PyPI por la red restringida de la
+sandbox; repetido con acceso de red autorizado, instaló la versión compatible.
+En el commit 0.8 se corrigió antes del push un mensaje donde el shell había
+interpretado backticks; el hash publicado es `6d4e05d` y el mensaje coincide
+con el roadmap.
+
+### Notas para el commit siguiente
+Ninguna.

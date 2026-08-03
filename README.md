@@ -118,6 +118,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   workers. Tras migrar, ejecutar el paso idempotente
   `.venv/bin/python manage.py createcachetable`; la suite aislada conserva
   `LocMemCache`.
+- **02/08/2026 — Commit 0.9:** se declararon `pypdf>=5,<7` para superposición
+  sobre el PDF oficial (CF-6) y `pillow>=10,<14` para los `ImageField`; además
+  se fijaron cotas superiores compatibles para Django, PostgreSQL, ReportLab,
+  OpenAI, Agents y Uvicorn.
 
 ### Registro de cambios documentales
 

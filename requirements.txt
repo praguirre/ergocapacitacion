@@ -1,9 +1,19 @@
-Django>=5.2
-psycopg[binary]>=3.2
+Django>=5.2,<6.0
+psycopg[binary]>=3.2,<4.0
 django-environ>=0.11
 django-bootstrap5>=25.1
 whitenoise>=6.7
-reportlab>=4.0
-openai>=1.0
-openai-agents>=0.0.19
-uvicorn>=0.30.0
+reportlab>=4.0,<5.0
+
+# Fusion de la capa de datos sobre el PDF oficial de la SRT 886/15.
+# Es la unica tecnica admitida por CF-6: rellenar el .xls oficial destruye
+# la curva de Fanger de la Planilla 2H y la escala de Borg de la 2E.
+pypdf>=5.0,<7.0
+
+# Requerida por ImageField: CompanyProfile.logo y VibracionCE_Eval.foto_montaje.
+# Estaba instalada pero no declarada (N8).
+pillow>=10.0,<14.0
+
+openai>=2.0,<3.0
+openai-agents>=0.6,<1.0
+uvicorn>=0.30,<1.0

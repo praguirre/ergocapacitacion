@@ -204,7 +204,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 0.6 | Tests de regresión de N1 y N2 | ✅ |
 | 0.7 | Crear `config/test_settings.py` (B8) | ✅ |
 | 0.8 | Configurar `CACHES` con `DatabaseCache` (B4) | ✅ |
-| 0.9 | Declarar `pypdf` y `pillow` (B7, N8) | ⬜ |
+| 0.9 | Declarar `pypdf` y `pillow` (B7, N8) | ✅ |
 | 0.10 | Agregar `app_name` a los 5 includes sin namespace (H-D) | ⬜ |
 
 ### Fase 1 — Adaptación del origen · `ergonomia_srt`
