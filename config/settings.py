@@ -44,7 +44,17 @@ LOCAL_APPS = [
     "apps.training",
     "apps.quiz",
     "apps.certificates",
-    "apps.ergobot_ai",
+    "apps.ergobot_ai",              # Chatbot docente. CF-1: NO se fusiona con help_ai
+
+    # ========================================================================
+    # Módulo de Ergonomía SRT 886/15
+    # ========================================================================
+    # `planillas` va primero: contiene el modelo raíz `Evaluacion`, del que
+    # dependen las claves foráneas de las otras dos apps con modelos.
+    "apps.ergonomia_886.planillas",
+    "apps.ergonomia_886.evaluaciones",
+    "apps.ergonomia_886.exportaciones",
+    "apps.ergonomia_886.help_ai",   # Ayuda del protocolo. CF-1: NO se fusiona con ergobot_ai
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -215,6 +225,37 @@ if _is_smtp_backend and not DEBUG:
 # =====================================================
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
 OPENAI_MODEL = env("OPENAI_MODEL", default="gpt-4.1-mini-2025-04-14")
+
+# =====================================================
+# MÓDULO DE ERGONOMÍA SRT 886/15
+# =====================================================
+# Modelo de lenguaje del módulo. Por defecto usa el de la organización, de
+# modo que hay un solo lugar donde decidir qué modelo se usa. Definir
+# CHAT_AI_MODEL en el .env sólo para que el módulo use uno distinto.
+#
+# ⚠️ CF-1: esto es una unificación de CONFIGURACIÓN, no de código. `help_ai`
+#    y `ergobot_ai` siguen siendo apps separadas que no se conocen. Es la
+#    única unificación que la condición admite.
+CHAT_AI_MODEL = env("CHAT_AI_MODEL", default=OPENAI_MODEL)
+
+# --- Chat de ayuda contextual (help_ai) ------------------------------------
+CHAT_AI_AGENT_CACHE_SIZE = env.int("CHAT_AI_AGENT_CACHE_SIZE", default=64)
+CHAT_AI_RATE_LIMIT = env.int("CHAT_AI_RATE_LIMIT", default=20)
+CHAT_AI_RATE_WINDOW_SECONDS = env.int("CHAT_AI_RATE_WINDOW_SECONDS", default=60)
+CHAT_AI_STREAM_TIMEOUT_SECONDS = env.int("CHAT_AI_STREAM_TIMEOUT_SECONDS", default=120)
+CHAT_AI_HEARTBEAT_SECONDS = env.int("CHAT_AI_HEARTBEAT_SECONDS", default=10)
+CHAT_AI_MAX_QUESTION_CHARS = env.int("CHAT_AI_MAX_QUESTION_CHARS", default=2000)
+CHAT_AI_MAX_THREAD_MESSAGES = env.int("CHAT_AI_MAX_THREAD_MESSAGES", default=20)
+CHAT_AI_MAX_MESSAGE_CHARS = env.int("CHAT_AI_MAX_MESSAGE_CHARS", default=4000)
+
+# --- Informes profesionales (exportaciones.reports) ------------------------
+REPORT_AI_TIMEOUT_SECONDS = env.int("REPORT_AI_TIMEOUT_SECONDS", default=90)
+REPORT_AI_RATE_LIMIT = env.int("REPORT_AI_RATE_LIMIT", default=10)
+REPORT_AI_RATE_WINDOW_SECONDS = env.int("REPORT_AI_RATE_WINDOW_SECONDS", default=3600)
+
+# --- Descarga de documentos oficiales --------------------------------------
+EXPORT_RATE_LIMIT = env.int("EXPORT_RATE_LIMIT", default=60)
+EXPORT_RATE_WINDOW_SECONDS = env.int("EXPORT_RATE_WINDOW_SECONDS", default=300)
 
 # =====================================================
 # LOGGING

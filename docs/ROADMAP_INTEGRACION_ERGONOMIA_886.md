@@ -230,7 +230,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.5 | Reescribir los 102 imports absolutos (B2) | ✅ |
 | 2.6 | Corregir la ruta de los documentos de ayuda (B6) | ✅ |
 | 2.7 | Copiar estáticos y artefactos byte a byte (CF-3, CF-6) | ✅ |
-| 2.8 | Registrar apps y settings del módulo | ⬜ |
+| 2.8 | Registrar apps y settings del módulo | ✅ |
 | 2.9 | URLconf del módulo y montaje | ⬜ |
 | 2.10 | Plantilla base del módulo y adaptación de 10 templates | ⬜ |
 | 2.11 | Extraer el widget de ayuda contextual | ⬜ |
@@ -3340,7 +3340,13 @@ for etiqueta in ['planillas','evaluaciones','exportaciones']:
 "
 ```
 
-**Conteo esperado de modelos:** `planillas` 14 · `evaluaciones` 16 · `exportaciones` 2
+**Conteo verificado de modelos registrados:** `planillas` 15 · `evaluaciones` 15 · `exportaciones` 2
+
+> **Hallazgo de ejecución — 03/08/2026.** `planillas` registra 15 modelos
+> concretos, incluido `SeguimientoMedida`. `evaluaciones/models.py` declara 16
+> clases basadas en modelos, pero `BaseFactorEvaluation` es abstracta y Django
+> registra 15. El criterio original 14/16/2 mezclaba ambos tipos de conteo; el
+> registro efectivo correcto es 15/15/2.
 
 - [ ] `manage.py check` sin issues
 - [ ] Los cuatro `label` son los cortos y los `name` los punteados

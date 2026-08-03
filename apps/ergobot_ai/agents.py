@@ -30,5 +30,6 @@ async def ergobot_agent(module_slug: str) -> Agent:
     return Agent(
         name="Ergobot",
         instructions=instructions,
-        model=getattr(settings, "OPENAI_MODEL", "gpt-4.1-mini-2025-04-14"),
+        # El valor por defecto vive en settings.py, en un solo lugar.
+        model=settings.OPENAI_MODEL,
     )

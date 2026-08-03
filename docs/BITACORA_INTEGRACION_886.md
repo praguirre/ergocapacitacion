@@ -1786,7 +1786,7 @@ Copiar los estáticos byte a byte y repetir esta verificación hasta obtener 33.
 | Fecha | 2026-08-03 00:43 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `aff71c6` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -1879,3 +1879,116 @@ idénticos; normalizarlos invalidaría esa evidencia.
 ### Notas para el commit siguiente
 Registrar las cuatro apps y portar todos los settings previstos; recién desde
 2.8 la suite trasplantada debe poder inicializar el registro de modelos.
+
+## Commit 2.8 — Registrar apps y settings del módulo
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:47 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se registraron las cuatro apps en orden de dependencia, se agregaron los 14
+settings con defaults y su plantilla versionada, y se eliminó el fallback de
+modelo duplicado de Ergobot. CF-1 mantiene ambas apps de IA separadas y solo
+comparte la decisión de configuración del modelo.
+
+### Archivos modificados
+- `config/settings.py` — apps y 14 settings del módulo.
+- `apps/ergobot_ai/agents.py` — modelo leído exclusivamente desde settings.
+- `.env.example` — variables documentadas sin tocar `.env` real.
+- `README.md` — registro y CF-1 documentados.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y conteo real corregidos.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal 2.8.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+=== Apps del modulo ===
+  label=planillas       name=apps.ergonomia_886.planillas
+  label=evaluaciones    name=apps.ergonomia_886.evaluaciones
+  label=exportaciones   name=apps.ergonomia_886.exportaciones
+  label=help_ai         name=apps.ergonomia_886.help_ai
+
+=== CF-1: las dos apps de IA coexisten ===
+  apps.ergobot_ai              : True
+  apps.ergonomia_886.help_ai   : True
+
+=== Settings del modelo ===
+  OPENAI_MODEL  : gpt-4.1-mini-2025-04-14
+  CHAT_AI_MODEL : gpt-4.1-mini-2025-04-14
+  Derivacion OK : True
+
+=== Modelos registrados ===
+  planillas       15 modelos
+  evaluaciones    15 modelos
+  exportaciones   2 modelos
+
+=== 14 settings del modulo ===
+  CHAT_AI_MODEL=gpt-4.1-mini-2025-04-14
+  CHAT_AI_AGENT_CACHE_SIZE=64
+  CHAT_AI_RATE_LIMIT=20
+  CHAT_AI_RATE_WINDOW_SECONDS=60
+  CHAT_AI_STREAM_TIMEOUT_SECONDS=120
+  CHAT_AI_HEARTBEAT_SECONDS=10
+  CHAT_AI_MAX_QUESTION_CHARS=2000
+  CHAT_AI_MAX_THREAD_MESSAGES=20
+  CHAT_AI_MAX_MESSAGE_CHARS=4000
+  REPORT_AI_TIMEOUT_SECONDS=90
+  REPORT_AI_RATE_LIMIT=10
+  REPORT_AI_RATE_WINDOW_SECONDS=3600
+  EXPORT_RATE_LIMIT=60
+  EXPORT_RATE_WINDOW_SECONDS=300
+  total=14
+
+# Suite combinada en estado intermedio
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 140 tests in 0.521s
+FAILED (failures=2, errors=90)
+Found 196 test(s).
+System check identified no issues (0 silenced).
+
+# Suite preexistente aislada
+.venv/bin/python manage.py test apps.accounts apps.certificates apps.company apps.dashboard apps.ergobot_ai apps.landing apps.presencial apps.quiz apps.training --settings=config.test_settings
+----------------------------------------------------------------------
+Ran 36 tests in 0.146s
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8026 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+You have 43 unapplied migration(s).
+Starting development server at http://127.0.0.1:8026/
+GET / -> 200
+```
+
+### Desvíos respecto del roadmap
+El conteo esperado 14/16/2 era incorrecto. `planillas` registra 15 modelos
+concretos; `evaluaciones` declara 16 clases de modelo pero
+`BaseFactorEvaluation` es abstracta, por lo que registra 15; `exportaciones`
+registra 2. El roadmap quedó corregido a 15/15/2.
+
+La suite combinada ya descubre 196 casos, pero aún falla por namespaces no
+montados (2.9), templates no adaptados (2.10–2.11) y factories del módulo que
+no proporcionan el email obligatorio de `CustomUser`. No se relajó ninguna
+prueba; las 36 preexistentes siguen verdes. El aviso de 43 migraciones es de
+la base SQLite en memoria nueva del proceso de servidor.
+
+### Notas para el commit siguiente
+Montar el URLconf con namespaces planos; esto debe eliminar la mayoría de los
+`NoReverseMatch` de la suite combinada.

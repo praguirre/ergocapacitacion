@@ -153,6 +153,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   módulo: 33 documentos de ayuda, CSS/JS del widget, `planilla_logic.js` y
   dependencias vendor. Los 13 artefactos normativos cargan con SHA-256 y las
   siete aprobaciones profesionales permanecen en estado `approved`.
+- **03/08/2026 — Commit 2.8:** Django registra las cuatro apps del módulo con
+  sus labels históricos y 14 settings con defaults. `CHAT_AI_MODEL` deriva de
+  `OPENAI_MODEL`; `help_ai` y `ergobot_ai` coexisten como apps separadas y las
+  cuotas usan el cache compartido configurado en 0.8.
 
 ### Registro de cambios documentales
 
