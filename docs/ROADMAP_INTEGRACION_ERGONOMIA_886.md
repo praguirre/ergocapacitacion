@@ -234,7 +234,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.9 | URLconf del módulo y montaje | ✅ |
 | 2.10 | Plantilla base del módulo y adaptación de 10 templates | ✅ |
 | 2.11 | Extraer el widget de ayuda contextual | ✅ |
-| 2.12 | `checks.py` — validación de las 48 rutas declarativas | ⬜ |
+| 2.12 | `checks.py` — validación de las 48 rutas declarativas | ✅ |
 | 2.13 | Aplicar migraciones y prueba de humo | ⬜ |
 
 ### Fase 3 — Normalización de dominio · `ergocapacitacion`
@@ -4016,13 +4016,13 @@ git checkout apps/ergonomia_886/evaluaciones/catalog.py
 .venv/bin/python manage.py check      # vuelve a estar limpio
 ```
 
-- [ ] `manage.py check` no reporta issues con el código correcto
-- [ ] **Con una ruta rota a propósito, reporta `ergonomia_886.E001`**
-- [ ] Los otros tres chequeos pasan
+- [x] `manage.py check` no reporta issues con el código correcto
+- [x] **Con una ruta rota a propósito, reporta `ergonomia_886.E001`**
+- [x] Los otros tres chequeos pasan
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 2.12, con la evidencia de que E001 se dispara
-- [ ] Tabla de control: 2.12 ✅ · `README.md`
+- [x] Bitácora: entrada 2.12, con la evidencia de que E001 se dispara
+- [x] Tabla de control: 2.12 ✅ · `README.md`
 
 ### Git
 

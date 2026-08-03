@@ -169,6 +169,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   extrajo a `_help_widget_body.html`, conservando el token CSRF del chat y los
   identificadores consumidos por `help_widget.js`; el widget sigue perteneciendo
   exclusivamente a `help_ai` conforme a CF-1.
+- **03/08/2026 — Commit 2.12:** cuatro chequeos de arranque validan las 48 rutas
+  declarativas, los 13 artefactos normativos (CF-3), el PDF oficial y su
+  SHA-256 (CF-6), y la ausencia de imports cruzados entre `help_ai` y
+  `ergobot_ai` (CF-1).
 
 ### Registro de cambios documentales
 

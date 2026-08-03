@@ -8,3 +8,7 @@ class PlanillasConfig(AppConfig):
     # que no colisiona con ninguna app del destino. Declararlo cambiaria el
     # app_label y obligaria a reescribir las migraciones.
     verbose_name = "Ergonomía 886 · Protocolo documental"
+
+    def ready(self):
+        # Los chequeos del módulo se registran desde la app raíz del dominio.
+        from apps.ergonomia_886 import checks  # noqa: F401

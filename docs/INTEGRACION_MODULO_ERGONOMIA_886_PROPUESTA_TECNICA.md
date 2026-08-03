@@ -1186,6 +1186,17 @@ En sentido inverso, reemplazar `ergobot_ai` por `help_ai` tampoco sirve: `ergobo
 > la Fase 2. Cualquier cambio fuera de namespaces/imports, esas tres
 > expectativas de integración y el email del fixture incumple CF-1.
 
+> **Decisión de Arquitectura DA-2.12 — ejecución 03/08/2026.** El ejemplo de
+> `checks.py` recolectaba 47 rutas (`26 + 12 + 9`) pese a declarar 48: omitía
+> el paquete `apps.ergonomia_886.evaluaciones.data` usado como cadena por
+> `calculators.py`. El chequeo ejecutado agrega explícitamente ese paquete y
+> verifica 48 rutas reales. Además, la búsqueda textual propuesta para CF-1
+> se disparaba contra el comentario vinculante de `help_ai/apps.py` que
+> documenta la propia separación. Se reemplaza por análisis AST de imports
+> estáticos y llamadas literales a `import_string()`: detecta acoplamiento de
+> código, que es la prohibición de CF-1, sin penalizar comentarios ni tests
+> que documenten la condición.
+
 ---
 
 ## Área 6 — Agenda y seguimiento

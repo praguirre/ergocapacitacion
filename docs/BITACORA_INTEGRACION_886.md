@@ -2185,7 +2185,7 @@ Crear `_help_widget_body.html` y validar el render completo del offcanvas; en
 | Fecha | 2026-08-03 01:02 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | pendiente hasta crear el commit |
+| Hash | `3316dbe` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -2262,6 +2262,90 @@ cambió respecto del cierre anterior.
 ### Notas para el commit siguiente
 Implementar los checks de sistema del módulo y hacer que validen rutas
 declarativas, CF-1, CF-3 y CF-6 sin ejecutar lógica de negocio.
+
+## Commit 2.12 — `checks.py`: validación de las 48 rutas declarativas
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 01:07 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | pendiente hasta crear el commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se registraron cuatro checks Django desde `PlanillasConfig.ready()`: resolución
+de las 48 rutas declarativas, integridad y aprobación de los 13 artefactos
+normativos (CF-3), integridad del PDF oficial (CF-6) y separación por imports
+entre `help_ai` y `ergobot_ai` (CF-1). DA-2.12 corrige dos defectos del ejemplo
+sin relajar sus condiciones.
+
+### Archivos modificados
+- `apps/ergonomia_886/checks.py` — cuatro checks de arranque.
+- `apps/ergonomia_886/planillas/apps.py` — registro en `ready()`.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — DA-2.12.
+- `README.md` — guardarraíles CF-1, CF-3 y CF-6 registrados.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 2.11 y evidencia literal 2.12.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+check_rutas_declarativas: 0 issues
+check_artefactos_normativos: 0 issues
+check_plantilla_oficial: 0 issues
+check_cf1_asistentes_separados: 0 issues
+
+Rutas: 26 + 12 + 9 + 1 paquete = 48
+Artefactos normativos unicos: 13
+bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4  apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+
+# Prueba negativa: LMC_Eval sustituido temporalmente por NO_EXISTE
+EXIT_CODE=1
+SystemCheckError: System check identified some issues:
+
+ERRORS:
+?: (ergonomia_886.E001) Ruta declarativa no resoluble: 'apps.ergonomia_886.evaluaciones.models.NO_EXISTE'
+    HINT: Declarada en catalog:lmc.model_path. Verificar que el módulo y el símbolo existan tras el trasplante a apps.ergonomia_886.
+
+System check identified 1 issue (0 silenced).
+
+# Restauración verificada
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+git diff -- apps/ergonomia_886/evaluaciones/catalog.py
+# sin salida
+
+# Suite preexistente aislada por sus nueve labels
+Ran 36 tests in 0.221s
+OK
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8030 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8030/
+GET / -> 200
+GET /evaluacion-ergonomica/protocolo/crear/ -> 302
+```
+
+### Desvíos respecto del roadmap
+DA-2.12: el recolector literal propuesto sumaba 47 rutas y omitía el paquete de
+datos declarado dos veces en `calculators.py`; se agregó como una ruta única y
+el total comprobado es 48. El escaneo textual CF-1 marcaba el comentario que
+documenta CF-1 en `help_ai/apps.py`; se reemplazó por AST para inspeccionar
+imports estáticos y `import_string()` literales, que son el acoplamiento
+prohibido. Comentarios y documentación no producen falsos positivos.
+
+### Notas para el commit siguiente
+Aplicar el protocolo de migraciones completo, ejecutar la suite combinada y
+realizar la prueba de humo autenticada que cierra la Fase 2.
 
 ### Notas para el commit siguiente
 Crear la base intermedia del módulo y adaptar los templates previstos sin
