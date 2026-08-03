@@ -16,9 +16,9 @@ from django.utils.text import slugify
 from django.views import View
 from django.views.generic import TemplateView
 
-from evaluaciones.catalog import FACTOR_CATALOG, FACTOR_DEFINITIONS
-from evaluaciones.models import RiskEvaluation
-from planillas.models import Evaluacion
+from apps.ergonomia_886.evaluaciones.catalog import FACTOR_CATALOG, FACTOR_DEFINITIONS
+from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
+from apps.ergonomia_886.planillas.models import Evaluacion
 
 from . import serializers
 from .models import ExportAudit, TipoDocumento

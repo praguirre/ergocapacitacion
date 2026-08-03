@@ -227,7 +227,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.2 | Actualizar las 48 rutas declarativas **antes de mover** (B2) | ✅ |
 | 2.3 | Copiar las 4 apps con migraciones y templates | ✅ |
 | 2.4 | Actualizar `name` en los 4 `apps.py` | ✅ |
-| 2.5 | Reescribir los 102 imports absolutos (B2) | ⬜ |
+| 2.5 | Reescribir los 102 imports absolutos (B2) | ✅ |
 | 2.6 | Corregir la ruta de los documentos de ayuda (B6) | ⬜ |
 | 2.7 | Copiar estáticos y artefactos byte a byte (CF-3, CF-6) | ⬜ |
 | 2.8 | Registrar apps y settings del módulo | ⬜ |
@@ -2857,7 +2857,7 @@ git push
 ### Objetivo
 Los imports entre apps son absolutos y dejaron de resolver.
 
-### Inventario **[VERIFICADO]** — 102 imports en 16 archivos
+### Inventario **[VERIFICADO]** — 101 imports trasplantados en 15 archivos
 
 | Archivo | Imports |
 |---|---:|
@@ -2871,7 +2871,14 @@ Los imports entre apps son absolutos y dejaron de resolver.
 | `exportaciones/packaging.py` | 2 |
 | `evaluaciones/tests.py` | 2 |
 | `planillas/views.py` · `evaluaciones/{models,admin,views}.py` · `exportaciones/models.py` · `help_ai/catalog.py` | 1 c/u |
-| **Total** | **102** — 85 de ellos en suites |
+| **Total trasplantado** | **101** — 87 de ellos en suites |
+
+> **Hallazgo de ejecución — 03/08/2026.** El inventario de origen sí contiene
+> 102 imports en 16 archivos, pero uno pertenece a `core/views.py`, archivo que
+> 2.3 descarta por diseño. Por eso 2.5 reescribe 101 imports en las 15 fuentes
+> copiadas. De esos, 87 están en suites: 85 en tests de `exportaciones` y dos
+> en `evaluaciones/tests.py`. El mensaje de commit conserva el inventario
+> histórico de 102 definido por el plan.
 
 ### Grafo de acoplamiento **[VERIFICADO]**
 
@@ -2932,7 +2939,7 @@ for p, e in malos: print('  🔴', p, e)
 
 - [ ] No quedan imports con el prefijo viejo
 - [ ] Ningún archivo tiene error de sintaxis
-- [ ] Las referencias sumadas rondan las 102
+- [ ] Las referencias trasplantadas suman exactamente 101
 
 ### 🔴 REGLA DE ORO
 - [ ] Bitácora: entrada 2.5, con el conteo por archivo · Tabla de control: 2.5 ✅ · `README.md`

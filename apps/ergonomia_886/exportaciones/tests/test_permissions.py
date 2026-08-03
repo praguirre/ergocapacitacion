@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from planillas.models import Evaluacion
+from apps.ergonomia_886.planillas.models import Evaluacion
 
 
 class PermisosTests(TestCase):
@@ -67,7 +67,7 @@ class PermisosTests(TestCase):
         self.assertGreaterEqual(len(lector.pages), 12)
 
     def test_cada_descarga_queda_auditada(self):
-        from exportaciones.models import ExportAudit
+        from apps.ergonomia_886.exportaciones.models import ExportAudit
         self.client.force_login(self.duenio)
         self.client.get(self.url)
         registro = ExportAudit.objects.get()
@@ -76,7 +76,7 @@ class PermisosTests(TestCase):
         self.assertGreater(registro.bytes_entregados, 1000)
 
     def test_las_doce_planillas_responden_para_su_dueno(self):
-        from exportaciones.official.catalog import PLANILLA_DEFINITIONS
+        from apps.ergonomia_886.exportaciones.official.catalog import PLANILLA_DEFINITIONS
         self.client.force_login(self.duenio)
         for definicion in PLANILLA_DEFINITIONS:
             with self.subTest(slug=definicion.slug):
@@ -90,7 +90,7 @@ class PermisosTests(TestCase):
 
     def test_el_panel_enlaza_a_la_evaluacion_correcta(self):
         """Riesgo H-7: Evaluacion.pk y RiskEvaluation.pk no son el mismo numero."""
-        from evaluaciones.models import RiskEvaluation
+        from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
         risk = RiskEvaluation.objects.create(evaluacion=self.evaluacion)
         self.assertNotEqual(risk.pk, self.evaluacion.pk + 1000)
         self.client.force_login(self.duenio)
@@ -106,7 +106,7 @@ class PermisosTests(TestCase):
 class DetalleEndpointTests(TestCase):
 
     def setUp(self):
-        from evaluaciones.models import RiskEvaluation
+        from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
         User = get_user_model()
         self.duenio = User.objects.create_user("duenio_d", password="x")
         self.intruso = User.objects.create_user("intruso_d", password="x")
@@ -129,7 +129,7 @@ class DetalleEndpointTests(TestCase):
         self.assertEqual(self.client.get(url).status_code, 404)
 
     def test_los_trece_factores_responden(self):
-        from evaluaciones.catalog import FACTOR_DEFINITIONS
+        from apps.ergonomia_886.evaluaciones.catalog import FACTOR_DEFINITIONS
         self.client.force_login(self.duenio)
         for definicion in FACTOR_DEFINITIONS:
             with self.subTest(slug=definicion.slug):
@@ -152,7 +152,7 @@ class DetalleEndpointTests(TestCase):
 class BotonEnPaginaDeFactorTests(TestCase):
 
     def setUp(self):
-        from evaluaciones.models import LMC_Eval, RiskEvaluation
+        from apps.ergonomia_886.evaluaciones.models import LMC_Eval, RiskEvaluation
         self.usuario = get_user_model().objects.create_user("boton", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
@@ -178,7 +178,7 @@ class BotonEnPaginaDeFactorTests(TestCase):
         )
 
     def test_las_trece_paginas_traen_el_boton(self):
-        from evaluaciones.catalog import FACTOR_DEFINITIONS
+        from apps.ergonomia_886.evaluaciones.catalog import FACTOR_DEFINITIONS
         self.client.force_login(self.usuario)
         for definicion in FACTOR_DEFINITIONS:
             with self.subTest(slug=definicion.slug):
@@ -192,7 +192,7 @@ class BotonEnPaginaDeFactorTests(TestCase):
 class BotonDeInformeTests(TestCase):
 
     def setUp(self):
-        from evaluaciones.models import RiskEvaluation
+        from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
         self.usuario = get_user_model().objects.create_user("boton_i", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
@@ -206,7 +206,7 @@ class BotonDeInformeTests(TestCase):
         )
 
     def test_con_resultado_calculado_el_boton_esta_habilitado(self):
-        from evaluaciones.models import LMC_Eval
+        from apps.ergonomia_886.evaluaciones.models import LMC_Eval
         LMC_Eval.objects.create(
             risk_evaluation=self.risk_eval, factor_slug="lmc",
             calc_data={"estado_resultado": "calculado"},
@@ -220,7 +220,7 @@ class BotonDeInformeTests(TestCase):
         )
 
     def test_en_borrador_el_boton_aparece_deshabilitado(self):
-        from evaluaciones.models import LMC_Eval
+        from apps.ergonomia_886.evaluaciones.models import LMC_Eval
         LMC_Eval.objects.create(
             risk_evaluation=self.risk_eval, factor_slug="lmc",
             calc_data={"estado_resultado": "borrador"},
@@ -231,7 +231,7 @@ class BotonDeInformeTests(TestCase):
         self.assertContains(respuesta, "Guardar y calcular")
 
     def test_desactualizado_pide_recalcular(self):
-        from evaluaciones.models import LMC_Eval
+        from apps.ergonomia_886.evaluaciones.models import LMC_Eval
         LMC_Eval.objects.create(
             risk_evaluation=self.risk_eval, factor_slug="lmc",
             calc_data={"estado_resultado": "desactualizado"},

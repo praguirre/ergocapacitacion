@@ -141,6 +141,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   punteada bajo `apps.ergonomia_886`; se mantienen los labels finales
   `planillas`, `evaluaciones`, `exportaciones` y `help_ai` sin declararlos ni
   alterar las diez migraciones copiadas.
+- **03/08/2026 — Commit 2.5:** se reescribieron los 101 imports absolutos de
+  las cuatro apps trasplantadas bajo `apps.ergonomia_886` (el import 102 del
+  inventario original pertenecía a `core`, descartado en 2.3). No se modificó
+  ninguna migración y 87 sustituciones pertenecen a suites de prueba.
 
 ### Registro de cambios documentales
 

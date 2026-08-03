@@ -15,7 +15,7 @@ from django.utils.functional import cached_property
 from django.utils.module_loading import import_string
 from django.views.generic import FormView, TemplateView
 from django.db import transaction
-from planillas.models import Evaluacion  # <- app planillas
+from apps.ergonomia_886.planillas.models import Evaluacion  # <- app planillas
 
 from .catalog import FACTOR_CATALOG, FACTOR_DEFINITIONS
 from .models import RiskEvaluation

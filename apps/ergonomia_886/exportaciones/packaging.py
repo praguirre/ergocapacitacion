@@ -9,8 +9,8 @@ import zipfile
 from django.utils import timezone
 from django.utils.text import slugify
 
-from evaluaciones.catalog import FACTOR_DEFINITIONS
-from evaluaciones.models import RiskEvaluation
+from apps.ergonomia_886.evaluaciones.catalog import FACTOR_DEFINITIONS
+from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
 
 from . import serializers
 from .official.builders import build_protocolo_pages

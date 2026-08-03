@@ -10,9 +10,9 @@ from typing import Any, Dict, List
 
 from django.utils.module_loading import import_string
 
-from evaluaciones.catalog import FACTOR_DEFINITIONS, get_factor_definition
-from evaluaciones.models import RiskEvaluation
-from planillas.models import (
+from apps.ergonomia_886.evaluaciones.catalog import FACTOR_DEFINITIONS, get_factor_definition
+from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
+from apps.ergonomia_886.planillas.models import (
     Evaluacion, FactorRiesgo, MedidaEspecifica, Planilla1, Planilla3,
     SeguimientoMedida,
 )

@@ -1560,7 +1560,7 @@ apps en settings.
 | Fecha | 2026-08-03 00:28 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `d17a3e3` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -1620,3 +1620,92 @@ documentado en 2.3 hasta reescribir imports y registrar las apps.
 ### Notas para el commit siguiente
 Reescribir los imports absolutos con inventario antes/después, sin modificar
 las migraciones.
+
+## Commit 2.5 — Reescribir los 102 imports absolutos (B2)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:32 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se reescribieron mecánicamente los 101 imports presentes en las cuatro apps
+trasplantadas, incluidos los indentados. El import 102 del inventario original
+pertenecía a `core/views.py`, descartado en 2.3. Las migraciones permanecieron
+intactas y la propuesta técnica quedó reconciliada con la ejecución.
+
+### Archivos modificados
+- 15 fuentes bajo `apps/ergonomia_886/` — prefijos absolutos reescritos.
+- `README.md` — inventario efectivo documentado.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance e inventario corregidos.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — hallazgo de ejecución registrado.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal 2.5.
+
+### Verificaciones ejecutadas
+
+```text
+imports_viejos=0
+imports_nuevos=101
+apps/ergonomia_886/exportaciones/tests/test_serializers.py:39
+apps/ergonomia_886/exportaciones/tests/test_official_pdf.py:15
+apps/ergonomia_886/exportaciones/tests/test_permissions.py:12
+apps/ergonomia_886/exportaciones/tests/test_reports_llm.py:12
+apps/ergonomia_886/exportaciones/tests/test_reports_pdf.py:7
+apps/ergonomia_886/exportaciones/serializers.py:3
+apps/ergonomia_886/exportaciones/views.py:3
+apps/ergonomia_886/evaluaciones/tests.py:2
+apps/ergonomia_886/exportaciones/packaging.py:2
+apps/ergonomia_886/evaluaciones/admin.py:1
+apps/ergonomia_886/evaluaciones/models.py:1
+apps/ergonomia_886/evaluaciones/views.py:1
+apps/ergonomia_886/exportaciones/models.py:1
+apps/ergonomia_886/help_ai/catalog.py:1
+apps/ergonomia_886/planillas/views.py:1
+migraciones_modificadas=0
+
+AST sobre todos los .py
+Archivos con error de sintaxis: 0
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 44 tests in 0.167s
+FAILED (errors=8)
+RuntimeError: Model class apps.ergonomia_886.planillas.models.Evaluacion
+doesn't declare an explicit app_label and isn't in INSTALLED_APPS.
+AttributeError: 'Settings' object has no attribute 'CHAT_AI_AGENT_CACHE_SIZE'
+
+.venv/bin/python manage.py test apps.accounts apps.certificates apps.company apps.dashboard apps.ergobot_ai apps.landing apps.presencial apps.quiz apps.training --settings=config.test_settings
+----------------------------------------------------------------------
+Ran 36 tests in 0.143s
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8020 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8020/
+GET / -> 200
+```
+
+### Desvíos respecto del roadmap
+La suma del propio inventario del commit daba 101, no 102: el número 102 de
+la propuesta incluía `core/views.py`, correctamente descartado. También había
+87 imports en suites y no 85 al incluir los dos de `evaluaciones/tests.py`.
+Roadmap y propuesta quedaron aclarados; el mensaje de Git se conserva literal.
+
+Contrario a la nota del plan, `manage.py check` no falla: Django ignora las
+apps aún no registradas. El descubrimiento amplio sí falla al importarlas y
+confirma los dos pendientes previstos para 2.8 (registro y settings de ayuda).
+
+### Notas para el commit siguiente
+Corregir el cálculo de la ruta de ayuda antes de registrar las apps.

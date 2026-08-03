@@ -10,7 +10,7 @@ from django.test import SimpleTestCase, TestCase
 from django.urls import resolve, reverse
 from django.utils.module_loading import import_string
 
-from planillas.models import Evaluacion, Planilla2E
+from apps.ergonomia_886.planillas.models import Evaluacion, Planilla2E
 
 from .catalog import FACTOR_CATALOG, FACTOR_DEFINITIONS
 from .calculators import (
@@ -69,7 +69,7 @@ class FactorCatalogContractTests(SimpleTestCase):
         )
 
     def test_catalog_is_the_shared_contract_for_every_factor(self):
-        from help_ai.catalog import PAGE_HELP_SLUGS
+        from apps.ergonomia_886.help_ai.catalog import PAGE_HELP_SLUGS
 
         catalog_slugs = [definition.slug for definition in FACTOR_DEFINITIONS]
         self.assertEqual(catalog_slugs, [choice.value for choice in FactorSlug])

@@ -1867,6 +1867,13 @@ En el destino, la migración `0001_initial` de `planillas` resolverá la FK cont
 | `help_ai/catalog.py` | 1 | `from evaluaciones.catalog import FACTOR_DEFINITIONS` |
 | **Total** | **102** | **85 de ellos en suites de prueba** |
 
+> **Hallazgo de ejecución — 03/08/2026.** Este inventario de 102 corresponde
+> al repositorio de origen e incluye el import de `core/views.py`, que se
+> descarta junto con `core`. El trasplante efectivo contiene 101 imports en 15
+> archivos; 87 están en suites (los 85 de `exportaciones/tests/` más dos de
+> `evaluaciones/tests.py`). Los 101 fueron reescritos y el import descartado
+> quedó contabilizado, no omitido.
+
 **Grafo de acoplamiento entre apps [VERIFICADO]:**
 
 ```

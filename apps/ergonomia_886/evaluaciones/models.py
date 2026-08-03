@@ -4,7 +4,7 @@ from django.db import models
 from django.conf import settings
 
 # Importamos Evaluacion del dominio de planillas
-from planillas.models import Evaluacion
+from apps.ergonomia_886.planillas.models import Evaluacion
 
 # Choices compartidos
 from .choices import (

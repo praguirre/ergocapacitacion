@@ -1,6 +1,6 @@
 """Catálogo canónico de páginas habilitadas para la ayuda contextual."""
 
-from evaluaciones.catalog import FACTOR_DEFINITIONS
+from apps.ergonomia_886.evaluaciones.catalog import FACTOR_DEFINITIONS
 
 
 GLOBAL_HELP_SLUGS = (

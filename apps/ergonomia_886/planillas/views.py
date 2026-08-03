@@ -27,7 +27,7 @@ from .forms import (
 )
 
 # NUEVOS imports para integrar el resumen de factores desde la app evaluaciones
-from evaluaciones.views import _build_wizard_items, _get_riskeval_or_404_for_user, _wizard_url
+from apps.ergonomia_886.evaluaciones.views import _build_wizard_items, _get_riskeval_or_404_for_user, _wizard_url
 
 
 # Etiquetas legibles para los slugs de evaluaciones (evitamos acoplar a evaluaciones.views)

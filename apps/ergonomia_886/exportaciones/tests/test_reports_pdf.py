@@ -2,11 +2,11 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 
-from evaluaciones.models import LMC_Eval, RiskEvaluation
-from planillas.models import Evaluacion
+from apps.ergonomia_886.evaluaciones.models import LMC_Eval, RiskEvaluation
+from apps.ergonomia_886.planillas.models import Evaluacion
 
-from exportaciones import serializers
-from exportaciones.reports.pdf import AVISO_LEGAL, build_factor_detail_pdf
+from apps.ergonomia_886.exportaciones import serializers
+from apps.ergonomia_886.exportaciones.reports.pdf import AVISO_LEGAL, build_factor_detail_pdf
 
 
 class DetalleFactorPDFTests(TestCase):
@@ -98,7 +98,7 @@ class RenderDelInformeTests(TestCase):
         )
 
     def _contenido(self):
-        from exportaciones.reports.pdf import build_professional_report_pdf
+        from apps.ergonomia_886.exportaciones.reports.pdf import build_professional_report_pdf
         payload = serializers.build_factor_payload(self.risk_eval, "lmc")
         return build_professional_report_pdf(
             cabecera=serializers.build_cabecera(self.evaluacion),
@@ -110,7 +110,7 @@ class RenderDelInformeTests(TestCase):
         )
 
     def test_el_markdown_del_modelo_no_puede_inyectar_marcado(self):
-        from exportaciones.reports.pdf import _markdown_a_flowables, _estilos
+        from apps.ergonomia_886.exportaciones.reports.pdf import _markdown_a_flowables, _estilos
         peligroso = '## Titulo <font color="red">rojo</font> & <b>negrita</b>'
         flowables = _markdown_a_flowables(peligroso, _estilos())
         texto = " ".join(getattr(f, "text", "") for f in flowables)
@@ -118,7 +118,7 @@ class RenderDelInformeTests(TestCase):
         self.assertIn("&amp;", texto)
 
     def test_se_conservan_negrita_cursiva_y_vinetas(self):
-        from exportaciones.reports.pdf import _markdown_a_flowables, _estilos
+        from apps.ergonomia_886.exportaciones.reports.pdf import _markdown_a_flowables, _estilos
         fuente = "- **fuerte** y *enfasis*"
         texto = " ".join(
             getattr(f, "text", "")

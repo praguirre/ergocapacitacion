@@ -7,18 +7,18 @@ import io
 from django.test import TestCase
 from pypdf import PdfReader
 
-from exportaciones.official.catalog import (
+from apps.ergonomia_886.exportaciones.official.catalog import (
     OFFICIAL_PAGESIZE,
     PLANILLA_DEFINITIONS,
     official_pdf_bytes,
 )
-from exportaciones.official.overlay import DrawOp, PageOps, stamp_official_pdf
-from exportaciones import serializers
-from exportaciones.official.builders import (
+from apps.ergonomia_886.exportaciones.official.overlay import DrawOp, PageOps, stamp_official_pdf
+from apps.ergonomia_886.exportaciones import serializers
+from apps.ergonomia_886.exportaciones.official.builders import (
     build_planilla1_pages, build_planilla2_pages, build_planilla4_pages,
 )
 from django.contrib.auth import get_user_model
-from planillas.models import Evaluacion, FactorRiesgo, Planilla1
+from apps.ergonomia_886.planillas.models import Evaluacion, FactorRiesgo, Planilla1
 
 
 class PlantillaOficialTests(TestCase):
@@ -107,12 +107,12 @@ class MapasPlanilla2Tests(TestCase):
     SLUGS = [f"planilla2{letra}" for letra in "abcdefghi"]
 
     def _mapa(self, slug):
-        from exportaciones.official.catalog import get_planilla_definition, load_page_map
+        from apps.ergonomia_886.exportaciones.official.catalog import get_planilla_definition, load_page_map
         return load_page_map(get_planilla_definition(slug).map_file)
 
     def _modelo(self, slug):
         from django.utils.module_loading import import_string
-        from exportaciones.serializers import PLANILLA2_MODELOS
+        from apps.ergonomia_886.exportaciones.serializers import PLANILLA2_MODELOS
         return import_string(PLANILLA2_MODELOS[slug])
 
     def test_cada_campo_del_mapa_existe_en_el_modelo(self):
@@ -166,7 +166,7 @@ class MapasPlanilla2Tests(TestCase):
                     )
 
     def test_cada_mapa_apunta_a_su_pagina_oficial(self):
-        from exportaciones.official.catalog import get_planilla_definition
+        from apps.ergonomia_886.exportaciones.official.catalog import get_planilla_definition
         for slug in self.SLUGS:
             with self.subTest(slug=slug):
                 self.assertEqual(
@@ -212,7 +212,7 @@ class BuildersTests(TestCase):
         self.assertEqual(paginas[0].ops, [])
 
     def test_planilla2a_guardada_marca_si_y_no(self):
-        from planillas.models import Planilla2A
+        from apps.ergonomia_886.planillas.models import Planilla2A
         Planilla2A.objects.create(
             evaluacion=self.evaluacion, tarea_nro="1",
             p1_levanta_2_a_25kg=True, p1_ciclico_diario=False,
@@ -222,7 +222,7 @@ class BuildersTests(TestCase):
         self.assertEqual(len([op for op in paginas[0].ops if op.text == "X"]), 9)
 
     def test_planilla2a_con_varias_tareas_produce_varias_paginas(self):
-        from planillas.models import Planilla2A
+        from apps.ergonomia_886.planillas.models import Planilla2A
         Planilla2A.objects.create(evaluacion=self.evaluacion, tarea_nro="1")
         Planilla2A.objects.create(evaluacion=self.evaluacion, tarea_nro="2")
         paginas = build_planilla2_pages(
@@ -231,7 +231,7 @@ class BuildersTests(TestCase):
 
     def test_las_nueve_planillas_marcan_todos_sus_items(self):
         from django.utils.module_loading import import_string
-        from exportaciones.official.catalog import get_planilla_definition, load_page_map
+        from apps.ergonomia_886.exportaciones.official.catalog import get_planilla_definition, load_page_map
         for slug, ruta in serializers.PLANILLA2_MODELOS.items():
             with self.subTest(slug=slug):
                 modelo = import_string(ruta)
@@ -243,7 +243,7 @@ class BuildersTests(TestCase):
                 modelo.objects.filter(evaluacion=self.evaluacion).delete()
 
     def test_planilla4_pagina_cuando_hay_mas_filas_que_capacidad(self):
-        from planillas.models import MedidaEspecifica, Planilla3, SeguimientoMedida
+        from apps.ergonomia_886.planillas.models import MedidaEspecifica, Planilla3, SeguimientoMedida
         planilla3 = Planilla3.objects.create(evaluacion=self.evaluacion)
         for i in range(20):
             medida = MedidaEspecifica.objects.create(
@@ -257,7 +257,7 @@ class BuildersTests(TestCase):
         self.assertEqual(len(paginas), 2)
 
     def test_el_protocolo_completo_tiene_al_menos_doce_paginas(self):
-        from exportaciones.official.builders import build_protocolo_pages
+        from apps.ergonomia_886.exportaciones.official.builders import build_protocolo_pages
         payload = serializers.build_evaluacion_payload(self.evaluacion)
         paginas = build_protocolo_pages(payload)
         self.assertGreaterEqual(len(paginas), 12)
@@ -265,8 +265,8 @@ class BuildersTests(TestCase):
         self.assertEqual(paginas[-1].page_index, 11)
 
     def test_planilla3_pagina_cuando_hay_mas_de_29_medidas(self):
-        from exportaciones.official.builders import build_planilla3_pages
-        from planillas.models import MedidaEspecifica, Planilla3
+        from apps.ergonomia_886.exportaciones.official.builders import build_planilla3_pages
+        from apps.ergonomia_886.planillas.models import MedidaEspecifica, Planilla3
         planilla3 = Planilla3.objects.create(evaluacion=self.evaluacion)
         for i in range(35):
             MedidaEspecifica.objects.create(planilla3=planilla3, descripcion=f"M{i}")

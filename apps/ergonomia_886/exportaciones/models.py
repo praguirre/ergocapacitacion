@@ -8,7 +8,7 @@ import json
 from django.conf import settings
 from django.db import models
 
-from planillas.models import Evaluacion
+from apps.ergonomia_886.planillas.models import Evaluacion
 
 
 class TipoDocumento(models.TextChoices):

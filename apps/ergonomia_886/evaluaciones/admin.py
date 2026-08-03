@@ -20,7 +20,7 @@ from .models import (
 )
 
 # Importamos modelos de Planillas
-from planillas.models import (
+from apps.ergonomia_886.planillas.models import (
     Evaluacion,
     Planilla1,
     FactorRiesgo,

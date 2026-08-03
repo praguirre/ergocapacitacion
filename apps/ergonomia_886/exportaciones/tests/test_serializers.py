@@ -5,9 +5,9 @@ from __future__ import annotations
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from planillas.models import Evaluacion
+from apps.ergonomia_886.planillas.models import Evaluacion
 
-from exportaciones import vocabulario as voc
+from apps.ergonomia_886.exportaciones import vocabulario as voc
 
 
 class VocabularioTests(TestCase):
@@ -47,15 +47,15 @@ class Planilla1PayloadTests(TestCase):
         )
 
     def test_sin_planilla1_el_payload_declara_que_no_existe(self):
-        from exportaciones import serializers
+        from apps.ergonomia_886.exportaciones import serializers
         payload = serializers.build_planilla1_payload(self.evaluacion)
         self.assertFalse(payload["existe"])
         self.assertEqual(payload["factores"], [])
         self.assertEqual(payload["razon_social"], "ACME LOGÍSTICA S.A.")
 
     def test_devuelve_siempre_los_nueve_factores_en_orden(self):
-        from exportaciones import serializers
-        from planillas.models import FactorRiesgo, Planilla1
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import FactorRiesgo, Planilla1
         planilla1 = Planilla1.objects.create(
             evaluacion=self.evaluacion, area_sector="Depósito",
             puesto_trabajo="Preparador", nro_trabajadores=14,
@@ -69,8 +69,8 @@ class Planilla1PayloadTests(TestCase):
         )
 
     def test_la_presencia_por_tarea_se_deriva_del_nivel_asignado(self):
-        from exportaciones import serializers
-        from planillas.models import FactorRiesgo, Planilla1
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import FactorRiesgo, Planilla1
         planilla1 = Planilla1.objects.create(evaluacion=self.evaluacion)
         FactorRiesgo.objects.create(
             planilla1=planilla1, tipo_factor="A", presente=True,
@@ -88,8 +88,8 @@ class Planilla1PayloadTests(TestCase):
         self.assertEqual(factor["nivel3"], "1")
 
     def test_los_booleanos_se_expresan_como_si_o_no(self):
-        from exportaciones import serializers
-        from planillas.models import Planilla1
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import Planilla1
         Planilla1.objects.create(
             evaluacion=self.evaluacion,
             procedimiento_escrito=True, capacitacion=False,
@@ -109,15 +109,15 @@ class Planilla2PayloadTests(TestCase):
         )
 
     def test_sin_instancia_no_se_marca_ningun_item(self):
-        from exportaciones import serializers
+        from apps.ergonomia_886.exportaciones import serializers
         payloads = serializers.build_planilla2_payloads(self.evaluacion, "planilla2a")
         self.assertEqual(len(payloads), 1)
         self.assertFalse(payloads[0]["existe"])
         self.assertEqual(payloads[0]["respuestas"], {})
 
     def test_guardada_distingue_si_de_no(self):
-        from exportaciones import serializers
-        from planillas.models import Planilla2A
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import Planilla2A
         Planilla2A.objects.create(
             evaluacion=self.evaluacion, tarea_nro="1",
             p1_levanta_2_a_25kg=True, p1_ciclico_diario=False,
@@ -129,8 +129,8 @@ class Planilla2PayloadTests(TestCase):
         self.assertEqual(len(respuestas), 9)
 
     def test_varias_tareas_producen_varios_payloads(self):
-        from exportaciones import serializers
-        from planillas.models import Planilla2A
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import Planilla2A
         Planilla2A.objects.create(evaluacion=self.evaluacion, tarea_nro="1")
         Planilla2A.objects.create(evaluacion=self.evaluacion, tarea_nro="2")
         payloads = serializers.build_planilla2_payloads(self.evaluacion, "planilla2a")
@@ -138,7 +138,7 @@ class Planilla2PayloadTests(TestCase):
         self.assertEqual([p["tarea_nro"] for p in payloads], ["1", "2"])
 
     def test_las_nueve_planillas_responden(self):
-        from exportaciones import serializers
+        from apps.ergonomia_886.exportaciones import serializers
         for slug in serializers.PLANILLA2_MODELOS:
             with self.subTest(slug=slug):
                 payloads = serializers.build_planilla2_payloads(self.evaluacion, slug)
@@ -146,8 +146,8 @@ class Planilla2PayloadTests(TestCase):
                 self.assertIn("respuestas", payloads[0])
 
     def test_2g_expone_los_nueve_campos_de_sus_cuatro_tablas(self):
-        from exportaciones import serializers
-        from planillas.models import Planilla2G
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import Planilla2G
         Planilla2G.objects.create(
             evaluacion=self.evaluacion, p1_mb_trabaja_con_herramientas=True,
             p2_ce_supera_limites=True,
@@ -164,8 +164,8 @@ class OrdenDeMedidasTests(TestCase):
     """Hueco G-6: la numeración debe ser estable y coincidir con la pantalla."""
 
     def test_las_medidas_se_numeran_por_pk_ascendente(self):
-        from exportaciones import serializers
-        from planillas.models import MedidaEspecifica, Planilla3
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import MedidaEspecifica, Planilla3
         usuario = get_user_model().objects.create_user("tester3", password="x")
         evaluacion = Evaluacion.objects.create(
             usuario=usuario, razon_social="ACME", cuit="30-1-9",
@@ -189,8 +189,8 @@ class Planilla4PayloadTests(TestCase):
         )
 
     def test_medida_sin_seguimiento_produce_fila_con_numero_y_resto_vacio(self):
-        from exportaciones import serializers
-        from planillas.models import MedidaEspecifica, Planilla3
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import MedidaEspecifica, Planilla3
         planilla3 = Planilla3.objects.create(evaluacion=self.evaluacion)
         MedidaEspecifica.objects.create(planilla3=planilla3, descripcion="Rediseñar mesa")
         fila = serializers.build_planilla4_payload(self.evaluacion)["filas"][0]
@@ -201,8 +201,8 @@ class Planilla4PayloadTests(TestCase):
 
     def test_las_fechas_salen_en_formato_argentino(self):
         from datetime import date
-        from exportaciones import serializers
-        from planillas.models import MedidaEspecifica, Planilla3, SeguimientoMedida
+        from apps.ergonomia_886.exportaciones import serializers
+        from apps.ergonomia_886.planillas.models import MedidaEspecifica, Planilla3, SeguimientoMedida
         planilla3 = Planilla3.objects.create(evaluacion=self.evaluacion)
         medida = MedidaEspecifica.objects.create(planilla3=planilla3, descripcion="M1")
         SeguimientoMedida.objects.create(
@@ -218,7 +218,7 @@ class CoherenciaConEvaluacionesTests(TestCase):
     """`exportaciones` replica `_factor_operational_state`; no debe divergir."""
 
     def setUp(self):
-        from evaluaciones.models import RiskEvaluation
+        from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
         usuario = get_user_model().objects.create_user("tester-coherencia", password="x")
         self.evaluacion = Evaluacion.objects.create(
             usuario=usuario, razon_social="ACME", cuit="30-1-9",
@@ -227,9 +227,9 @@ class CoherenciaConEvaluacionesTests(TestCase):
         self.risk_eval = RiskEvaluation.objects.create(evaluacion=self.evaluacion)
 
     def test_estado_operativo_coincide_con_evaluaciones(self):
-        from evaluaciones.models import LMC_Eval
-        from evaluaciones.views import _factor_operational_state
-        from exportaciones import serializers
+        from apps.ergonomia_886.evaluaciones.models import LMC_Eval
+        from apps.ergonomia_886.evaluaciones.views import _factor_operational_state
+        from apps.ergonomia_886.exportaciones import serializers
         escenarios = [
             {"estado_resultado": "borrador"},
             {"estado_resultado": "desactualizado"},
@@ -258,18 +258,18 @@ class FactorPayloadTests(TestCase):
             usuario=self.usuario, razon_social="ACME", cuit="30-1-9",
             direccion_establecimiento="X", provincia="Buenos Aires",
         )
-        from evaluaciones.models import RiskEvaluation
+        from apps.ergonomia_886.evaluaciones.models import RiskEvaluation
         self.risk_eval = RiskEvaluation.objects.create(evaluacion=self.evaluacion)
 
     def test_factor_sin_iniciar_se_declara_como_inexistente(self):
-        from exportaciones import serializers
+        from apps.ergonomia_886.exportaciones import serializers
         payload = serializers.build_factor_payload(self.risk_eval, "lmc")
         self.assertFalse(payload["existe"])
         self.assertEqual(payload["estado_operativo"], "sin_iniciar")
 
     def test_los_trece_factores_producen_payload(self):
-        from evaluaciones.catalog import FACTOR_DEFINITIONS
-        from exportaciones import serializers
+        from apps.ergonomia_886.evaluaciones.catalog import FACTOR_DEFINITIONS
+        from apps.ergonomia_886.exportaciones import serializers
         for definicion in FACTOR_DEFINITIONS:
             with self.subTest(slug=definicion.slug):
                 payload = serializers.build_factor_payload(
@@ -278,8 +278,8 @@ class FactorPayloadTests(TestCase):
                 self.assertEqual(payload["factor_label"], definicion.label)
 
     def test_el_payload_conserva_calc_data_integro(self):
-        from evaluaciones.models import LMC_Eval
-        from exportaciones import serializers
+        from apps.ergonomia_886.evaluaciones.models import LMC_Eval
+        from apps.ergonomia_886.exportaciones import serializers
         trazas = {
             "estado_resultado": "calculado",
             "limite_base_kg": 14.0,
@@ -300,8 +300,8 @@ class FactorPayloadTests(TestCase):
         self.assertEqual(payload["nivel_numerico_srt"], 3)
 
     def test_los_choices_se_exponen_con_su_etiqueta_legible(self):
-        from evaluaciones.models import LMC_Eval
-        from exportaciones import serializers
+        from apps.ergonomia_886.evaluaciones.models import LMC_Eval
+        from apps.ergonomia_886.exportaciones import serializers
         LMC_Eval.objects.create(
             risk_evaluation=self.risk_eval, factor_slug="lmc",
             v_altura="espinilla_nudillos", h_dist="intermedio",
@@ -312,8 +312,8 @@ class FactorPayloadTests(TestCase):
         self.assertEqual(inputs["h_dist"], "Intermedio (30–60 cm)")
 
     def test_vce_incluye_tramos_y_declara_evidencia_sin_adjuntarla(self):
-        from evaluaciones.models import VCESegment, VibracionCE_Eval
-        from exportaciones import serializers
+        from apps.ergonomia_886.evaluaciones.models import VCESegment, VibracionCE_Eval
+        from apps.ergonomia_886.exportaciones import serializers
         vce = VibracionCE_Eval.objects.create(
             risk_evaluation=self.risk_eval, factor_slug="vibracion_cuerpo_entero",
             calc_data={"estado_resultado": "calculado"},
@@ -333,13 +333,13 @@ class FactorPayloadTests(TestCase):
 class HuellaDePayloadTests(TestCase):
 
     def test_la_huella_es_estable_ante_el_orden_de_las_claves(self):
-        from exportaciones.models import payload_fingerprint
+        from apps.ergonomia_886.exportaciones.models import payload_fingerprint
         a = {"factor_slug": "lmc", "inputs": {"peso_kg": 18.5, "duracion_h": 6}}
         b = {"inputs": {"duracion_h": 6, "peso_kg": 18.5}, "factor_slug": "lmc"}
         self.assertEqual(payload_fingerprint(a), payload_fingerprint(b))
 
     def test_la_huella_cambia_si_cambia_un_valor(self):
-        from exportaciones.models import payload_fingerprint
+        from apps.ergonomia_886.exportaciones.models import payload_fingerprint
         a = {"inputs": {"peso_kg": 18.5}}
         b = {"inputs": {"peso_kg": 25.0}}
         self.assertNotEqual(payload_fingerprint(a), payload_fingerprint(b))

@@ -8,18 +8,18 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from evaluaciones.models import LMC_Eval, RiskEvaluation
-from planillas.models import Evaluacion
+from apps.ergonomia_886.evaluaciones.models import LMC_Eval, RiskEvaluation
+from apps.ergonomia_886.planillas.models import Evaluacion
 
-from exportaciones import serializers
-from exportaciones.models import EstadoInforme
-from exportaciones.reports.llm import (
+from apps.ergonomia_886.exportaciones import serializers
+from apps.ergonomia_886.exportaciones.models import EstadoInforme
+from apps.ergonomia_886.exportaciones.reports.llm import (
     CLAVES_PROHIBIDAS,
     ReportResult,
     get_or_create_report,
     sanitize_payload,
 )
-from exportaciones.reports.prompts import PROMPT_VERSION, SYSTEM_PROMPT
+from apps.ergonomia_886.exportaciones.reports.prompts import PROMPT_VERSION, SYSTEM_PROMPT
 
 MARKDOWN_FALSO = """\
 ## 1. Objeto y alcance
@@ -74,7 +74,7 @@ class SanitizacionTests(TestCase):
             {"razon_social", "area_sector", "puesto_trabajo", "provincia"},
         )
 
-from exportaciones.reports.prompts import SYSTEM_PROMPT
+from apps.ergonomia_886.exportaciones.reports.prompts import SYSTEM_PROMPT
 
 
 class PromptTests(TestCase):
@@ -122,7 +122,7 @@ class CacheDeInformesTests(TestCase):
         )
 
     def _resultado_falso(self, payload, **kwargs):
-        from exportaciones.models import payload_fingerprint
+        from apps.ergonomia_886.exportaciones.models import payload_fingerprint
         limpio = sanitize_payload(payload)
         return ReportResult(
             markdown=MARKDOWN_FALSO,
@@ -192,7 +192,7 @@ class CuotasDeInformeTests(TestCase):
         cache.clear()
 
     def test_el_lease_impide_dos_generaciones_simultaneas(self):
-        from exportaciones.reports.limits import (
+        from apps.ergonomia_886.exportaciones.reports.limits import (
             ReportLimitExceeded, acquire_report_lease, release_report_lease,
         )
         lease = acquire_report_lease(1)
@@ -203,7 +203,7 @@ class CuotasDeInformeTests(TestCase):
 
     @override_settings(REPORT_AI_RATE_LIMIT=2)
     def test_la_cuota_horaria_se_agota(self):
-        from exportaciones.reports.limits import (
+        from apps.ergonomia_886.exportaciones.reports.limits import (
             ReportLimitExceeded, acquire_report_lease, release_report_lease,
         )
         for _ in range(2):
@@ -213,7 +213,7 @@ class CuotasDeInformeTests(TestCase):
         self.assertGreater(ctx.exception.retry_after, 0)
 
     def test_las_cuotas_de_distintos_usuarios_son_independientes(self):
-        from exportaciones.reports.limits import acquire_report_lease
+        from apps.ergonomia_886.exportaciones.reports.limits import acquire_report_lease
         acquire_report_lease(10)
         acquire_report_lease(11)  # otro usuario: no debe bloquearse
 
@@ -234,7 +234,7 @@ class InformeEndpointTests(TestCase):
         )
 
     def _resultado_falso(self, payload, **kwargs):
-        from exportaciones.models import payload_fingerprint
+        from apps.ergonomia_886.exportaciones.models import payload_fingerprint
         limpio = sanitize_payload(payload)
         return ReportResult(
             markdown=MARKDOWN_FALSO,
