@@ -223,7 +223,7 @@ Ninguna.
 | Fecha | 2026-08-02 23:33 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `59eefc7` |
 | Fase | 0 |
 | Estado | ✅ Completado |
 
@@ -278,6 +278,64 @@ Starting development server at http://127.0.0.1:8003/
 
 curl -s -o /dev/null -w 'GET /dashboard/empresa/nomina/ -> HTTP %{http_code}\n' http://127.0.0.1:8003/dashboard/empresa/nomina/
 GET /dashboard/empresa/nomina/ -> HTTP 302
+```
+
+### Desvíos respecto del roadmap
+Ninguno.
+
+### Notas para el commit siguiente
+Ninguna.
+
+## Commit 0.4 — Corregir los settings de redirección profesional (H-F)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:35 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se calificaron con namespace los settings de login y redirección profesional.
+Los cuatro settings de autenticación configurados resuelven ahora a rutas
+existentes.
+
+### Archivos modificados
+- `config/settings.py` — nombres de URL profesionales calificados.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada y evidencia del commit.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.4 marcado como completado.
+- `README.md` — registro del cierre de H-F.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python -c "<script de resolución de settings del roadmap>"
+LOGIN_URL                           = 'trainee_landing'                                  -> /acceso/
+LOGIN_REDIRECT_URL                  = 'training_home'                                    -> /capacitacion/
+PROFESSIONAL_LOGIN_URL              = 'accounts_professional:professional_login'         -> /auth/login/
+PROFESSIONAL_LOGIN_REDIRECT_URL     = 'dashboard:home'                                   -> /dashboard/
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps
+................................
+----------------------------------------------------------------------
+Ran 32 tests in 4.083s
+
+OK
+Destroying test database for alias 'default'...
+Found 32 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8004 --noreload
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8004/
+
+curl -s -o /dev/null -w 'GET /auth/login/ -> HTTP %{http_code}\n' http://127.0.0.1:8004/auth/login/
+GET /auth/login/ -> HTTP 200
 ```
 
 ### Desvíos respecto del roadmap

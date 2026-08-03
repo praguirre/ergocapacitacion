@@ -105,9 +105,11 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = "trainee_landing"
 LOGIN_REDIRECT_URL = "training_home"
 
-# URLs de login profesionales (para usar en decoradores/mixins/vistas)
-PROFESSIONAL_LOGIN_URL = "professional_login"
-PROFESSIONAL_LOGIN_REDIRECT_URL = "dashboard"
+# URLs de login profesionales (para usar en decoradores/mixins/vistas).
+# Deben ser nombres calificados: los planos no resuelven porque los includes
+# de accounts declaran namespace.
+PROFESSIONAL_LOGIN_URL = "accounts_professional:professional_login"
+PROFESSIONAL_LOGIN_REDIRECT_URL = "dashboard:home"
 
 # Password validators (los defaults; no molestan en commit 1)
 AUTH_PASSWORD_VALIDATORS = [

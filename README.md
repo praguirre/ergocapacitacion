@@ -100,6 +100,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **02/08/2026 — Commit 0.3:** se restauró `@login_required` como capa exterior
   en once vistas de empresa y dos profesionales. Las ocho rutas anónimas
   verificadas redirigen con HTTP 302 y ninguna devuelve 500.
+- **02/08/2026 — Commit 0.4:** se calificaron los settings profesionales de
+  login y redirección con sus namespaces reales. Los cuatro settings de
+  autenticación resuelven correctamente y el login profesional responde 200.
 
 ### Registro de cambios documentales
 
