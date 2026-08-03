@@ -285,6 +285,24 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
+        # --- Módulo de Ergonomía SRT 886/15 ---
+        # Los logs registran identificadores y métricas, NUNCA payloads ni
+        # contenido de informes (CF-4).
+        "apps.ergonomia_886": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apps.ergonomia_886.exportaciones.reports": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apps.ergonomia_886.help_ai": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
 

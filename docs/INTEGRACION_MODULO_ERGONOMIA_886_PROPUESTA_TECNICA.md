@@ -4144,6 +4144,7 @@ Adicionalmente, dos precisiones sobre `app_label` y rutas de archivo:
 | **H-P** | Los cuatro snapshots de `Evaluacion` tienen `blank=False`; el código propuesto para poblarlos en `save()` no alcanza porque `ModelForm.is_valid()` falla antes | Roadmap 3.5 | ⚠️ El formulario los completa en `clean()` sólo al crear y conserva una validación obligatoria explícita; `save()` mantiene la defensa CF-5 |
 | **H-Q** | El roadmap requiere `ergonomia_886:evaluacion_list`, pero el URLconf padre no puede adquirir ese namespace sin anidar y romper los namespaces planos de 2.9 | Roadmap 3.6 y decisión de namespaces planos | ⚠️ Se creó un include vacío con namespace sólo para rutas raíz; `planillas:`, `evaluaciones:`, `exportaciones:` y `help_ai:` permanecen planos |
 | **H-R** | El módulo contiene **25 templates HTML**, no 28; 23 declaran `help_slug`. Las 30 pantallas resultan de reutilizar la Planilla 2 para nueve variantes y de los 13 factores | Propuesta y roadmap 4.4 | ⚠️ Se verificó el inventario real por prueba automática; el alcance funcional de 30 pantallas no se recortó |
+| **H-S** | La configuración de tres loggers jerárquicos del ejemplo duplica cada evento de `help_ai` y `exportaciones.reports` por propagación al logger padre | Roadmap 4.5 | ⚠️ Los tres loggers declaran `propagate=False`; cada evento se emite una sola vez y conserva el nivel INFO |
 
 ---
 

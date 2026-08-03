@@ -3465,7 +3465,7 @@ visual y funcional completo previsto en 4.4.
 | Fecha | 2026-08-03 11:42 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `a7a69f8` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -3607,3 +3607,120 @@ de factores excedían 12 px el viewport; el contenedor responsive lo cerró.
 
 ### Notas para el commit siguiente
 Agregar los loggers del módulo y ejecutar la verificación integral de CF-1.
+
+---
+
+## Commit 4.5 — Loggers del módulo y verificación integral de CF-1
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:53 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se configuraron los loggers `apps.ergonomia_886`,
+`apps.ergonomia_886.exportaciones.reports` y `apps.ergonomia_886.help_ai` en
+INFO, con consola y sin propagación duplicada. Los logs de formularios dejaron
+de interpolar el usuario (que se representaba por email) y registran sólo
+`user_id`. Una suite funcional prueba tres guías del widget y el stream docente
+de Ergobot con proveedor simulado, sin usar claves ni red externa.
+
+### Archivos modificados
+- `config/settings.py` — tres loggers INFO sin propagación.
+- `apps/ergonomia_886/evaluaciones/views.py` — logs con ID, sin email ni payload.
+- `apps/ergobot_ai/tests.py` — humo funcional independiente de ambos asistentes.
+- `README.md` — cierre de Fase 4 y CF-1.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit y fase marcados ✅.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — hallazgo H-S.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 4.4 y evidencia literal 4.5.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python -c '<verificacion CF-1 y loggers>'
+=== 1. Apps separadas en INSTALLED_APPS ===
+  apps.ergobot_ai            : True
+  apps.ergonomia_886.help_ai : True
+=== 2. Ninguna importa codigo de la otra ===
+  acoplamientos AST detectados: 0
+  OK: comentarios y chequeos normativos no cuentan como imports
+=== 3. Prefijos de URL distintos ===
+  ergobot_ai : /ai/ergobot/ergonomia/stream/
+  help_ai    : /evaluacion-ergonomica/ayuda/chat/lmc/
+=== 4. Loggers sin payload configurados ===
+  apps.ergonomia_886 : {'handlers': ['console'], 'level': 'INFO', 'propagate': False}
+  apps.ergonomia_886.exportaciones.reports : {'handlers': ['console'], 'level': 'INFO', 'propagate': False}
+  apps.ergonomia_886.help_ai : {'handlers': ['console'], 'level': 'INFO', 'propagate': False}
+
+.venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 22 tests in 0.247s
+OK
+Destroying test database for alias 'default'...
+Found 22 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps.ergonomia_886.help_ai apps.ergobot_ai --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 24 tests in 0.252s
+OK
+Destroying test database for alias 'default'...
+Found 24 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 234 tests in 2.068s
+OK
+Destroying test database for alias 'default'...
+Found 234 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+.venv/bin/python manage.py migrate --check
+(sin salida)
+
+shasum -a 256 apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+bc0d0753943888779abd0936f6c4dc2e128766c7cf6370a4a2fb19073aad59f4  apps/ergonomia_886/exportaciones/official/templates_bin/res_srt_886_15-formulario.pdf
+
+git diff --name-only a7a69f8 -- apps/ergonomia_886/help_ai/tests.py
+(sin salida: las 22 pruebas permanecen intactas)
+git diff --check
+(sin salida)
+```
+
+### Evidencia CF-1
+
+- Apps distintas: ambas presentes en `INSTALLED_APPS`.
+- Código desacoplado: el analizador AST E007 encontró cero imports cruzados.
+- Contratos intactos: las 22 pruebas heredadas de `help_ai` pasan sin cambios.
+- Transporte separado: `/ai/ergobot/...` frente a
+  `/evaluacion-ergonomica/ayuda/chat/...`.
+- Funcional: las guías `dashboard`, `planilla1` y `posturas_forzadas`
+  respondieron 200 con versiones distintas; Ergobot emitió un delta docente y
+  cierre SSE en su propia vista, con Runner simulado.
+- Dominios: la ayuda usa contenido normativo por pantalla; Ergobot conserva su
+  agente docente de capacitación. Ninguna importa código de la otra.
+- Chequeo automático: `manage.py check` limpio, incluido `ergonomia_886.E007`.
+
+### Desvíos respecto del roadmap
+El `grep` literal sugerido marca comentarios y el propio chequeo E007 como
+falsos positivos. Se usó el analizador AST del módulo, que mide el contrato real:
+imports de Python e `import_string`, no menciones documentales.
+
+La configuración jerárquica propuesta duplicaba mensajes porque los loggers
+hijos propagaban al padre con el mismo handler. Se añadió `propagate=False` y se
+registró H-S. Al habilitar INFO también se observó que `request.user` imprimía
+emails; se reemplazó por `user_id`, manteniendo identificadores operativos sin
+datos personales. El primer fixture async carecía de `request.auser`; se adaptó
+la prueba al contrato real de `login_required` sin tocar la vista.
+
+### Notas para el commit siguiente
+Fase 4 cerrada. No iniciar Fase 5 sin instrucción explícita del usuario.

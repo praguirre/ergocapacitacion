@@ -393,10 +393,10 @@ class FactorFormView(LoginRequiredMixin, FormView):
         # Carga y control de propiedad
         self._risk_eval = _get_riskeval_or_404_for_user(kwargs["evaluacion_id"], request.user)
         logger.info(
-            "FactorFormView dispatch factor=%s evaluacion_id=%s user=%s",
+            "FactorFormView dispatch factor=%s evaluacion_id=%s user_id=%s",
             self.factor_slug,
             self._risk_eval.pk,
-            request.user,
+            request.user.pk,
         )
         return super().dispatch(request, *args, **kwargs)
 
@@ -461,10 +461,10 @@ class FactorFormView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         action = self.request.POST.get("action")  # "save" o "save_and_calc"
         logger.info(
-            "FactorFormView form_valid factor=%s action=%s user=%s risk_eval=%s",
+            "FactorFormView form_valid factor=%s action=%s user_id=%s risk_eval=%s",
             self.factor_slug,
             action,
-            self.request.user,
+            self.request.user.pk,
             self.risk_eval.pk,
         )
 
@@ -518,10 +518,10 @@ class FactorFormView(LoginRequiredMixin, FormView):
             for field, error_list in form.errors.as_data().items()
         }
         logger.warning(
-            "FactorFormView form_invalid factor=%s user=%s risk_eval=%s "
+            "FactorFormView form_invalid factor=%s user_id=%s risk_eval=%s "
             "error_codes=%s",
             self.factor_slug,
-            self.request.user,
+            self.request.user.pk,
             getattr(self, "_risk_eval", None),
             error_codes,
         )

@@ -23,7 +23,7 @@ Es un **plan de ejecución commit por commit**. No es un documento de diseño: e
 | **1** — Adaptación del origen | `ergonomia_srt` | 7 (1.0–1.6) | ✅ |
 | **2** — Trasplante | `ergocapacitacion` | 13 (2.1–2.13) | ✅ |
 | **3** — Normalización de dominio | `ergocapacitacion` | 9 (3.1–3.9) | ✅ |
-| **4** — Integración de UI 🎯 | `ergocapacitacion` | 5 (4.1–4.5) | ❌ |
+| **4** — Integración de UI 🎯 | `ergocapacitacion` | 5 (4.1–4.5) | ✅ |
 | **5** — Aprovechamiento | `ergocapacitacion` | 6 (5.1–5.6) | ❌ |
 | **6** — Content Security Policy | `ergocapacitacion` | 7 (6.1–6.7) | ❌ independiente |
 
@@ -259,7 +259,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 4.2 | Entrada de navegación en el navbar | ✅ |
 | 4.3 | Cuarta stat del dashboard con import diferido | ✅ |
 | 4.4 | Ajustes de contraste al tema oscuro | ✅ |
-| 4.5 | Loggers del módulo y verificación de CF-1 | ⬜ |
+| 4.5 | Loggers del módulo y verificación de CF-1 | ✅ |
 
 ### Fase 5 — Aprovechamiento · `ergocapacitacion`
 
@@ -5670,13 +5670,13 @@ echo "=== 5. El chequeo automatico E007 ==="
 
 **Verificación funcional, con el servidor levantado:**
 
-- [ ] El widget de ayuda responde en 3 pantallas del módulo con slugs distintos
-- [ ] **El chatbot Ergobot responde en `/capacitacion/`**
-- [ ] Las respuestas son coherentes con el dominio de cada uno
+- [x] El widget de ayuda responde en 3 pantallas del módulo con slugs distintos
+- [x] **El chatbot Ergobot responde en `/capacitacion/`**
+- [x] Las respuestas son coherentes con el dominio de cada uno
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 4.5, **con la salida completa de la verificación de CF-1**
-- [ ] Tabla de control: 4.5 ✅ · `README.md`
+- [x] Bitácora: entrada 4.5, **con la salida completa de la verificación de CF-1**
+- [x] Tabla de control: 4.5 ✅ · `README.md`
 
 ### Git
 

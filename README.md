@@ -230,6 +230,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   para el tema oscuro y sus 30 pantallas quedaron cubiertas por un recorrido
   HTTP. Se verificaron los 23 bloques de ayuda, los cinco scripts interactivos,
   tablas densas y ausencia de overflow; la suite total alcanza 232 pruebas.
+- **03/08/2026 — Commit 4.5 / cierre de Fase 4:** se habilitaron tres loggers
+  jerárquicos sin payload, sin datos personales ni propagación duplicada. CF-1
+  queda verificada por AST, 22 pruebas intactas de `help_ai`, URLs separadas y
+  pruebas funcionales de ambos asistentes. La fase cierra con 234 pruebas OK.
 
 ### Registro de cambios documentales
 
