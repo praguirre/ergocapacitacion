@@ -1,10 +1,10 @@
 <!-- planillas/templates/planillas/detalle_evaluacion.html -->
-{% extends 'base.html' %}
+{% extends 'ergonomia_886/base_886.html' %}
 {% block help_slug %}dashboard{% endblock %}
 {% load static %}
 {% block title %}Detalle de Evaluación: {{ evaluacion.razon_social }}{% endblock %}
 
-{% block content %}
+{% block content_886 %}
 <div class="container">
     <h1 class="mb-2">Protocolo de Ergonomía</h1>
     <h3 class="text-muted mb-4">{{ evaluacion.razon_social }} – CUIT: {{ evaluacion.cuit }}</h3>

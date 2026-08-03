@@ -2000,7 +2000,7 @@ Montar el URLconf con namespaces planos; esto debe eliminar la mayoría de los
 | Fecha | 2026-08-03 00:55 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `61a6dbb` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -2083,6 +2083,100 @@ adicional cambió.
 
 La raíz del módulo devuelve 404 deliberadamente hasta implementar el listado
 en 3.6. Las otras rutas anónimas están protegidas y ninguna devuelve 500.
+
+### Notas para el commit siguiente
+Extraer el cuerpo del offcanvas a `_help_widget_body.html`, sin mover el bloque
+`help_slug` fuera de la cadena de herencia.
+
+## Commit 2.10 — Plantilla base del módulo y adaptación de 10 templates
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:59 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | pendiente hasta crear el commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se implementó la variante inline recomendada de `base_886.html`: el bloque
+`help_slug` vive en la cadena de `{% extends %}` y el include queda limitado al
+cuerpo del offcanvas. Se adaptaron los nueve templates trasplantados presentes;
+el décimo, `core/dashboard.html`, continúa diferido al commit 3.6 como prescribe
+el propio roadmap. Los 13 formularios de factor heredan del único base adaptado.
+
+### Archivos modificados
+- `templates/ergonomia_886/base_886.html` — base intermedia inline del módulo.
+- `apps/ergonomia_886/planillas/templates/planillas/*.html` — seis templates adaptados.
+- `apps/ergonomia_886/evaluaciones/templates/evaluaciones/factor_form_base.html` — base de 13 factores adaptada.
+- `apps/ergonomia_886/evaluaciones/templates/evaluaciones/wizard_resumen.html` — resumen adaptado.
+- `apps/ergonomia_886/exportaciones/templates/exportaciones/panel_exportacion.html` — panel adaptado.
+- `apps/ergonomia_886/help_ai/tests.py` — lectura del widget trasladada de `base.html` a `base_886.html`.
+- `README.md` — integración visual y alcance 9+1 documentados.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal 2.10.
+
+### Verificaciones ejecutadas
+
+```text
+# Estructura de herencia
+rg -l "extends ...ergonomia_886/base_886.html" apps/ergonomia_886/*/templates | wc -l
+       9
+rg -n "block help_slug" templates/ergonomia_886 apps/ergonomia_886/*/templates | wc -l
+      23
+rg -n "extends ...base_dashboard.html" apps/ergonomia_886/*/templates
+# sin salida
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+.venv/bin/python manage.py shell --settings=config.test_settings -c "...get_template('ergonomia_886/base_886.html')..."
+Template base_886: compilacion OK
+
+# Suite preexistente aislada por sus nueve labels
+Ran 36 tests in 0.142s
+OK
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+# Suite help_ai focalizada, después de trasladar su lectura a base_886.html
+Ran 22 tests in 0.238s
+FAILED (failures=1, errors=1)
+Found 22 test(s).
+System check identified no issues (0 silenced).
+ERROR: test_dynamic_responses_apply_restrictive_csp
+KeyError: 'content-security-policy'
+FAIL: test_templates_do_not_depend_on_cdn_or_inline_event_handlers
+AssertionError: 'cdn.jsdelivr.net' unexpectedly found
+Pendientes planificados: cabecera CSP y retiro global de CDN en Fase 6.
+
+.venv/bin/python manage.py runserver 127.0.0.1:8028 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8028/
+GET / -> 200
+GET /evaluacion-ergonomica/protocolo/crear/ -> 302
+```
+
+### Desvíos respecto del roadmap
+El título habla de diez templates, pero la tabla del mismo commit difiere
+explícitamente `core/dashboard.html` a 3.6; por eso este commit adapta los nueve
+archivos realmente copiados y preserva el décimo para su reimplantación.
+
+La prueba de seguridad todavía leía el widget en el `templates/base.html` del
+origen. Se actualizó únicamente esa ruta para acompañar el traslado arquitectónico
+a `templates/ergonomia_886/base_886.html`; sus aserciones funcionales no cambiaron.
+
+La primera ejecución con settings reales fue bloqueada por el sandbox al acceder
+a PostgreSQL. La repetición autorizada ejecutó los 22 tests y luego detectó una
+sesión ajena reteniendo `test_ergocapacitacion` durante el teardown. Las
+verificaciones deterministas finales se aislaron con `config.test_settings`; no
+hubo cambios de código para ocultar la incidencia.
+
+### Notas para el commit siguiente
+Crear `_help_widget_body.html` y validar el render completo del offcanvas; en
+2.10 el include se deja deliberadamente preparado para ese paso inmediato.
 
 ### Notas para el commit siguiente
 Crear la base intermedia del módulo y adaptar los templates previstos sin

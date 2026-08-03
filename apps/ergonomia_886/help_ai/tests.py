@@ -63,7 +63,10 @@ class HelpContentCoverageTests(SimpleTestCase):
             Path(settings.BASE_DIR) / "static" / "ayuda" / "js" / "help_widget.js"
         ).read_text(encoding="utf-8")
         base_template = (
-            Path(settings.BASE_DIR) / "templates" / "base.html"
+            Path(settings.BASE_DIR)
+            / "templates"
+            / "ergonomia_886"
+            / "base_886.html"
         ).read_text(encoding="utf-8")
         self.assertIn("DOMPurify.sanitize", widget)
         self.assertIn('addEventListener("hidden.bs.offcanvas"', widget)

@@ -161,6 +161,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   `/evaluacion-ergonomica/` con namespaces planos para protocolo, factores,
   documentos y ayuda. `help_ai` queda separado del Ergobot docente, que
   conserva su prefijo `/ai/` conforme a CF-1.
+- **03/08/2026 — Commit 2.10:** `base_886.html` integra visualmente el módulo
+  con el dashboard y declara inline el bloque `help_slug`; nueve templates
+  trasplantados cambiaron su herencia y el décimo (`core/dashboard.html`)
+  permanece diferido a su reimplementación en 3.6.
 
 ### Registro de cambios documentales
 

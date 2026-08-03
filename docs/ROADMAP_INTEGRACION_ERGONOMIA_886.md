@@ -232,7 +232,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.7 | Copiar estáticos y artefactos byte a byte (CF-3, CF-6) | ✅ |
 | 2.8 | Registrar apps y settings del módulo | ✅ |
 | 2.9 | URLconf del módulo y montaje | ✅ |
-| 2.10 | Plantilla base del módulo y adaptación de 10 templates | ⬜ |
+| 2.10 | Plantilla base del módulo y adaptación de 10 templates | ✅ |
 | 2.11 | Extraer el widget de ayuda contextual | ⬜ |
 | 2.12 | `checks.py` — validación de las 48 rutas declarativas | ⬜ |
 | 2.13 | Aplicar migraciones y prueba de humo | ⬜ |
@@ -3689,12 +3689,12 @@ grep -rl "block help_slug" apps/ergonomia_886/ | wc -l    # → 23
 .venv/bin/python manage.py check
 ```
 
-- [ ] Ningún template extiende `base.html`
-- [ ] Los 23 `{% block help_slug %}` siguen presentes
+- [x] Ningún template extiende `base.html`
+- [x] Los 23 `{% block help_slug %}` siguen presentes
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 2.10, indicando qué variante de `base_886.html` funcionó
-- [ ] Tabla de control: 2.10 ✅ · `README.md`
+- [x] Bitácora: entrada 2.10, indicando qué variante de `base_886.html` funcionó
+- [x] Tabla de control: 2.10 ✅ · `README.md`
 
 ### Git
 
