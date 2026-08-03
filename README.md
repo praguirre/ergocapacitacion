@@ -109,6 +109,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **02/08/2026 — Commit 0.6:** se agregaron cuatro pruebas automáticas para N1
   y N2: diez rutas de backoffice anónimas, login resoluble y ficha del
   trabajador con y sin `QuizState`. La suite subió de 32 a 36 pruebas.
+- **02/08/2026 — Commit 0.7:** se agregó `config/test_settings.py` con SQLite
+  efímero, `LocMemCache`, hashing rápido, storage estático no manifestado y
+  correo en memoria. Ejecutar: `.venv/bin/python manage.py test apps
+  --settings=config.test_settings`.
 
 ### Registro de cambios documentales
 

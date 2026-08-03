@@ -412,7 +412,7 @@ Ninguna.
 | Fecha | 2026-08-02 23:40 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `3e1df5c` |
 | Fase | 0 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -489,3 +489,71 @@ aserción existente fue modificada ni relajada.
 ### Notas para el commit siguiente
 El commit 0.7 centraliza a nivel de settings de prueba el mismo aislamiento de
 storage que esta regresión necesita localmente.
+
+## Commit 0.7 — Crear `config/test_settings.py` (B8)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-02 23:43 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 0 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se creó la configuración aislada de pruebas con SQLite en memoria, caché local,
+hashing rápido, storage no manifestado y correo en memoria. El plan A funcionó:
+las 36 pruebas pasaron tanto con la configuración nueva como con la normal.
+
+### Archivos modificados
+- `config/test_settings.py` — settings aislados de la suite.
+- `docs/BITACORA_INTEGRACION_886.md` — entrada y evidencia del commit.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — commit 0.7 marcado como completado.
+- `README.md` — documentación del comando de prueba aislado.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps --settings=config.test_settings -v 2
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Found 36 test(s).
+...
+----------------------------------------------------------------------
+Ran 36 tests in 0.179s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test apps
+....................................
+----------------------------------------------------------------------
+Ran 36 tests in 4.232s
+
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py runserver 127.0.0.1:8007 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+You have 33 unapplied migration(s).
+Starting development server at http://127.0.0.1:8007/
+
+curl -s -o /dev/null -w 'GET / -> HTTP %{http_code}\n' http://127.0.0.1:8007/
+GET / -> HTTP 200
+```
+
+### Desvíos respecto del roadmap
+El smoke test con la base SQLite en memoria advirtió 33 migraciones sin aplicar,
+lo esperable al iniciar un servidor fuera del runner de tests. `GET /` no
+requiere base y respondió 200. Durante la publicación del commit 0.6 GitHub
+emitió una vez `Error in the HTTP2 framing layer`; el reintento confirmó
+`Everything up-to-date` y la rama remota quedó sincronizada.
+
+### Notas para el commit siguiente
+Se usó el plan A (SQLite); no fue necesario solicitar permisos de PostgreSQL.
