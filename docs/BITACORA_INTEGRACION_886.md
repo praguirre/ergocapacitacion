@@ -3252,7 +3252,7 @@ Fase 3 cerrada. No iniciar Fase 4 sin instrucción explícita del usuario.
 | Fecha | 2026-08-03 10:54 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `c3387d7` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -3311,3 +3311,77 @@ el ambiente persistente no tiene usuarios empresa y no se creó ninguno (P-2).
 
 ### Notas para el commit siguiente
 Agregar la entrada «Evaluaciones» al navbar compartido del backoffice.
+
+---
+
+## Commit 4.2 — Entrada de navegación en el navbar
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 11:17 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se agregó «Evaluaciones» al navbar compartido del backoffice, disponible para
+profesionales y empresas. La clase activa depende del prefijo completo del
+módulo, por lo que persiste entre listado, alta y detalle. Una regresión cubre
+ambos tipos de usuario y la navegación por esas tres familias de pantalla.
+
+### Archivos modificados
+- `templates/base_dashboard.html` — nueva entrada de navegación compartida.
+- `apps/dashboard/tests_navigation.py` — regresión profesional/empresa y estado activo.
+- `README.md` — cambio funcional y verificación responsive.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 4.1 y evidencia literal 4.2.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.dashboard.tests_navigation --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+..
+Ran 2 tests in 0.079s
+OK
+Destroying test database for alias 'default'...
+Found 2 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 227 tests in 1.779s
+OK
+Destroying test database for alias 'default'...
+Found 227 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+Navegador local, viewport 390 x 844, menú colapsado:
+{"active":["Evaluaciones"],"bodyScrollWidth":390,"htmlScrollWidth":390,"navText":["ErgoSolutions","Dashboard","Capacitaciones","Evaluaciones","Mi Perfil"],"togglerVisible":"block","viewport":{"h":844,"w":390}}
+
+Navegador local, menú desplegado y transición finalizada:
+{"className":"navbar-collapse collapse show","evaluacionesVisible":true,"scrollWidth":390,"viewport":390}
+
+git diff --check
+(sin salida)
+```
+
+### Desvíos respecto del roadmap
+La primera versión de la prueba incluyó `help_ai:help_guide`, que entrega
+Markdown crudo y deliberadamente no extiende el dashboard. Se sustituyó por el
+detalle HTML de una evaluación sin modificar código funcional ni relajar la
+aserción. El navegador de la aplicación no tenía una sesión local autenticada;
+para la comprobación puramente visual se renderizó temporalmente la plantilla
+real en memoria, sin persistir archivos ni datos, y se sirvieron sus assets
+desde el servidor de desarrollo. Así se verificaron el breakpoint, el estado
+activo y la ausencia de overflow con el HTML/CSS/JS efectivos.
+
+### Notas para el commit siguiente
+Agregar la cuarta stat mediante un import diferido y tolerante al desmontaje.

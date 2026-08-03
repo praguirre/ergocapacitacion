@@ -40,6 +40,12 @@
                             <i class="bi bi-mortarboard me-1"></i>Capacitaciones
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'evaluacion-ergonomica' in request.path %}active{% endif %}"
+                           href="{% url 'ergonomia_886:evaluacion_list' %}">
+                            <i class="bi bi-clipboard-check me-1"></i>Evaluaciones
+                        </a>
+                    </li>
                     {% if is_company_user %}
                     <li class="nav-item">
                         <a class="nav-link {% if 'nomina' in request.path %}active{% endif %}"

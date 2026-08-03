@@ -218,6 +218,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   activa, indica «Disponible» y navega a `/evaluacion-ergonomica/`. Su texto
   describe exclusivamente Ergonomía SRT 886/15, sin prometer iluminación ni
   ruido; la tarjeta de Capacitaciones permanece intacta.
+- **03/08/2026 — Commit 4.2:** el navbar compartido del backoffice incorpora
+  «Evaluaciones» para profesionales y empresas. La entrada permanece activa en
+  las pantallas HTML del módulo y el menú colapsable fue validado a 390 px sin
+  desbordamiento horizontal.
 
 ### Registro de cambios documentales
 

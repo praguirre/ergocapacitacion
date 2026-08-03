@@ -256,7 +256,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | Commit | Título | Estado |
 |---|---|:---:|
 | 4.1 | **Activar la tarjeta «Evaluaciones»** | ✅ |
-| 4.2 | Entrada de navegación en el navbar | ⬜ |
+| 4.2 | Entrada de navegación en el navbar | ✅ |
 | 4.3 | Cuarta stat del dashboard con import diferido | ⬜ |
 | 4.4 | Ajustes de contraste al tema oscuro | ⬜ |
 | 4.5 | Loggers del módulo y verificación de CF-1 | ⬜ |
@@ -5440,12 +5440,12 @@ git push
 
 ### Verificación
 
-- [ ] El ítem aparece para `professional` y para `company`
-- [ ] Se marca activo en **todas** las pantallas del módulo
-- [ ] El navbar no se desborda en pantalla angosta
+- [x] El ítem aparece para `professional` y para `company`
+- [x] Se marca activo en **todas** las pantallas del módulo
+- [x] El navbar no se desborda en pantalla angosta
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 4.2 · Tabla de control: 4.2 ✅ · `README.md`
+- [x] Bitácora: entrada 4.2 · Tabla de control: 4.2 ✅ · `README.md`
 
 ### Git
 
