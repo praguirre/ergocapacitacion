@@ -2,6 +2,7 @@
 from django import forms
 from django.db import models
 from django.forms import inlineformset_factory
+from apps.company.models import CompanyProfile
 from .models import *
 
 # --- MIXIN DE LÓGICA REUTILIZABLE ---
@@ -25,9 +26,93 @@ class YesNoMixin:
 
 # --- Formularios ---
 class EvaluacionForm(forms.ModelForm):
+    """Alta y edición de la evaluación ergonómica.
+
+    CF-5: al crear, los datos de una empresa registrada sólo se proponen. Los
+    campos permanecen editables y lo escrito por el profesional siempre gana.
+    Los snapshots nunca se resincronizan al editar el perfil de la empresa.
+    """
+
     class Meta:
         model = Evaluacion
-        fields = ['razon_social', 'cuit', 'ciiu', 'direccion_establecimiento', 'provincia']
+        fields = [
+            "empresa", "razon_social", "cuit", "ciiu",
+            "direccion_establecimiento", "provincia",
+        ]
+        widgets = {
+            "empresa": forms.Select(attrs={
+                "class": "form-select",
+                "data-poblar-campos": "true",
+            }),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+        if user is not None and user.is_company:
+            try:
+                perfil = user.company_profile
+                self.fields["empresa"].queryset = CompanyProfile.objects.filter(
+                    pk=perfil.pk
+                )
+                self.fields["empresa"].initial = perfil
+                self.fields["empresa"].disabled = True
+            except CompanyProfile.DoesNotExist:
+                self.fields["empresa"].queryset = CompanyProfile.objects.none()
+        else:
+            self.fields["empresa"].queryset = CompanyProfile.objects.filter(
+                account_status=CompanyProfile.AccountStatus.ACTIVE,
+            ).order_by("razon_social")
+            self.fields["empresa"].required = False
+            self.fields["empresa"].empty_label = "— Otra (cargar manualmente) —"
+
+        # Permite que un valor vacío sea propuesto desde CompanyProfile durante
+        # clean(), antes de la validación del modelo. Sin empresa, clean()
+        # conserva la obligatoriedad histórica de estos cuatro campos.
+        for field_name in (
+            "razon_social", "cuit", "direccion_establecimiento", "provincia",
+        ):
+            self.fields[field_name].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        empresa = cleaned_data.get("empresa")
+        if empresa is not None and self.instance.pk is None:
+            propuestas = {
+                "razon_social": empresa.razon_social,
+                "cuit": empresa.cuit,
+                "direccion_establecimiento": empresa.domicilio,
+                "provincia": empresa.provincia,
+            }
+            for field_name, propuesta in propuestas.items():
+                cleaned_data[field_name] = cleaned_data.get(field_name) or propuesta
+
+        for field_name in (
+            "razon_social", "cuit", "direccion_establecimiento", "provincia",
+        ):
+            if not cleaned_data.get(field_name):
+                self.add_error(field_name, "Este campo es obligatorio.")
+        return cleaned_data
+
+    def save(self, commit=True):
+        evaluacion = super().save(commit=False)
+        empresa = self.cleaned_data.get("empresa")
+
+        if empresa is not None and evaluacion.pk is None:
+            evaluacion.razon_social = evaluacion.razon_social or empresa.razon_social
+            evaluacion.cuit = evaluacion.cuit or empresa.cuit
+            evaluacion.direccion_establecimiento = (
+                evaluacion.direccion_establecimiento or empresa.domicilio
+            )
+            evaluacion.provincia = evaluacion.provincia or empresa.provincia
+
+        if self.user is not None and evaluacion.pk is None:
+            evaluacion.usuario = self.user
+
+        if commit:
+            evaluacion.save()
+        return evaluacion
 
 class Planilla1Form(forms.ModelForm):
     class Meta:

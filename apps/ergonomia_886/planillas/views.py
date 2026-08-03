@@ -57,14 +57,12 @@ FACTOR_LABELS = {
 @backoffice_required
 def crear_evaluacion_view(request):
     if request.method == 'POST':
-        form = EvaluacionForm(request.POST)
+        form = EvaluacionForm(request.POST, user=request.user)
         if form.is_valid():
-            evaluacion = form.save(commit=False)
-            evaluacion.usuario = request.user
-            evaluacion.save()
+            evaluacion = form.save()
             return redirect('planillas:detalle_evaluacion', evaluacion_id=evaluacion.id)
     else:
-        form = EvaluacionForm()
+        form = EvaluacionForm(user=request.user)
     return render(request, 'planillas/crear_evaluacion.html', {'form': form})
 
 # ─────────────────────────────────────────────────────────────────────

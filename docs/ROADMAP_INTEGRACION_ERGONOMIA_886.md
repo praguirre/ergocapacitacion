@@ -245,7 +245,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 3.2 | **Ampliar `CLAVES_PROHIBIDAS`** (CF-4) | ✅ |
 | 3.3 | Propiedad mixta por tipo de usuario | ✅ |
 | 3.4 | Decoradores en todas las vistas del módulo | ✅ |
-| 3.5 | Formulario de creación con selector de empresa (CF-5) | ⬜ |
+| 3.5 | Formulario de creación con selector de empresa (CF-5) | ✅ |
 | 3.6 | Vista de listado de evaluaciones | ⬜ |
 | 3.7 | Vista de eliminación de evaluación | ⬜ |
 | 3.8 | Índices de consulta | ⬜ |
@@ -4917,12 +4917,12 @@ class EvaluacionForm(forms.ModelForm):
 .venv/bin/python manage.py test --settings=config.test_settings
 ```
 
-- [ ] El poblado no sobrescribe lo tipeado
-- [ ] Editar el perfil de la empresa **no** altera evaluaciones existentes
-- [ ] Un usuario `company` sólo puede seleccionar su propia empresa
+- [x] El poblado no sobrescribe lo tipeado
+- [x] Editar el perfil de la empresa **no** altera evaluaciones existentes
+- [x] Un usuario `company` sólo puede seleccionar su propia empresa
 
 ### 🔴 REGLA DE ORO
-- [ ] Bitácora: entrada 3.5 · Tabla de control: 3.5 ✅ · `README.md`
+- [x] Bitácora: entrada 3.5 · Tabla de control: 3.5 ✅ · `README.md`
 
 ### Git
 

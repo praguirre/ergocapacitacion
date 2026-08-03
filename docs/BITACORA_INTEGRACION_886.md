@@ -2791,7 +2791,7 @@ propiedad D-9 y separando consulta empresarial de edición profesional.
 | Fecha | 2026-08-03 10:30 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | `pendiente` |
+| Hash | `44dd342` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -2862,3 +2862,68 @@ por `LoginRequiredMixin`.
 
 ### Notas para el commit siguiente
 Incorporar el selector de empresa y el poblado no destructivo exigido por CF-5.
+
+---
+
+## Commit 3.5 — Formulario de creación con selector de empresa (CF-5)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 10:33 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | `pendiente` |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+`EvaluacionForm` permite elegir una empresa activa o mantener una carga manual.
+Al crear, los snapshots vacíos se proponen desde `CompanyProfile`; cualquier
+valor escrito gana. Para un usuario empresa, el selector queda limitado y
+deshabilitado sobre su propio perfil. La vista inyecta al usuario y delega la
+asignación del responsable al formulario.
+
+### Archivos modificados
+- `apps/ergonomia_886/planillas/forms.py` — selector, validación y poblado CF-5.
+- `apps/ergonomia_886/planillas/views.py` — formulario contextualizado con usuario.
+- `apps/ergonomia_886/planillas/tests_forms.py` — tres regresiones de snapshots y alcance.
+- `README.md` — comportamiento documental registrado.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance y criterios marcados.
+- `docs/INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` — hallazgo H-P.
+- `docs/BITACORA_INTEGRACION_886.md` — hash 3.4 y evidencia literal 3.5.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.planillas --settings=config.test_settings -v 2
+Found 10 test(s).
+test_cf5_el_poblado_no_sobrescribe_lo_que_el_profesional_tipeo ... ok
+test_company_solo_puede_seleccionar_su_propia_empresa ... ok
+test_el_poblado_no_resincroniza_al_editar ... ok
+Ran 10 tests in 0.065s
+OK
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py test --settings=config.test_settings -v 1
+Creating test database for alias 'default'...
+Ran 206 tests in 1.571s
+OK
+Destroying test database for alias 'default'...
+Found 206 test(s).
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+**H-P:** el ejemplo poblaba en `save()`, pero los snapshots `blank=False` hacen
+que `is_valid()` rechace primero los vacíos. Se completan de forma no
+destructiva en `clean()` antes de validar el modelo y se conserva `save()` como
+segunda defensa. Sin empresa, los cuatro campos siguen siendo obligatorios.
+
+### Notas para el commit siguiente
+Reimplantar el listado completo con propiedad mixta, filtros, orden seguro y
+paginación sin degradar la consulta original.

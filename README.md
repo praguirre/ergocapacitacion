@@ -196,6 +196,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   `login_required` antes de `backoffice_required`; las vistas de clase ya
   heredan `LoginRequiredMixin`. Una regresión recorre doce rutas anónimas y
   descarta HTTP 500. El chat conserva su contrato 401 y separación CF-1.
+- **03/08/2026 — Commit 3.5:** el alta incorpora un selector de empresas
+  activas y snapshots documentales no destructivos. Los datos registrados sólo
+  completan valores vacíos al crear; lo escrito por el profesional prevalece y
+  futuras ediciones del perfil no alteran evaluaciones emitidas (CF-5).
 
 ### Registro de cambios documentales
 
