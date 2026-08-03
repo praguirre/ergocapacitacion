@@ -228,7 +228,7 @@ Estas ocho decisiones estaban abiertas en el documento de diseño. **Ya están r
 | 2.3 | Copiar las 4 apps con migraciones y templates | ✅ |
 | 2.4 | Actualizar `name` en los 4 `apps.py` | ✅ |
 | 2.5 | Reescribir los 102 imports absolutos (B2) | ✅ |
-| 2.6 | Corregir la ruta de los documentos de ayuda (B6) | ⬜ |
+| 2.6 | Corregir la ruta de los documentos de ayuda (B6) | ✅ |
 | 2.7 | Copiar estáticos y artefactos byte a byte (CF-3, CF-6) | ⬜ |
 | 2.8 | Registrar apps y settings del módulo | ⬜ |
 | 2.9 | URLconf del módulo y montaje | ⬜ |

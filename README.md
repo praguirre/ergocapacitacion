@@ -145,6 +145,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   las cuatro apps trasplantadas bajo `apps.ergonomia_886` (el import 102 del
   inventario original pertenecía a `core`, descartado en 2.3). No se modificó
   ninguna migración y 87 sustituciones pertenecen a suites de prueba.
+- **03/08/2026 — Commit 2.6:** la ayuda contextual resuelve sus 33 documentos
+  Markdown desde `settings.BASE_DIR/static/ayuda/help_texts`, independizando
+  la ruta de la profundidad del paquete y manteniendo el error estricto ante
+  contenido ausente o inválido.
 
 ### Registro de cambios documentales
 

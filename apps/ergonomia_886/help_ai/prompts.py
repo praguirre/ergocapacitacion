@@ -8,11 +8,17 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-HELP_TEXTS_PATH = BASE_DIR / "static" / "ayuda" / "help_texts"
+# Los 33 documentos de ayuda viven en los estáticos del proyecto, no dentro
+# de la app. Se ancla a settings.BASE_DIR y no a la posición de este archivo:
+# al anidar la app bajo apps/ergonomia_886/, un `parent.parent` apuntaría a
+# un directorio inexistente y `md()` lanzaría HelpContentError en cada
+# llamada, dejando el sistema de ayuda sin funcionar (B6).
+HELP_TEXTS_PATH = Path(settings.BASE_DIR) / "static" / "ayuda" / "help_texts"
 VALID_HELP_NAME = re.compile(r"^[a-z0-9_-]+$")
 
 

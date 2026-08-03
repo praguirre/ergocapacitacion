@@ -1628,7 +1628,7 @@ las migraciones.
 | Fecha | 2026-08-03 00:32 |
 | Repositorio | ergocapacitacion |
 | Rama | `feature/ergonomia-886` |
-| Hash | Se completa después del commit |
+| Hash | `e018d0d` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -1709,3 +1709,72 @@ confirma los dos pendientes previstos para 2.8 (registro y settings de ayuda).
 
 ### Notas para el commit siguiente
 Corregir el cálculo de la ruta de ayuda antes de registrar las apps.
+
+## Commit 2.6 — Corregir la ruta de los documentos de ayuda (B6)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-03 00:41 |
+| Repositorio | ergocapacitacion |
+| Rama | `feature/ergonomia-886` |
+| Hash | Se completa después del commit |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+`HELP_TEXTS_PATH` quedó anclado a `settings.BASE_DIR`, sin depender de la
+profundidad del paquete. Se mantuvo la carga estricta: nombres inválidos y
+documentos ausentes siguen lanzando `HelpContentError`.
+
+### Archivos modificados
+- `apps/ergonomia_886/help_ai/prompts.py` — ruta estable desde settings.
+- `README.md` — bloqueo B6 documentado.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — avance 2.6.
+- `docs/BITACORA_INTEGRACION_886.md` — evidencia literal 2.6.
+
+### Verificaciones ejecutadas
+
+```text
+Ruta   : /Users/praguirre/ergocapacitacion/static/ayuda/help_texts
+Existe : False
+Archivos .md: 0 (esperado 33 tras 2.7)
+Nombre invalido: HelpContentError Nombre de ayuda inválido: '../invalido'
+Ausencia estricta: HelpContentError No se pudo cargar el documento de ayuda slug-que-no-existe.md
+
+Validación AST
+Expresiones parent.parent ejecutables: 0 []
+11:from django.conf import settings
+21:HELP_TEXTS_PATH = Path(settings.BASE_DIR) / "static" / "ayuda" / "help_texts"
+
+.venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+.venv/bin/python manage.py test apps.accounts apps.certificates apps.company apps.dashboard apps.ergobot_ai apps.landing apps.presencial apps.quiz apps.training --settings=config.test_settings
+----------------------------------------------------------------------
+Ran 36 tests in 0.151s
+OK
+Destroying test database for alias 'default'...
+Found 36 test(s).
+System check identified no issues (0 silenced).
+
+# Intentos de smoke
+127.0.0.1:8021 -> Error: That port is already in use.
+127.0.0.1:8022 -> servidor iniciado; consulta local sin respuesta, terminada.
+.venv/bin/python manage.py runserver 127.0.0.1:8024 --noreload --settings=config.test_settings
+System check identified no issues (0 silenced).
+Starting development server at http://127.0.0.1:8024/
+GET / -> 200
+```
+
+### Desvíos respecto del roadmap
+El grep literal de `parent.parent` encuentra el término en el comentario que
+el propio cambio agrega; la validación semántica por AST confirmó cero
+expresiones ejecutables. La inexistencia de los 33 Markdown es el estado
+previsto hasta 2.7. Operativamente, 8021 estaba ocupado y la consulta a 8022
+quedó colgada; se repitió con timeout en 8024 y respondió 200.
+
+### Notas para el commit siguiente
+Copiar los estáticos byte a byte y repetir esta verificación hasta obtener 33.
