@@ -46,3 +46,57 @@
 #helpWidget .tab-pane:not(.active) {
     display: none !important;
 }
+
+/* 7) Estado de respuesta visible dentro del flujo de la conversación. */
+#helpWidget .ai-thinking {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    max-width: 85%;
+    margin-bottom: .5rem;
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    background-color: rgba(255, 255, 255, .06);
+    color: var(--bs-secondary-color, #adb5bd);
+    font-size: .875rem;
+}
+
+#helpWidget .ai-thinking__dots {
+    display: inline-flex;
+    gap: 3px;
+}
+
+#helpWidget .ai-thinking__dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: ergobot-thinking 1.2s infinite ease-in-out;
+}
+
+#helpWidget .ai-thinking__dots span:nth-child(2) {
+    animation-delay: .18s;
+}
+
+#helpWidget .ai-thinking__dots span:nth-child(3) {
+    animation-delay: .36s;
+}
+
+@keyframes ergobot-thinking {
+    0%, 60%, 100% {
+        opacity: .25;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-3px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #helpWidget .ai-thinking__dots span {
+        animation: none;
+        opacity: .6;
+    }
+}

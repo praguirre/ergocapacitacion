@@ -5249,3 +5249,86 @@ El despliegue debe ejecutar `collectstatic --noinput` para publicar el
 JavaScript con hash nuevo. El Commit 7.2 puede apoyarse en el contrato ya
 normalizado y concentrarse únicamente en el feedback visual del estado de
 respuesta.
+
+---
+
+## Commit 7.2 — Mostrar el estado accesible «ErgoBot está pensando»
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-06 22:49 ART |
+| Repositorio | ergocapacitacion |
+| Rama | feature/ergonomia-886 |
+| Hash | <se completa después del commit> |
+| Fase | 7 — Estabilización de producción |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+El chat muestra ahora un estado visible «ErgoBot está pensando» dentro del
+flujo de mensajes desde el instante del submit, antes de cargar la guía o
+iniciar el stream. El estado tiene semántica accesible, tres puntos animados y
+una variante sin movimiento. Se retira al primer contenido, al finalizar o
+ante error, y los controles siempre recuperan su estado.
+
+Se eliminó el texto redundante bajo el formulario y la creación de una burbuja
+vacía. Todo el comportamiento permanece en archivos externos compatibles con
+la CSP bloqueante.
+
+### Archivos modificados
+
+- `static/ayuda/css/help_widget.css` — estado visual, animación y media query.
+- `static/ayuda/js/help_widget.js` — ciclo de vida síncrono del indicador y
+  recuperación de controles.
+- `templates/ergonomia_886/_help_widget_body.html` — retiro del indicador
+  redundante.
+- `apps/ergonomia_886/help_ai/tests.py` — contrato de accesibilidad, orden de
+  ejecución, ausencia de burbuja fantasma y compatibilidad CSP.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` y `README.md` — trazabilidad.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 28 tests in 0.203s — OK
+
+.venv/bin/python manage.py test --settings=config.test_settings
+Ran 270 tests in 2.180s — OK
+
+node --check static/ayuda/js/help_widget.js
+(sin salida; código 0)
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+.venv/bin/python manage.py migrate --check
+(sin salida; código 0)
+
+collectstatic con STATIC_ROOT temporal y storage manifestado de WhiteNoise
+180 archivos copiados, 536 post-procesados
+help_widget.css -> help_widget.2674cac4e604.css
+help_widget.js  -> help_widget.d27cd8775b21.js
+
+runserver 127.0.0.1:8000 --noreload + smoke HTTP
+200  /
+
+git diff --check
+(sin salida; código 0)
+```
+
+### Desvíos respecto del roadmap
+
+El navegador interno disponible no tenía una sesión autenticada y no había un
+navegador externo conectado. No se crearon usuarios ni contraseñas sólo para
+QA (P-2). La estructura, accesibilidad, orden temporal y assets manifestados
+quedaron cubiertos automáticamente; la observación del estado transitorio se
+incorpora al smoke autenticado del despliegue.
+
+### Notas para el commit siguiente
+
+Producción debe ejecutar `collectstatic --noinput`. Durante el smoke, realizar
+una consulta y confirmar que el indicador aparece inmediatamente y desaparece
+al llegar la respuesta. El Commit 7.3 no modifica este widget.

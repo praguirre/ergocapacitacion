@@ -81,6 +81,34 @@ class HelpContentCoverageTests(SimpleTestCase):
         self.assertNotIn("/ai/chat/", widget)
         self.assertIn("Object.keys(message).length === 2", widget)
 
+    def test_thinking_state_is_accessible_and_csp_compatible(self):
+        widget = (
+            Path(settings.BASE_DIR) / "static" / "ayuda" / "js" / "help_widget.js"
+        ).read_text(encoding="utf-8")
+        styles = (
+            Path(settings.BASE_DIR) / "static" / "ayuda" / "css" / "help_widget.css"
+        ).read_text(encoding="utf-8")
+        template = (
+            Path(settings.BASE_DIR)
+            / "templates"
+            / "ergonomia_886"
+            / "_help_widget_body.html"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('label.textContent = "ErgoBot está pensando"', widget)
+        self.assertIn('wrap.setAttribute("role", "status")', widget)
+        self.assertIn('wrap.setAttribute("aria-live", "polite")', widget)
+        send_to_ai = widget[widget.index("async function sendToAI"):]
+        self.assertLess(
+            send_to_ai.index("showThinking();"),
+            send_to_ai.index("await loadGuide"),
+        )
+        self.assertNotIn('renderOrUpdateAIMessage("")', widget)
+        self.assertNotIn("ai-typing-indicator", widget)
+        self.assertNotIn("ai-typing-indicator", template)
+        self.assertIn("@keyframes ergobot-thinking", styles)
+        self.assertIn("prefers-reduced-motion: reduce", styles)
+
     def test_templates_do_not_depend_on_cdn_or_inline_event_handlers(self):
         template_roots = (
             Path(settings.BASE_DIR) / "templates",

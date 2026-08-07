@@ -313,6 +313,13 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   textual acotado. Cinco regresiones usan las clases reales del SDK y elevan la
   suite a 269 pruebas. `collectstatic` confirmó el hash
   `help_widget.435b6b864b40.js`; no hay migraciones ni llamadas a OpenAI.
+- **06/08/2026 — Commit 7.2 / feedback del Chat IA:** la ayuda contextual
+  muestra «ErgoBot está pensando» dentro del área de mensajes desde antes del
+  primer acceso de red. El estado usa `role=status`, `aria-live=polite`, puntos
+  animados en CSS externo y respeta `prefers-reduced-motion`; desaparecen el
+  texto redundante y la burbuja vacía anteriores. La suite alcanza 270 pruebas
+  y `collectstatic` produjo `help_widget.2674cac4e604.css` y
+  `help_widget.d27cd8775b21.js`; sin migraciones.
 
 ### Registro de cambios documentales
 

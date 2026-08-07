@@ -6638,13 +6638,27 @@ git commit -m "fix(help-ai): reparar el contrato de conversación multiturno"
 git push origin feature/ergonomia-886
 ```
 
-## Commit 7.2 — Mostrar el estado accesible «ErgoBot está pensando»
+## ✅ Commit 7.2 — Mostrar el estado accesible «ErgoBot está pensando»
 
 ### Objetivo
 
 Mostrar feedback inmediato dentro del área de mensajes antes de cualquier
 espera de red, retirarlo al recibir contenido o finalizar, y respetar
 `prefers-reduced-motion`. El CSS y JavaScript permanecen externos por CSP.
+
+### Resultado de ejecución — 06/08/2026
+
+- [x] El estado se inserta en `#chat-messages` antes del primer `await`.
+- [x] `role="status"`, `aria-live="polite"` y puntos decorativos ocultos a
+  tecnologías asistivas.
+- [x] La animación vive en CSS externo y respeta movimiento reducido.
+- [x] Se eliminaron el indicador redundante bajo el formulario y la burbuja
+  vacía.
+- [x] 28 pruebas de `help_ai` y 270 pruebas totales OK.
+- [x] Sintaxis JavaScript, checks, migraciones y `collectstatic` limpios.
+- [ ] Observación autenticada del estado transitorio en producción: incluida
+  como smoke obligatorio del despliegue; no había una sesión local reutilizable
+  y P-2 impide crear credenciales sólo para QA.
 
 ### Git propuesto
 

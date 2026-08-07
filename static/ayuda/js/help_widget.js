@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
   const chatMessages = document.getElementById("chat-messages");
   const submitButton = document.getElementById("chat-submit-btn");
-  const typingIndicator = document.getElementById("ai-typing-indicator");
 
   window.chatThread = window.chatThread || [];
 
@@ -123,7 +122,37 @@ document.addEventListener("DOMContentLoaded", () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
+  function hideThinking() {
+    document.getElementById("ai-thinking")?.remove();
+  }
+
+  function showThinking() {
+    hideThinking();
+    const wrap = document.createElement("div");
+    wrap.className = "ai-thinking";
+    wrap.id = "ai-thinking";
+    wrap.setAttribute("role", "status");
+    wrap.setAttribute("aria-live", "polite");
+
+    const label = document.createElement("span");
+    label.textContent = "ErgoBot está pensando";
+
+    const dots = document.createElement("span");
+    dots.className = "ai-thinking__dots";
+    dots.setAttribute("aria-hidden", "true");
+    dots.append(
+      document.createElement("span"),
+      document.createElement("span"),
+      document.createElement("span"),
+    );
+
+    wrap.append(label, dots);
+    chatMessages.appendChild(wrap);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
   function renderOrUpdateAIMessage(fullContent) {
+    hideThinking();
     let ai = chatMessages.querySelector(".ai-message-container:last-child");
     if (!ai || ai.dataset.finalized === "true") {
       ai = document.createElement("div");
@@ -139,19 +168,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const slug = helpWidgetElement.dataset.pageSlug;
     if (!slug) return;
 
+    chatInput.disabled = true;
+    submitButton.disabled = true;
+    showThinking();
+
     let helpVersion;
     try {
       helpVersion = await loadGuide(slug);
     } catch {
+      hideThinking();
+      chatInput.disabled = false;
+      submitButton.disabled = false;
       renderOrUpdateAIMessage(
         "⚠️ No se pudo verificar la versión de la guía. Intentá nuevamente.",
       );
+      chatInput.focus();
       return;
     }
-
-    chatInput.disabled = true;
-    submitButton.disabled = true;
-    typingIndicator.style.display = "block";
 
     const url = resolvedUrl(helpWidgetElement.dataset.chatUrlTemplate, slug);
     const csrfToken = chatForm.querySelector("[name=csrfmiddlewaretoken]")?.value;
@@ -171,10 +204,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (finalized) return;
       finalized = true;
       clearInterval(watchdog);
+      hideThinking();
       renderOrUpdateAIMessage(text);
       const last = chatMessages.querySelector(".ai-message-container:last-child");
       if (last) last.dataset.finalized = "true";
-      typingIndicator.style.display = "none";
       chatInput.disabled = false;
       submitButton.disabled = false;
       chatInput.focus();
@@ -277,7 +310,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!userMessage) return;
 
       renderUserMessage(userMessage);
-      renderOrUpdateAIMessage("");
       sendToAI(userMessage);
       chatInput.value = "";
     });
