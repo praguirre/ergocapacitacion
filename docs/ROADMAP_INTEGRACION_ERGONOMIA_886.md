@@ -1,7 +1,7 @@
 # ROADMAP DE EJECUCIÓN — Integración del módulo de Ergonomía SRT 886/15 en ErgoSolutions
 
 **Documento:** `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md`
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha de emisión:** 2 de agosto de 2026
 **Documento base:** [`INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md`](INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md)
 **Destinatario:** asistente IA programador que ejecuta la integración
@@ -15,7 +15,7 @@
 
 Es un **plan de ejecución commit por commit**. No es un documento de diseño: el diseño ya está resuelto y justificado en `INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md`. Aquí sólo se ejecuta.
 
-**58 commits, 7 fases, dos repositorios.** Cada commit es autocontenido: tiene su objetivo, sus archivos, su código, su verificación y su mensaje de commit. Se ejecutan **en orden**, sin saltear.
+**61 commits, 8 fases, dos repositorios.** Cada commit es autocontenido: tiene su objetivo, sus archivos, su código, su verificación y su mensaje de commit. Se ejecutan **en orden**, sin saltear.
 
 | Fase | Repositorio | Commits | Bloquea la siguiente |
 |---|---|:---:|:---:|
@@ -26,6 +26,7 @@ Es un **plan de ejecución commit por commit**. No es un documento de diseño: e
 | **4** — Integración de UI 🎯 | `ergocapacitacion` | 5 (4.1–4.5) | ✅ |
 | **5** — Aprovechamiento | `ergocapacitacion` | 6 (5.1–5.6) | ✅ |
 | **6** — Content Security Policy | `ergocapacitacion` | 7 (6.1–6.7) | ❌ independiente |
+| **7** — Estabilización de producción | `ergocapacitacion` | 3 (7.1–7.3) | ❌ independiente |
 
 > **El objetivo de negocio se cumple al terminar la Fase 4** (commit 4.1). Las Fases 5 y 6 agregan valor sobre algo que ya funciona y pueden posponerse sin bloquear un despliegue.
 
@@ -6565,6 +6566,111 @@ python manage.py check --deploy
 
 ---
 
+# FASE 7 — ESTABILIZACIÓN DE PRODUCCIÓN
+
+> **Origen:** auditoría de producción del 6 de agosto de 2026 sobre
+> `v0.2.0-beta` (`c06378b`). Esta fase se incorpora antes de escribir código
+> para cumplir la regla de trazabilidad de `AGENTS.md`.
+
+## ✅ Commit 7.1 — Corregir el contrato multiturno de la ayuda contextual
+
+### Objetivo
+
+Evitar que la segunda consulta del Chat IA sea rechazada con HTTP 400. El
+servidor debe emitir el historial en el mismo formato estricto que acepta al
+recibirlo: una lista de objetos con únicamente `role` y `content`, ambos en
+texto plano y con roles `user` o `assistant`.
+
+### Decisión de Arquitectura DA-7.1 — contrato de cable canónico
+
+`normalize_thread()` **no se relaja**. Su validación exacta impide que el
+navegador introduzca roles privilegiados o campos adicionales en el contexto
+del agente. La adaptación se realiza en el productor mediante
+`to_wire_thread()`, que:
+
+1. descarta razonamiento, llamadas a herramientas y roles privilegiados;
+2. aplana las partes textuales generadas por el SDK;
+3. conserva únicamente `{role, content}`;
+4. recorta mensajes e historial a los límites configurados; y
+5. garantiza mediante una prueba de contrato que su salida sobrevive a
+   `normalize_thread()`.
+
+El cliente valida el mismo contrato antes de persistir el historial en
+memoria. Ante una respuesta inesperada lo reinicia, evitando contaminar el
+siguiente request durante un despliegue parcial.
+
+### Archivos previstos
+
+- `apps/ergonomia_886/help_ai/views.py`
+- `apps/ergonomia_886/help_ai/tests.py`
+- `static/ayuda/js/help_widget.js`
+- `docs/BITACORA_INTEGRACION_886.md`
+- `README.md`
+
+### Verificación obligatoria
+
+```bash
+.venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+.venv/bin/python manage.py test --settings=config.test_settings
+.venv/bin/python manage.py check
+.venv/bin/python manage.py makemigrations --check --dry-run
+.venv/bin/python manage.py migrate --check
+git diff --check
+```
+
+### Resultado de ejecución — 06/08/2026
+
+- [x] 27 pruebas de `help_ai` OK.
+- [x] 269 pruebas totales OK.
+- [x] La salida construida con un item real del SDK sobrevive a
+  `normalize_thread()`.
+- [x] `check`, `makemigrations --check --dry-run` y `migrate --check` limpios.
+- [x] `collectstatic` generó el asset manifestado
+  `help_widget.435b6b864b40.js`.
+- [x] Humo local: `/` 200; módulo y guía protegidos redirigen a acceso; CSP
+  bloqueante presente.
+- [x] Sin migraciones ni llamadas a OpenAI.
+
+### Git propuesto
+
+```bash
+git commit -m "fix(help-ai): reparar el contrato de conversación multiturno"
+git push origin feature/ergonomia-886
+```
+
+## Commit 7.2 — Mostrar el estado accesible «ErgoBot está pensando»
+
+### Objetivo
+
+Mostrar feedback inmediato dentro del área de mensajes antes de cualquier
+espera de red, retirarlo al recibir contenido o finalizar, y respetar
+`prefers-reduced-motion`. El CSS y JavaScript permanecen externos por CSP.
+
+### Git propuesto
+
+```bash
+git commit -m "feat(help-ai): mostrar el estado de respuesta de ErgoBot"
+git push origin feature/ergonomia-886
+```
+
+## Commit 7.3 — Incorporar el menú de selección de evaluaciones
+
+### Objetivo
+
+Agregar una pantalla intermedia entre el dashboard y cada protocolo. El
+catálogo será estático en Python: habilitar una evaluación siempre requiere
+una app, URLs, formularios y cálculos, por lo que una tabla administrable no
+aportaría autonomía real y sí agregaría migraciones y estados inválidos.
+
+### Git propuesto
+
+```bash
+git commit -m "feat(dashboard): agregar el selector de evaluaciones"
+git push origin feature/ergonomia-886
+```
+
+---
+
 *Roadmap de ejecución emitido el 2 de agosto de 2026, sobre el documento de diseño `INTEGRACION_MODULO_ERGONOMIA_886_PROPUESTA_TECNICA.md` y la verificación directa del código de ambos proyectos.*
 
-*58 commits · 7 fases · 2 repositorios · 6 condiciones vinculantes.*
+*61 commits · 8 fases · 2 repositorios · 6 condiciones vinculantes.*

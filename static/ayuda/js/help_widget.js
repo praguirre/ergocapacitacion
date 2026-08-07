@@ -198,7 +198,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (data.done) {
         finalize(fullResponse);
-        if (Array.isArray(data.thread)) window.chatThread = data.thread;
+        if (Array.isArray(data.thread)) {
+          const validThread = data.thread.every(
+            (message) =>
+              message && typeof message === "object"
+              && ["user", "assistant"].includes(message.role)
+              && typeof message.content === "string"
+              && Object.keys(message).length === 2,
+          );
+          window.chatThread = validThread ? data.thread : [];
+          if (!validThread) {
+            console.warn(
+              "Hilo con formato inesperado: se reinicia la conversación.",
+            );
+          }
+        }
       }
     }
 

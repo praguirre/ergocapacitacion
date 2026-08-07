@@ -11,6 +11,9 @@ from django.core.cache import cache
 from django.contrib.staticfiles import finders
 from django.test import AsyncClient, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
+from openai.types.responses import ResponseOutputMessage, ResponseOutputText
+from agents.agent import Agent as SDKAgent
+from agents.items import MessageOutputItem
 
 from .agents import page_agent
 from .catalog import GLOBAL_HELP_SLUGS, PAGE_HELP_SLUGS
@@ -21,7 +24,7 @@ from .limits import (
     release_chat_lease,
 )
 from .prompts import HelpContentError, HELP_TEXTS_PATH, md, page_help_context
-from .views import chat_stream_generator, normalize_thread
+from .views import chat_stream_generator, normalize_thread, to_wire_thread
 
 
 class HelpContentCoverageTests(SimpleTestCase):
@@ -76,6 +79,7 @@ class HelpContentCoverageTests(SimpleTestCase):
         self.assertNotIn("EventSource(", widget)
         self.assertNotIn("/static/ayuda/help_texts/", widget)
         self.assertNotIn("/ai/chat/", widget)
+        self.assertIn("Object.keys(message).length === 2", widget)
 
     def test_templates_do_not_depend_on_cdn_or_inline_event_handlers(self):
         template_roots = (
@@ -310,7 +314,26 @@ class ChatSecurityTests(TestCase):
                     yield None
 
             def to_input_list(self):
-                return [{"role": "assistant", "content": "Respuesta"}]
+                message = ResponseOutputMessage(
+                    id="msg_trace_test",
+                    role="assistant",
+                    status="completed",
+                    type="message",
+                    content=[
+                        ResponseOutputText(
+                            annotations=[],
+                            text="Respuesta",
+                            type="output_text",
+                        )
+                    ],
+                )
+                return [
+                    {"role": "user", "content": "Consulta"},
+                    MessageOutputItem(
+                        agent=SDKAgent(name="test"),
+                        raw_item=message,
+                    ).to_input_item(),
+                ]
 
             def cancel(self):
                 raise AssertionError("Un run completo no debe cancelarse")
@@ -336,7 +359,16 @@ class ChatSecurityTests(TestCase):
 
         run_config = runner.call_args.kwargs["run_config"]
         self.assertFalse(run_config.trace_include_sensitive_data)
-        self.assertTrue(any('"done": true' in chunk for chunk in chunks))
+        done_event = next(
+            json.loads(chunk.removeprefix("data: ").strip())
+            for chunk in chunks
+            if '"done": true' in chunk
+        )
+        self.assertEqual(
+            normalize_thread(done_event["thread"]),
+            done_event["thread"],
+        )
+
 
     @override_settings(
         CHAT_AI_HEARTBEAT_SECONDS=0.01,
@@ -525,3 +557,101 @@ class ChatSecurityTests(TestCase):
             "config.asgi.application",
         )
         self.assertIn("uvicorn", requirements)
+
+
+class WireThreadContractTests(TestCase):
+    """Regresión del contrato productor-consumidor del historial del chat."""
+
+    def _real_sdk_item(self, text: str) -> dict:
+        message = ResponseOutputMessage(
+            id="msg_test",
+            role="assistant",
+            status="completed",
+            type="message",
+            content=[
+                ResponseOutputText(
+                    annotations=[],
+                    text=text,
+                    type="output_text",
+                )
+            ],
+        )
+        return MessageOutputItem(
+            agent=SDKAgent(name="test"),
+            raw_item=message,
+        ).to_input_item()
+
+    def test_real_sdk_item_is_not_wire_format(self):
+        item = self._real_sdk_item("Respuesta")
+
+        self.assertNotEqual(set(item), {"role", "content"})
+        with self.assertRaises(ValueError):
+            normalize_thread([item])
+
+    def test_wire_thread_survives_normalization(self):
+        raw = [
+            {"role": "user", "content": "¿Qué mido en la planilla 2A?"},
+            self._real_sdk_item("Registrá el peso de la carga."),
+        ]
+
+        wire = to_wire_thread(raw)
+
+        self.assertEqual(
+            wire,
+            [
+                {"role": "user", "content": "¿Qué mido en la planilla 2A?"},
+                {
+                    "role": "assistant",
+                    "content": "Registrá el peso de la carga.",
+                },
+            ],
+        )
+        self.assertEqual(normalize_thread(wire), wire)
+
+    def test_wire_thread_discards_non_message_and_privileged_items(self):
+        raw = [
+            {"type": "reasoning", "id": "rs_1", "summary": []},
+            {
+                "type": "function_call",
+                "name": "x",
+                "arguments": "{}",
+                "call_id": "c1",
+            },
+            {"role": "system", "content": "instrucciones internas"},
+            self._real_sdk_item("Respuesta visible"),
+        ]
+
+        wire = to_wire_thread(raw)
+
+        self.assertEqual(
+            wire,
+            [{"role": "assistant", "content": "Respuesta visible"}],
+        )
+        self.assertEqual(normalize_thread(wire), wire)
+
+    @override_settings(CHAT_AI_MAX_MESSAGE_CHARS=50)
+    def test_wire_thread_truncates_long_messages(self):
+        wire = to_wire_thread([self._real_sdk_item("x" * 500)])
+
+        self.assertEqual(len(wire[0]["content"]), 50)
+        self.assertEqual(normalize_thread(wire), wire)
+
+    @override_settings(CHAT_AI_MAX_THREAD_MESSAGES=4)
+    def test_wire_thread_keeps_recent_complete_exchanges(self):
+        raw = []
+        for index in range(6):
+            raw.extend(
+                [
+                    {"role": "user", "content": f"pregunta {index}"},
+                    self._real_sdk_item(f"respuesta {index}"),
+                ]
+            )
+
+        wire = to_wire_thread(raw)
+
+        self.assertEqual(len(wire), 4)
+        self.assertEqual(
+            wire[0],
+            {"role": "user", "content": "pregunta 4"},
+        )
+        self.assertEqual(normalize_thread(wire), wire)

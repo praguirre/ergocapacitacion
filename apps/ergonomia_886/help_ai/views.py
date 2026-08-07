@@ -86,6 +86,59 @@ def normalize_thread(raw_thread) -> list:
     return normalized
 
 
+def _extract_text(content) -> str:
+    """Aplana el contenido de un mensaje del SDK a texto plano."""
+    if isinstance(content, str):
+        return content
+    if not isinstance(content, list):
+        return ""
+
+    parts = []
+    for part in content:
+        if not isinstance(part, dict):
+            continue
+        part_type = part.get("type")
+        if part_type in {"output_text", "input_text", "text"}:
+            parts.append(part.get("text") or "")
+        elif part_type == "refusal":
+            parts.append(part.get("refusal") or "")
+    return "".join(parts)
+
+
+def to_wire_thread(raw_items) -> list:
+    """Convierte items del SDK al contrato estricto que acepta el cliente.
+
+    La salida debe sobrevivir siempre a ``normalize_thread()``: el navegador
+    la reenviará sin transformaciones en la consulta siguiente.
+    """
+    wire = []
+    for item in raw_items or []:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") not in (None, "message"):
+            continue
+        role = item.get("role")
+        if role not in {"user", "assistant"}:
+            continue
+        text = _extract_text(item.get("content")).strip()
+        if not text:
+            continue
+        wire.append(
+            {
+                "role": role,
+                "content": text[: settings.CHAT_AI_MAX_MESSAGE_CHARS],
+            }
+        )
+
+    limit = max(0, int(settings.CHAT_AI_MAX_THREAD_MESSAGES))
+    if len(wire) > limit:
+        # Con límites normales se conserva una cantidad par para no cortar
+        # un intercambio. Un límite unitario se respeta literalmente.
+        keep = limit if limit < 2 else limit - (limit % 2)
+        wire = wire[-keep:] if keep else []
+    return wire
+
+
 async def chat_stream_generator(
     slug: str,
     user_msg: str,
@@ -119,6 +172,7 @@ async def chat_stream_generator(
         )
 
         saw_raw_delta = False
+        assistant_text = []
         heartbeat_seconds = max(
             0.1,
             min(
@@ -160,6 +214,7 @@ async def chat_stream_generator(
                 delta = event.data.delta or ""
                 if delta:
                     saw_raw_delta = True
+                    assistant_text.append(delta)
                     yield f"data: {json.dumps({'delta': delta})}\n\n"
                 continue
 
@@ -168,14 +223,26 @@ async def chat_stream_generator(
                 if not saw_raw_delta:
                     chunk = ItemHelpers.text_message_output(event.item) or ""
                     if chunk:
+                        assistant_text.append(chunk)
                         yield f"data: {json.dumps({'delta': chunk})}\n\n"
                 continue
 
-        # Al terminar, devolvemos el hilo actualizado
+        # El SDK devuelve items de Responses API con claves y contenido que
+        # normalize_thread() rechaza. Se convierten al contrato de cable antes
+        # de enviarlos al navegador.
+        answer = "".join(assistant_text).strip()
+        fallback = (thread or []) + [{"role": "user", "content": user_msg}]
+        if answer:
+            fallback.append({"role": "assistant", "content": answer})
+
         try:
-            final_thread = run.to_input_list()
+            final_thread = to_wire_thread(run.to_input_list())
         except Exception:
-            final_thread = messages
+            logger.exception("No se pudo derivar el hilo del run para slug=%s", slug)
+            final_thread = []
+
+        if not final_thread:
+            final_thread = to_wire_thread(fallback)
 
         yield f"data: {json.dumps({'done': True, 'thread': final_thread})}\n\n"
 
@@ -196,11 +263,13 @@ async def chat_stream_generator(
             )
             + "\n\n"
         )
-        yield f"data: {json.dumps({'done': True, 'thread': thread or []})}\n\n"
+        final_thread = to_wire_thread(thread or [])
+        yield f"data: {json.dumps({'done': True, 'thread': final_thread})}\n\n"
     except Exception:
         logger.exception("Error durante el stream del Chat IA para slug=%s", slug)
         yield f"data: {json.dumps({'error': 'Ocurrió un error al procesar tu solicitud. Intenta nuevamente.'})}\n\n"
-        yield f"data: {json.dumps({'done': True, 'thread': thread or []})}\n\n"
+        final_thread = to_wire_thread(thread or [])
+        yield f"data: {json.dumps({'done': True, 'thread': final_thread})}\n\n"
     finally:
         if next_event_task is not None and not next_event_task.done():
             next_event_task.cancel()

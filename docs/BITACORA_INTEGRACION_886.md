@@ -5169,3 +5169,83 @@ sujetos a decisión de producción:
 
 El despliegue requiere la detención P-1 prevista para las variables del `.env`
 de producción (`CSP_REPORT_ONLY=False` y, opcionalmente, `CHAT_AI_MODEL`).
+
+---
+
+## Commit 7.1 — Corregir el contrato multiturno de la ayuda contextual
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-06 22:25 ART |
+| Repositorio | ergocapacitacion |
+| Rama | feature/ergonomia-886 |
+| Hash | <se completa después del commit> |
+| Fase | 7 — Estabilización de producción |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se corrigió el contrato productor-consumidor que hacía fallar con HTTP 400 la
+segunda consulta del Chat IA. `run.to_input_list()` entrega items de Responses
+API con metadatos y contenido por partes; ahora el servidor los convierte al
+formato canónico `{role, content}` antes de enviarlos al navegador. La frontera
+de seguridad de entrada permanece estricta.
+
+También se acumula el texto transmitido para construir un fallback válido si
+el SDK no puede entregar el hilo y el cliente verifica forma, roles y tipos
+antes de conservarlo. No se llamó a OpenAI durante las pruebas.
+
+### Archivos modificados
+
+- `apps/ergonomia_886/help_ai/views.py` — helpers de extracción y conversión,
+  límites del historial, fallback del stream y cierre seguro en errores.
+- `apps/ergonomia_886/help_ai/tests.py` — cinco regresiones con un item creado
+  por las clases reales del SDK y prueba productor-consumidor.
+- `static/ayuda/js/help_widget.js` — validación defensiva del hilo recibido.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` — Fase 7 y DA-7.1.
+- `README.md` — registro cronológico del hotfix.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings -v 2
+Ran 27 tests in 0.220s — OK
+
+.venv/bin/python manage.py test --settings=config.test_settings
+Ran 269 tests in 2.348s — OK
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+.venv/bin/python manage.py migrate --check
+(sin salida; código 0)
+
+collectstatic con STATIC_ROOT temporal y storage manifestado de WhiteNoise
+180 archivos copiados, 536 post-procesados
+ayuda/js/help_widget.js -> ayuda/js/help_widget.435b6b864b40.js
+
+runserver 127.0.0.1:8000 --noreload + smoke HTTP
+200  /
+302  /evaluacion-ergonomica/ -> /acceso/
+302  /evaluacion-ergonomica/ayuda/guide/lmc/ -> /acceso/
+Content-Security-Policy: bloqueante; connect-src 'self'
+
+git diff --check
+(sin salida; código 0)
+```
+
+### Desvíos respecto del roadmap
+
+`migrate --check` no pudo acceder inicialmente al PostgreSQL local desde el
+sandbox. Se repitió con autorización únicamente para la conexión local y
+finalizó con código 0. No se aplicaron migraciones ni se modificaron datos.
+
+### Notas para el commit siguiente
+
+El despliegue debe ejecutar `collectstatic --noinput` para publicar el
+JavaScript con hash nuevo. El Commit 7.2 puede apoyarse en el contrato ya
+normalizado y concentrarse únicamente en el feedback visual del estado de
+respuesta.

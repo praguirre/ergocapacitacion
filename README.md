@@ -305,6 +305,14 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   reportadas sin resolver, por ser previas al módulo y requerir decisión de
   producción: las cabeceras y cookies de HTTPS ausentes en `config/settings.py`
   y la falta de cotas superiores en tres dependencias.
+- **06/08/2026 — Commit 7.1 / estabilización de producción:** se corrigió el
+  contrato multiturno de la ayuda contextual. Los items enriquecidos de
+  Responses API se convierten ahora al formato canónico `{role, content}` sin
+  relajar la validación contra roles privilegiados o claves adicionales; el
+  cliente descarta historiales inesperados y el servidor conserva un fallback
+  textual acotado. Cinco regresiones usan las clases reales del SDK y elevan la
+  suite a 269 pruebas. `collectstatic` confirmó el hash
+  `help_widget.435b6b864b40.js`; no hay migraciones ni llamadas a OpenAI.
 
 ### Registro de cambios documentales
 
