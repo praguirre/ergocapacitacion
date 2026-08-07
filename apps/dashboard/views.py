@@ -10,6 +10,7 @@ from django.conf import settings as django_settings
 from django.core.mail import send_mail
 from django.db import models
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
@@ -22,6 +23,7 @@ from .forms import (
     ChangePasswordForm, CompanyProfileEditForm,
     ProfessionalProfileForm, ShareLinkForm,
 )
+from .evaluaciones_catalog import get_evaluation_modules
 from .utils import check_module_access
 
 
@@ -147,6 +149,30 @@ def capacitaciones_menu(request):
         "personalized_modules": personalized_modules,
         "has_personalized": personalized_modules.exists(),
     })
+
+
+@login_required
+@backoffice_required
+def evaluaciones_menu(request):
+    """Menú de protocolos disponibles y planificados."""
+    modules = [
+        {
+            "slug": module.slug,
+            "title": module.title,
+            "description": module.description,
+            "icon": module.icon,
+            "color": module.color,
+            "is_active": module.is_active,
+            "url": reverse(module.url_name) if module.url_name else "",
+        }
+        for module in get_evaluation_modules()
+    ]
+
+    return render(
+        request,
+        "dashboard/evaluaciones_menu.html",
+        {"evaluation_modules": modules},
+    )
 
 
 @login_required

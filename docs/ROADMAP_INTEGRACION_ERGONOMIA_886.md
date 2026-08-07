@@ -6667,7 +6667,7 @@ git commit -m "feat(help-ai): mostrar el estado de respuesta de ErgoBot"
 git push origin feature/ergonomia-886
 ```
 
-## Commit 7.3 — Incorporar el menú de selección de evaluaciones
+## ✅ Commit 7.3 — Incorporar el menú de selección de evaluaciones
 
 ### Objetivo
 
@@ -6675,6 +6675,25 @@ Agregar una pantalla intermedia entre el dashboard y cada protocolo. El
 catálogo será estático en Python: habilitar una evaluación siempre requiere
 una app, URLs, formularios y cálculos, por lo que una tabla administrable no
 aportaría autonomía real y sí agregaría migraciones y estados inválidos.
+
+### Decisión de Arquitectura DA-7.3 — catálogo estático
+
+El catálogo usa dataclasses inmutables y una URL nominal opcional. Sólo los
+módulos con `url_name` son activos; la vista resuelve sus URLs antes del render
+y las cards restantes no generan anchors. Esta decisión evita una tabla que
+podría declarar como disponible un protocolo sin implementación ejecutable.
+
+### Resultado de ejecución — 06/08/2026
+
+- [x] `/dashboard/evaluaciones/` disponible para profesional y empresa; trainee
+  recibe 403 y anónimo redirige al acceso.
+- [x] Ergonomía SRT 886/15 es la única card activa.
+- [x] Iluminación, Ruido, Carga Térmica, Puesta a Tierra y Contaminantes
+  Químicos se muestran como “Próximamente” y sin enlaces.
+- [x] Dashboard y navbar navegan al selector; el listado 886 incorpora regreso
+  mediante breadcrumb.
+- [x] 18 pruebas específicas y 272 pruebas totales OK.
+- [x] Checks, migraciones y smoke HTTP limpios; cero migraciones nuevas.
 
 ### Git propuesto
 

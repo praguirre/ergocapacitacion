@@ -41,8 +41,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if 'evaluacion-ergonomica' in request.path %}active{% endif %}"
-                           href="{% url 'ergonomia_886:evaluacion_list' %}">
+                        <a class="nav-link {% if 'evaluacion-ergonomica' in request.path or request.resolver_match.url_name == 'evaluaciones_menu' %}active{% endif %}"
+                           href="{% url 'dashboard:evaluaciones_menu' %}">
                             <i class="bi bi-clipboard-check me-1"></i>Evaluaciones
                         </a>
                     </li>

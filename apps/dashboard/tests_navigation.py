@@ -39,7 +39,7 @@ class EvaluacionesNavbarTests(TestCase):
 
     def _assert_navbar(self, user):
         self.client.force_login(user)
-        href = reverse("ergonomia_886:evaluacion_list")
+        href = reverse("dashboard:evaluaciones_menu")
 
         dashboard = self.client.get(reverse("dashboard:home"))
         self.assertEqual(dashboard.status_code, 200)

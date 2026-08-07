@@ -320,6 +320,12 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   texto redundante y la burbuja vacía anteriores. La suite alcanza 270 pruebas
   y `collectstatic` produjo `help_widget.2674cac4e604.css` y
   `help_widget.d27cd8775b21.js`; sin migraciones.
+- **06/08/2026 — Commit 7.3 / selector de evaluaciones:** el dashboard y el
+  navbar abren `/dashboard/evaluaciones/`, un catálogo estático accesible a
+  profesionales y empresas. Ergonomía SRT 886/15 permanece disponible;
+  Iluminación, Ruido, Carga Térmica, Puesta a Tierra y Contaminantes Químicos
+  se presentan como próximos módulos sin enlaces. El listado 886 incorpora un
+  breadcrumb de regreso. La suite alcanza 272 pruebas y no hay migraciones.
 
 ### Registro de cambios documentales
 

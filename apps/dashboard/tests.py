@@ -30,6 +30,10 @@ class DashboardTests(TestCase):
             first_name='Test',
             last_name='Pro',
         )
+        self.trainee = User.objects.create_trainee(
+            cuil='20-12345678-9',
+            email='trainee-dashboard@test.com',
+        )
         self.module = TrainingModule.objects.create(
             slug='test-module',
             title='Módulo de Test',
@@ -53,11 +57,33 @@ class DashboardTests(TestCase):
 
         self.assertContains(response, 'Evaluaciones')
         self.assertContains(response, 'Disponible')
-        self.assertContains(response, reverse('ergonomia_886:evaluacion_list'))
+        self.assertContains(response, reverse('dashboard:evaluaciones_menu'))
         self.assertNotContains(response, 'Próximamente')
         self.assertNotContains(response, 'iluminación')
         self.assertNotContains(response, 'ruido')
         self.assertContains(response, reverse('dashboard:capacitaciones_menu'))
+
+    def test_menu_evaluaciones_lista_disponibles_y_proximamente(self):
+        self.client.force_login(self.professional)
+
+        response = self.client.get(reverse('dashboard:evaluaciones_menu'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'dashboard/evaluaciones_menu.html')
+        self.assertContains(response, 'Ergonomía')
+        self.assertContains(response, reverse('ergonomia_886:evaluacion_list'))
+        self.assertContains(response, 'Disponible')
+        self.assertContains(response, 'Próximamente')
+        self.assertContains(response, 'aria-disabled="true"', count=5)
+        self.assertContains(response, 'data-module-active="true"', count=1)
+        self.assertNotContains(response, 'href=""')
+
+    def test_menu_evaluaciones_requiere_backoffice(self):
+        self.client.force_login(self.trainee)
+
+        response = self.client.get(reverse('dashboard:evaluaciones_menu'))
+
+        self.assertEqual(response.status_code, 403)
 
     def test_capacitaciones_menu(self):
         """Menú de capacitaciones lista los módulos."""

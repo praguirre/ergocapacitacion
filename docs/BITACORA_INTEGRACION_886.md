@@ -5332,3 +5332,82 @@ incorpora al smoke autenticado del despliegue.
 Producción debe ejecutar `collectstatic --noinput`. Durante el smoke, realizar
 una consulta y confirmar que el indicador aparece inmediatamente y desaparece
 al llegar la respuesta. El Commit 7.3 no modifica este widget.
+
+---
+
+## Commit 7.3 — Incorporar el menú de selección de evaluaciones
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-06 22:57 ART |
+| Repositorio | ergocapacitacion |
+| Rama | feature/ergonomia-886 |
+| Hash | <se completa después del commit> |
+| Fase | 7 — Estabilización de producción |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se incorporó un nivel de navegación entre el dashboard y los protocolos de
+evaluación. Un catálogo Python inmutable declara Ergonomía como disponible y
+cinco protocolos futuros como cards informativas no clickeables. La vista
+resuelve las URLs activas de forma temprana y permanece protegida para usuarios
+de backoffice.
+
+El dashboard y el navbar apuntan al selector; el listado de Ergonomía conserva
+el navbar activo y agrega un breadcrumb para regresar. No se creó modelo,
+tabla, migración ni estado administrable sin implementación real.
+
+### Archivos modificados
+
+- `apps/dashboard/evaluaciones_catalog.py` — catálogo canónico de protocolos.
+- `apps/dashboard/views.py` y `apps/dashboard/urls.py` — vista protegida y ruta.
+- `templates/dashboard/evaluaciones_menu.html` — grilla disponible/próximamente.
+- `templates/dashboard/home.html` y `templates/base_dashboard.html` — nuevos
+  destinos y estado activo.
+- `apps/ergonomia_886/planillas/templates/planillas/evaluacion_list.html` —
+  breadcrumb de regreso.
+- `apps/dashboard/tests.py` y `apps/dashboard/tests_navigation.py` — permisos,
+  render, enlaces y navegación compartida.
+- `docs/ROADMAP_INTEGRACION_ERGONOMIA_886.md` y `README.md` — trazabilidad.
+
+### Verificaciones ejecutadas
+
+```text
+.venv/bin/python manage.py test apps.dashboard.tests apps.dashboard.tests_navigation --settings=config.test_settings -v 2
+Ran 18 tests in 0.100s — OK
+
+.venv/bin/python manage.py test --settings=config.test_settings
+Ran 272 tests in 2.402s — OK
+
+.venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+.venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+.venv/bin/python manage.py migrate --check
+(sin salida; código 0)
+
+runserver 127.0.0.1:8000 --noreload + smoke HTTP
+200  /
+302  /dashboard/evaluaciones/ -> /acceso/
+Content-Security-Policy: bloqueante
+
+git diff --check
+(sin salida; código 0)
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. Los seis íconos propuestos existen en Bootstrap Icons 1.11.3. La
+observación visual autenticada se mantiene dentro del smoke de despliegue por
+la misma restricción P-2 registrada en 7.2; la renderización autenticada quedó
+cubierta automáticamente para profesional y empresa.
+
+### Notas para el despliegue
+
+No hay migraciones nuevas. El despliegue conjunto de la Fase 7 debe ejecutar
+`collectstatic --noinput` por los assets modificados en 7.1 y 7.2, reiniciar
+los workers y comprobar el selector, el indicador y tres consultas consecutivas
+del Chat IA.
