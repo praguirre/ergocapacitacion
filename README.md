@@ -341,6 +341,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   `dashboard` y el detalle usa el nuevo `menu_planillas`; sus guías se sirven
   desde el documento correcto y un test impide futuras colisiones. La suite
   alcanza 277 pruebas; el despliegue requiere `collectstatic`.
+- **07/08/2026 — Chat IA A.4 / guías enriquecidas:** se reescribieron las
+  ayudas del listado, menú de planillas, creación y respaldo general. Las tres
+  guías críticas superan 3.000 caracteres y el respaldo 1.900; los 32 slugs
+  cargan correctamente y el despliegue requiere `collectstatic`.
 
 ### Registro de cambios documentales
 

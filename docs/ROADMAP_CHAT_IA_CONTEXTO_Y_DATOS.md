@@ -335,7 +335,7 @@ PY
 | A.1 | Registro de páginas: `pages.py` y su cobertura | H1 | ✅ |
 | A.2 | Preámbulo v2.0: declarar la pantalla y acotar el descargo | H1 + H2 | ⚠️ |
 | A.3 | Separar el slug del detalle: `menu_planillas` | H3 | ✅ |
-| A.4 | Reescribir y enriquecer los cuatro documentos cruzados | H3 + H4 | ⬜ |
+| A.4 | Reescribir y enriquecer los cuatro documentos cruzados | H3 + H4 | ✅ |
 | A.5 | Respaldo del slug y guarda en la vista genérica | H5 | ⬜ |
 | A.6 | Defensa activa en el cliente: la falla deja de ser muda | H5 | ⬜ |
 | A.7 | Partir `guia_general.md` en núcleo y anexos | H4 | ⬜ |

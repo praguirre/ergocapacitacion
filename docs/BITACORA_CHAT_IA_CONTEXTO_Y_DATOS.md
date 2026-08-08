@@ -338,7 +338,7 @@ Ninguna.
 |---|---|
 | Fecha | 2026-08-07 21:49 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `29c02dd` |
 | Fase | A |
 | Hallazgo / Condición | H3 |
 | Estado | ✅ Completado |
@@ -462,5 +462,101 @@ Ninguno.
 ### Notas para el commit siguiente
 Los títulos provisionales `dashboard` y `home` son deliberadamente iguales;
 A.4 reescribe los cuatro documentos.
+
+---
+
+## Commit A.4 — Reescribir y enriquecer los cuatro documentos cruzados
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 21:52 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H3 + H4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se reescribieron las guías de listado, menú de planillas, creación y respaldo
+general con el contenido obligatorio del roadmap. Las tres pantallas críticas
+ya tienen señal específica suficiente y acciones, estados y pasos siguientes.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `static/ayuda/help_texts/dashboard.md` | modificado | Guía completa del listado. |
+| `static/ayuda/help_texts/menu_planillas.md` | modificado | Guía completa del detalle. |
+| `static/ayuda/help_texts/crear.md` | modificado | Empresas, snapshot CF-5 y errores. |
+| `static/ayuda/help_texts/home.md` | modificado | Respaldo general e inofensivo. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.4 y hash de A.3. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.4 completado. |
+| `README.md` | modificado | Registro funcional de A.4. |
+
+### Decisiones de implementación
+Ninguna fuera del contenido prescripto. Se usó español rioplatense coherente
+con el preámbulo v2.0 y la configuración `es-ar`.
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 277 tests in 2.294s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ for f in dashboard menu_planillas crear home; do ...; done
+dashboard          3024 chars   # Guía de Evaluaciones Ergonómicas
+menu_planillas     3144 chars   # Guía del Menú de Planillas
+crear              3328 chars   # Guía para Crear una Evaluación
+home               1900 chars   # Guía general del Módulo de Ergonomía SRT 886/15
+
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python -c "<carga de todos los slugs>"
+Los 32 slugs cargan contexto sin error.
+```
+
+El humo de contenido se verificó cargando los 32 contextos con el constructor
+real; la revisión visual de redacción por Pablo queda pendiente y no bloquea.
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 277 | 277 |
+| Tests de `help_ai` | 36 | 36 |
+| `dashboard.md` | 339 | 3.024 |
+| `menu_planillas.md` | 532 | 3.144 |
+| `crear.md` | 446 | 3.328 |
+| `home.md` | 339 | 1.900 |
+
+### Tests modificados y por qué
+Ninguno.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | Sí — obligatorio ida y vuelta |
+| Reinicio del servicio | Sí — cambian cuatro `help_version` |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+Los usuarios que conserven una guía anterior abierta recibirán HTTP 409 con
+«Recargá la guía» para `dashboard`, `menu_planillas`, `crear` y `home`; es el
+comportamiento diseñado.
+
+### Cómo se revierte
+```bash
+git revert <hash de A.4>
+.venv/bin/python manage.py collectstatic --noinput
+```
+Los contenidos originales están transcriptos íntegramente en A.3.
+
+### Desvíos respecto del roadmap
+Ninguno.
+
+### Notas para el commit siguiente
+Redacción pendiente de revisión de Pablo. No bloquea el avance del roadmap.
 
 ---
