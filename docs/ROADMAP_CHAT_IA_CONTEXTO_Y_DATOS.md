@@ -340,7 +340,7 @@ PY
 | A.6 | Defensa activa en el cliente: la falla deja de ser muda | H5 | ✅ |
 | A.7 | Partir `guia_general.md` en núcleo y anexos | H4 | ✅ |
 | A.8 | Composición del contexto global por perfil de página | H4 | ⚠️ |
-| A.9 | Cobertura bidireccional de slugs y mensajes de inventario | H-A5 + H-A6 | ⬜ |
+| A.9 | Cobertura bidireccional de slugs y mensajes de inventario | H-A5 + H-A6 | ⚠️ |
 | A.10 | Cierre de Fase A: medición, verificación integral y `push` | — | ⬜ |
 
 ### Fase B — Infraestructura y migración a ASGI
@@ -1944,6 +1944,14 @@ sudo systemctl restart ergocapacitacion     # 🛑 P-4 en producción
 ---
 
 ## Commit A.9 — Cobertura bidireccional de slugs y mensajes de inventario
+
+> **Decisión de Arquitectura DA-A9-1 — slugs dinámicos (ejecución 07/08/2026).**
+> El algoritmo literal de este commit sólo ve slugs escritos directamente en
+> bloques de plantilla. La realidad contiene diez slugs válidos servidos por
+> bloques dinámicos: `factor` y `planilla2a`…`planilla2i`. La cobertura inversa
+> los modela en `SLUGS_DINAMICOS`, separada de `SLUGS_DE_RESPALDO`, y verifica
+> que ambos conjuntos sigan perteneciendo al catálogo. Sin esta distinción el
+> test queda falso-rojo aun en el árbol correcto.
 
 ### Objetivo
 Cerrar los hallazgos adicionales **H-A5** y **H-A6**: el test de cobertura de slugs sólo validaba una dirección y escaneaba rutas inexistentes, y los tests de inventario fallan con mensajes que no dicen qué hacer.

@@ -180,29 +180,71 @@ class HelpContentCoverageTests(SimpleTestCase):
                     f"/evaluacion-ergonomica/ayuda/guide/{slug}/",
                 )
 
-    def test_static_template_slugs_are_registered_for_coverage(self):
-        pattern = re.compile(
-            r"{%\s*block\s+help_slug\s*%}\s*([a-z0-9_-]+)"
-            r"\s*{%\s*endblock\s*%}"
-        )
-        template_roots = (
-            Path(settings.BASE_DIR) / "templates",
-            Path(settings.BASE_DIR) / "core" / "templates",
-            Path(settings.BASE_DIR) / "planillas" / "templates",
-            Path(settings.BASE_DIR) / "evaluaciones" / "templates",
-        )
-        template_slugs = set()
-        for root in template_roots:
-            for template in root.rglob("*.html"):
-                template_slugs.update(
-                    pattern.findall(template.read_text(encoding="utf-8"))
-                )
+    # `home` se sirve sólo como respaldo del bloque help_slug de
+    # base_886.html. Ninguna pantalla lo declara, y es deliberado.
+    SLUGS_DE_RESPALDO = frozenset({"home"})
+    # Estos slugs se inyectan desde las vistas en bloques dinámicos; por eso
+    # no aparecen como literales durante el barrido estático de plantillas.
+    SLUGS_DINAMICOS = frozenset(
+        {"factor", "planilla2a", "planilla2b", "planilla2c", "planilla2d",
+         "planilla2e", "planilla2f", "planilla2g", "planilla2h", "planilla2i"}
+    )
 
-        self.assertTrue(
-            template_slugs.issubset(set(PAGE_HELP_SLUGS)),
-            "Hay help_slug de templates sin registrar en PAGE_HELP_SLUGS: "
-            f"{sorted(template_slugs - set(PAGE_HELP_SLUGS))}",
+    def _slugs_declarados_por_plantillas(self):
+        import re
+        from pathlib import Path
+        from django.conf import settings
+
+        patron = re.compile(
+            r"{%\s*block\s+help_slug\s*%}\s*([a-z0-9_-]+)\s*{%\s*endblock\s*%}"
         )
+        raiz = Path(settings.BASE_DIR)
+        rutas = list(raiz.glob("templates/**/*.html")) + list(
+            raiz.glob("apps/**/templates/**/*.html")
+        )
+        encontrados = set()
+        for plantilla in rutas:
+            encontrados.update(patron.findall(plantilla.read_text(encoding="utf-8")))
+        return encontrados
+
+    def test_static_template_slugs_are_registered_for_coverage(self):
+        """Dirección 1: toda pantalla declara un slug que existe."""
+        declarados = self._slugs_declarados_por_plantillas()
+        huerfanos = declarados - set(PAGE_HELP_SLUGS)
+        self.assertEqual(
+            huerfanos, set(),
+            f"Hay help_slug de plantillas sin registrar en PAGE_HELP_SLUGS: "
+            f"{sorted(huerfanos)}. Agregalos al catálogo y creá su .md.",
+        )
+
+    def test_no_hay_slugs_huerfanos_en_el_catalogo(self):
+        """Dirección 2 (H-A5): todo slug del catálogo lo declara alguien.
+
+        Ésta es la que faltaba. `home` figuraba en el catálogo sin que
+        ninguna pantalla lo declarara, y su documento —que describía el
+        listado— nunca se servía. Ése fue el Hallazgo 3.
+        """
+        declarados = self._slugs_declarados_por_plantillas()
+        catalogo = set(PAGE_HELP_SLUGS)
+        especiales = self.SLUGS_DE_RESPALDO | self.SLUGS_DINAMICOS
+        especiales_desconocidos = especiales - catalogo
+        self.assertEqual(
+            especiales_desconocidos, set(),
+            "Hay slugs especiales que ya no pertenecen a PAGE_HELP_SLUGS: "
+            f"{sorted(especiales_desconocidos)}. Corregí el conjunto especial "
+            "o restaurá el registro eliminado.",
+        )
+        huerfanos = catalogo - declarados - especiales
+        self.assertEqual(
+            huerfanos, set(),
+            f"Slugs del catálogo que ninguna pantalla declara: "
+            f"{sorted(huerfanos)}. Si es un respaldo deliberado, agregalo a "
+            "SLUGS_DE_RESPALDO con un comentario que lo justifique.",
+        )
+
+    def test_el_barrido_de_plantillas_encuentra_las_del_modulo(self):
+        """Guarda del guardián: si el barrido no encuentra nada, no prueba nada."""
+        self.assertGreaterEqual(len(self._slugs_declarados_por_plantillas()), 20)
 
 
 class HelpPageRegistryTests(SimpleTestCase):

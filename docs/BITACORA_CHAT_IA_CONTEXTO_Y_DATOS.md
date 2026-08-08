@@ -886,7 +886,7 @@ Usar el orden literal registrado arriba para la composición por perfiles.
 |---|---|
 | Fecha | 2026-08-07 22:08 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `4dbb915` |
 | Fase | A |
 | Hallazgo / Condición | H4 |
 | Estado | ⚠️ Completado con desvíos |
@@ -1035,5 +1035,119 @@ de las respuestas fuente sin transmitir el corpus.
 ### Notas para el commit siguiente
 La aceptación generativa con proveedor debe repetirse cuando exista egreso
 explícitamente autorizado; no afecta las garantías estructurales ni el ahorro.
+
+---
+
+## Commit A.9 — Cobertura bidireccional de slugs y mensajes de inventario
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 22:13 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H-A5, H-A6 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se corrigió el barrido de plantillas para recorrer tanto la raíz como todas las
+apps, se agregó la cobertura inversa catálogo → pantalla y una guarda contra
+barridos vacíos. Los tres inventarios de UI ahora fallan con mensajes que
+explican cómo actualizar la expectativa.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Barrido real, cobertura bidireccional y guarda del guardián. |
+| `apps/ergonomia_886/evaluaciones/tests_ui_dark.py` | modificado | Mensajes accionables en tres conteos. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.9 y hash de A.8. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | DA-A9-1 y estado de A.9. |
+| `README.md` | modificado | Registro de cobertura bidireccional. |
+
+### Decisiones de implementación
+**DA-A9-1:** el barrido estático no puede descubrir `factor` ni
+`planilla2a`…`planilla2i`, porque llegan a bloques dinámicos desde las vistas.
+Se los modeló en `SLUGS_DINAMICOS`, separado del respaldo deliberado `home`, y
+se verifica que ambos conjuntos sigan perteneciendo al catálogo.
+
+### Validación ejecutada
+
+```text
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python -c "..."
+templates                    existe: True
+core/templates               existe: False
+planillas/templates          existe: False
+evaluaciones/templates       existe: False
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 48 tests in 0.248s
+OK
+
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 289 tests in 2.249s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 48 tests in 0.251s
+OK
+```
+
+Prueba negativa, después de agregar temporalmente `slug_fantasma` al catálogo
+y crear su Markdown:
+
+```text
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+FAIL: test_no_hay_slugs_huerfanos_en_el_catalogo
+AssertionError: Items in the first set but not the second:
+'slug_fantasma' : Slugs del catálogo que ninguna pantalla declara:
+['slug_fantasma']. Si es un respaldo deliberado, agregalo a
+SLUGS_DE_RESPALDO con un comentario que lo justifique.
+Ran 48 tests in 0.257s
+FAILED (failures=3, errors=2)
+```
+
+Los otros cuatro errores son guardas independientes que también rechazaron el
+slug deliberadamente incompleto. Se retiraron tanto la entrada del catálogo
+como `slug_fantasma.md`; `git status --short` volvió a mostrar únicamente los
+cinco archivos definitivos de A.9.
+
+| Comprobación | Antes | Después |
+|---|---:|---:|
+| Tests totales | 287 | 289 |
+| Tests de `help_ai` | 46 | 48 |
+| Direcciones de cobertura | 1 | 2 |
+| Rutas de plantilla reales barridas | 1 parcial | raíz + apps |
+
+### Tests modificados y por qué
+Se reemplazó `test_static_template_slugs_are_registered_for_coverage`: sus tres
+rutas específicas de app ya no existen y el test omitía las plantillas reales
+del módulo. No se borró cobertura; se amplió a ambas direcciones. En
+`tests_ui_dark.py` sólo se agregaron mensajes a tres aserciones existentes.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | No |
+| Reinicio del servicio | No |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de A.9>
+```
+
+### Desvíos respecto del roadmap
+El algoritmo literal consideraba huérfanos diez slugs válidos declarados de
+forma dinámica. La realidad exigió DA-A9-1 antes de implementar la excepción.
+
+### Notas para el commit siguiente
+La medición de cierre debe conservar 289 pruebas y 48 en `help_ai`.
 
 ---

@@ -361,6 +361,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   El promedio documental baja de 33.249 a 16.070 caracteres (-51,7 %) y la
   suite alcanza 287; la batería externa quedó restringida por política de
   egreso, con 6/6 fuentes verificadas localmente.
+- **07/08/2026 — Chat IA A.9 / cobertura bidireccional:** el inventario de
+  slugs recorre las plantillas reales de la raíz y de las apps, comprueba ambos
+  sentidos y distingue respaldos de valores dinámicos. Una inyección temporal
+  confirmó que rechaza `slug_fantasma`; la suite alcanza 289 pruebas.
 
 ### Registro de cambios documentales
 

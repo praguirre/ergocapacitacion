@@ -97,7 +97,12 @@ class DarkThemeJourneyTests(TestCase):
 
     def test_recorrido_de_30_pantallas_y_slugs_de_ayuda(self):
         pantallas = self._pantallas()
-        self.assertEqual(len(pantallas), 30)
+        self.assertEqual(
+            len(pantallas), 30,
+            "Cambió la cantidad de pantallas del recorrido. Si agregaste o "
+            "quitaste una, actualizá este número Y verificá que la pantalla "
+            "nueva declare su bloque help_slug.",
+        )
 
         for nombre, url, help_slug in pantallas:
             with self.subTest(pantalla=nombre, slug=help_slug):
@@ -118,7 +123,12 @@ class DarkThemeJourneyTests(TestCase):
             for path in raiz.rglob("*.html")
             if "templates" in path.parts
         )
-        self.assertEqual(len(templates), 25)
+        self.assertEqual(
+            len(templates), 25,
+            "Cambió la cantidad de plantillas de apps/ergonomia_886. "
+            "Actualizá este número y confirmá que la plantilla nueva declare "
+            "help_slug si es una pantalla con ayuda contextual.",
+        )
 
         contenidos = {path: path.read_text(encoding="utf-8") for path in templates}
         con_help_slug = [
@@ -126,7 +136,11 @@ class DarkThemeJourneyTests(TestCase):
             for path, contenido in contenidos.items()
             if "{% block help_slug %}" in contenido
         ]
-        self.assertEqual(len(con_help_slug), 23)
+        self.assertEqual(
+            len(con_help_slug), 23,
+            "Cambió la cantidad de plantillas con bloque help_slug. Si es "
+            "intencional, actualizá el número y registralo en la bitácora.",
+        )
 
         for path, contenido in contenidos.items():
             with self.subTest(template=path.name):
