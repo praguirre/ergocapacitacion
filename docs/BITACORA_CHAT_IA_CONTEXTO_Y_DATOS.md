@@ -471,7 +471,7 @@ A.4 reescribe los cuatro documentos.
 |---|---|
 | Fecha | 2026-08-07 21:52 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `d532c14` |
 | Fase | A |
 | Hallazgo / Condición | H3 + H4 |
 | Estado | ✅ Completado |
@@ -558,5 +558,104 @@ Ninguno.
 
 ### Notas para el commit siguiente
 Redacción pendiente de revisión de Pablo. No bloquea el avance del roadmap.
+
+---
+
+## Commit A.5 — Respaldo del slug y guarda en la vista genérica
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 21:54 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H5 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+La plantilla genérica de Planillas 2 usa `home` si el slug falta o está vacío.
+La vista falla con `ImproperlyConfigured` cuando un llamador no declara slug,
+y dos pruebas recorren las plantillas y ejercitan la guarda.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `apps/ergonomia_886/planillas/templates/planillas/planilla2_structured_form.html` | modificado | Filtro `default:"home"`. |
+| `apps/ergonomia_886/planillas/views.py` | modificado | Guarda explícita antes de consultar datos. |
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Contrato de bloques y guarda vacía. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.5 y hash de A.4. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.5 marcado con desvío. |
+| `README.md` | modificado | Registro funcional de A.5. |
+
+### Decisiones de implementación
+El test de la guarda usa un objeto request mínimo porque la excepción ocurre
+antes de acceder al request o a la base. Esto prueba exactamente la frontera.
+
+### Validación ejecutada
+
+```text
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python -c "<filtro default>"
+sin variable   actual: data-page-slug=""                nuevo: data-page-slug="home"
+vacía          actual: data-page-slug=""                nuevo: data-page-slug="home"
+presente       actual: data-page-slug="planilla2c"      nuevo: data-page-slug="planilla2c"
+
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 279 tests in 2.373s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 38 tests in 0.243s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.planillas --settings=config.test_settings
+Ran 43 tests in 0.229s
+OK
+
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python - <<'PY'
+ImproperlyConfigured: Planilla2C: la vista no declaró help_slug y el panel de ayuda contextual quedaría inutilizable en esa pantalla.
+
+$ rg -n "'help_slug': help_slug" apps/ergonomia_886/planillas/views.py
+313:        'help_slug': help_slug,
+```
+
+La línea de contexto quedó restaurada y presente.
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 277 | 279 |
+| Tests de `help_ai` | 36 | 38 |
+| Slug faltante o vacío | `""` silencioso | respaldo `home` |
+
+### Tests modificados y por qué
+Ninguno existente. Se agregaron dos pruebas.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | No |
+| Reinicio del servicio | Sí |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de A.5>
+```
+El camino feliz no cambia; al revertir reaparece el modo de falla silencioso.
+
+### Desvíos respecto del roadmap
+La reproducción indicada de comentar sólo `'help_slug': help_slug` no puede
+activar una guarda ubicada al inicio de la función: el parámetro sigue siendo
+no vacío. Se reprodujo correctamente llamando la misma vista con `help_slug=''`
+y se confirmó por `rg` que la línea de contexto quedó intacta.
+
+### Notas para el commit siguiente
+Ninguna.
 
 ---

@@ -270,6 +270,59 @@ class HelpPageRegistryTests(SimpleTestCase):
         )
 
 
+class HelpSlugContractTests(SimpleTestCase):
+    """Todo bloque de ayuda resuelve a un slug válido y nunca queda vacío."""
+
+    def test_todo_bloque_help_slug_resuelve_a_un_slug_valido(self):
+        """Ninguna pantalla puede renderizar data-page-slug vacío (Hallazgo 5)."""
+        import re
+        from pathlib import Path
+        from django.conf import settings
+        from apps.ergonomia_886.help_ai.catalog import PAGE_HELP_SLUGS
+
+        bloque = re.compile(
+            r"{%\s*block\s+help_slug\s*%}(.*?){%\s*endblock\s*%}", re.DOTALL
+        )
+        literal = re.compile(r"^[a-z0-9_-]+$")
+        con_default = re.compile(
+            r'^\{\{\s*\w+\s*\|\s*default:"([a-z0-9_-]+)"\s*\}\}$'
+        )
+
+        raiz = Path(settings.BASE_DIR)
+        problemas = []
+        for plantilla in list(raiz.glob("templates/**/*.html")) + list(
+            raiz.glob("apps/**/templates/**/*.html")
+        ):
+            for cuerpo in bloque.findall(plantilla.read_text(encoding="utf-8")):
+                cuerpo = cuerpo.strip()
+                if literal.match(cuerpo):
+                    resuelto = cuerpo
+                elif (coincidencia := con_default.match(cuerpo)) is not None:
+                    resuelto = coincidencia.group(1)
+                else:
+                    problemas.append(
+                        f"{plantilla}: bloque sin respaldo -> {cuerpo!r}"
+                    )
+                    continue
+                if resuelto not in PAGE_HELP_SLUGS:
+                    problemas.append(
+                        f"{plantilla}: slug desconocido -> {resuelto!r}"
+                    )
+
+        self.assertEqual(problemas, [], "\n".join(problemas))
+
+    def test_la_vista_generica_rechaza_un_help_slug_vacio(self):
+        from django.core.exceptions import ImproperlyConfigured
+        from apps.ergonomia_886.planillas.views import _generic_planilla2_view
+        from apps.ergonomia_886.planillas.models import Planilla2A
+        from apps.ergonomia_886.planillas.forms import Planilla2AForm
+
+        with self.assertRaisesRegex(ImproperlyConfigured, "Planilla2A"):
+            _generic_planilla2_view(
+                object(), 1, Planilla2A, Planilla2AForm, "Título", help_slug=""
+            )
+
+
 CLAUSULAS_INVARIANTES = (
     "no ves lo que cargó",
     "Nunca afirmes haber leído",

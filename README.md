@@ -345,6 +345,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   ayudas del listado, menú de planillas, creación y respaldo general. Las tres
   guías críticas superan 3.000 caracteres y el respaldo 1.900; los 32 slugs
   cargan correctamente y el despliegue requiere `collectstatic`.
+- **07/08/2026 — Chat IA A.5 / slug con respaldo:** la plantilla genérica de
+  Planillas 2 cae a la guía `home` y la vista rechaza configuraciones vacías
+  con un error explícito. Dos pruebas nuevas elevan la suite a 279.
 
 ### Registro de cambios documentales
 

@@ -1,7 +1,7 @@
 <!-- planillas/templates/planillas/planilla2_structured_form.html -->
 
 {% extends 'ergonomia_886/base_886.html' %}
-{% block help_slug %}{{ help_slug }}{% endblock %}
+{% block help_slug %}{{ help_slug|default:"home" }}{% endblock %}
 {% load django_bootstrap5 %}
 
 {% block title %}{{ titulo_planilla }}{% endblock %}

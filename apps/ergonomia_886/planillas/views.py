@@ -9,6 +9,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.forms import modelformset_factory
 from django.core.paginator import Paginator
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Prefetch, Q
 from django.http import Http404
 from django.views.decorators.http import require_POST
@@ -272,6 +273,16 @@ def _generic_planilla2_view(
     factor_slug=None,
     factor_slugs: list[str] | None = None,
 ):
+    # El widget de ayuda muere en silencio si data-page-slug llega vacío:
+    # help_widget.js aborta con `if (!slug) return;` sin mensaje, sin error
+    # de consola y sin log de servidor. Fallar acá, con nombre y apellido,
+    # en vez de allá sin ningún síntoma.
+    if not help_slug:
+        raise ImproperlyConfigured(
+            f"{model_cls.__name__}: la vista no declaró help_slug y el panel "
+            "de ayuda contextual quedaría inutilizable en esa pantalla."
+        )
+
     evaluacion = obtener_evaluacion_o_404(evaluacion_id, request.user)
 
     instance = model_cls.objects.filter(evaluacion=evaluacion).first() or model_cls(evaluacion=evaluacion)
