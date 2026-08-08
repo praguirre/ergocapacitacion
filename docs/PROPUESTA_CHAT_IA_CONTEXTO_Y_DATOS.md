@@ -365,6 +365,12 @@ Diff propuesto sobre [agents.py:19-36](apps/ergonomia_886/help_ai/agents.py:19):
 
 El texto íntegro de `build_preamble()` se define en el [Cap. 2](#cap-2--hallazgo-2-el-descargo-de-privacidad-se-sobregeneraliza), porque los Hallazgos 1 y 2 comparten el mismo bloque de texto y separarlos produciría dos redacciones incoherentes.
 
+> **Nota de ejecución A.2 (07/08/2026):** el diff propuesto necesitó el
+> operador `+` entre `build_preamble(...)` y el primer f-string. Sin él,
+> Python produce `SyntaxError`; la implementación conserva el diseño y agrega
+> únicamente esa concatenación explícita. Dos aserciones literales del
+> preámbulo anterior también se actualizaron al texto v2.0.
+
 ### 1.3 Justificación
 
 El modelo no puede inferir estado del mundo a partir de un identificador técnico dentro de un encabezado. Necesita una **aserción declarativa en primera persona del sistema**: «el usuario está ahora mismo en X». Además, darle el título humano y la ruta le permite responder con el mismo vocabulario que el usuario ve en pantalla, en vez de con un slug interno.

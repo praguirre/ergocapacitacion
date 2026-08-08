@@ -161,11 +161,8 @@ class HelpContentCoverageTests(SimpleTestCase):
                 self.assertIn(f"### GUÍA ESPECÍFICA ({slug})", instructions)
                 self.assertIn(md(slug), instructions)
                 self.assertIn(context.version, instructions)
-                self.assertIn(
-                    "No tienes acceso a los valores del formulario",
-                    instructions,
-                )
-                self.assertIn("Nunca afirmes haber visto esos datos", instructions)
+                self.assertIn("No tenés acceso a los valores del formulario", instructions)
+                self.assertIn("Nunca afirmes haber leído esos datos", instructions)
                 self.assertEqual(
                     agent_cls.call_args.kwargs["model"],
                     settings.CHAT_AI_MODEL,
@@ -246,6 +243,67 @@ class HelpPageRegistryTests(SimpleTestCase):
                     re.search(r"/\d+/", info.ruta),
                     f"La ruta de {slug} contiene un identificador concreto: {info.ruta}",
                 )
+
+
+CLAUSULAS_INVARIANTES = (
+    "no ves lo que cargó",
+    "Nunca afirmes haber leído",
+    "está ahora mismo en",
+    "nunca sobre la UBICACIÓN",
+    "No pidas nombres de trabajadores",
+)
+
+
+class PreambleTests(SimpleTestCase):
+    """Hallazgos 1 y 2: el prompt afirma la pantalla y acota el descargo."""
+
+    def test_preambulo_no_niega_la_ubicacion(self):
+        from apps.ergonomia_886.help_ai.pages import page_info
+        from apps.ergonomia_886.help_ai.preamble import build_preamble
+
+        texto = build_preamble(slug="crear", info=page_info("crear"))
+        for clausula in CLAUSULAS_INVARIANTES:
+            with self.subTest(clausula=clausula):
+                self.assertIn(clausula, texto)
+
+        self.assertNotIn("qué valores debe copiar en la consulta", texto)
+
+    @patch("apps.ergonomia_886.help_ai.agents.Agent")
+    def test_instructions_declaran_la_pantalla_actual(self, agent_cls):
+        from apps.ergonomia_886.help_ai.agents import page_agent
+        from apps.ergonomia_886.help_ai.pages import page_info
+
+        for slug in PAGE_HELP_SLUGS:
+            with self.subTest(slug=slug):
+                agent_cls.reset_mock()
+                contexto = page_help_context(slug)
+                page_agent.cache_clear()
+                page_agent(slug, contexto.version)
+                instrucciones = agent_cls.call_args.kwargs["instructions"]
+
+                info = page_info(slug)
+                self.assertIn("está ahora mismo en", instrucciones)
+                self.assertIn(info.titulo, instrucciones)
+                self.assertIn(info.ruta, instrucciones)
+                self.assertLess(
+                    instrucciones.index(info.titulo),
+                    instrucciones.index("### CONTEXTO GENERAL"),
+                )
+
+    @patch("apps.ergonomia_886.help_ai.agents.Agent")
+    def test_el_contexto_general_y_especifico_siguen_presentes(self, agent_cls):
+        """Regresión: el preámbulo nuevo no puede desplazar la documentación."""
+        from apps.ergonomia_886.help_ai.agents import page_agent
+
+        contexto = page_help_context("lmc")
+        page_agent.cache_clear()
+        page_agent("lmc", contexto.version)
+        instrucciones = agent_cls.call_args.kwargs["instructions"]
+
+        self.assertIn("### CONTEXTO GENERAL", instrucciones)
+        self.assertIn("### GUÍA ESPECÍFICA (lmc)", instrucciones)
+        self.assertIn(contexto.global_markdown, instrucciones)
+        self.assertIn(contexto.specific_markdown, instrucciones)
 
 
 class ChatSecurityTests(TestCase):

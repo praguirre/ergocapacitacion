@@ -144,7 +144,7 @@ La ficha `menu_planillas` se creará en A.1 antes de ingresar al catálogo en A.
 |---|---|
 | Fecha | 2026-08-07 21:43 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `b8059e2` |
 | Fase | A |
 | Hallazgo / Condición | H1 |
 | Estado | ✅ Completado |
@@ -225,5 +225,109 @@ Ninguno.
 ### Notas para el commit siguiente
 La ficha `menu_planillas` es la única que aún no pertenece al catálogo; A.3
 cerrará esa diferencia.
+
+---
+
+## Commit A.2 — Preámbulo v2.0: declarar la pantalla y acotar el descargo
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 21:47 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H1 + H2 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se creó el preámbulo v2.0 y se cableó antes de toda la documentación del
+agente. El prompt afirma título, ruta y propósito de la pantalla, mientras
+acota explícitamente la falta de acceso a los datos cargados.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `apps/ergonomia_886/help_ai/preamble.py` | creado | Preámbulo v2.0 sin acceso a datos. |
+| `apps/ergonomia_886/help_ai/agents.py` | modificado | Composición con ficha de pantalla y preámbulo. |
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Tres pruebas nuevas y dos literales actualizados. |
+| `docs/PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Nota del desvío sintáctico encontrado al ejecutar. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.2 y hash de A.1. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.2 marcado con desvío. |
+| `README.md` | modificado | Registro funcional de A.2. |
+
+### Decisiones de implementación
+La concatenación propuesta `build_preamble(...) f"..."` no es sintaxis Python
+válida. Se agregó el operador `+`, cambio mínimo indispensable. Además se
+actualizaron dos aserciones literales del preámbulo anterior al texto v2.0.
+
+### Preámbulo reemplazado íntegro
+
+```text
+Eres un asistente experto en la Resolución SRT 886/15 y en el uso de ErgoApp. Responde en español, con claridad, y usa Markdown cuando ayude a la legibilidad. No tienes acceso a los valores del formulario, resultados, observaciones ni datos de la evaluación que el usuario está viendo. Nunca afirmes haber visto esos datos ni inventes por qué obtuvo un nivel. Si la respuesta depende de ellos, indícale qué valores debe copiar en la consulta o qué campo debe revisar. No solicites nombres de trabajadores, CUIT ni otros datos personales innecesarios.
+```
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 276 tests in 2.499s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 35 tests in 0.215s
+OK
+
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python - <<'PY'
+home           29558 chars  |  'está ahora mismo en': True  |  título: True
+dashboard      29734 chars  |  'está ahora mismo en': True  |  título: True
+crear          29618 chars  |  'está ahora mismo en': True  |  título: True
+lmc            38238 chars  |  'está ahora mismo en': True  |  título: True
+```
+
+Prueba manual con respuesta del proveedor: recomendada pero no bloqueante en
+A.2; se difiere a la aceptación integral de A.10.
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 273 | 276 |
+| Tests de `help_ai` | 32 | 35 |
+| Prompt `home` | 28.273 | 29.558 (+1.285) |
+| Prompt `dashboard` | 28.471 | 29.734 (+1.263) |
+| Prompt `crear` | 28.381 | 29.618 (+1.237) |
+| Prompt `lmc` | 36.984 | 38.238 (+1.254) |
+
+### Tests modificados y por qué
+`test_page_agent_receives_global_and_page_specific_context` conservó su
+propósito, pero sus dos literales se actualizaron de «No tienes...»/«haber
+visto» a «No tenés...»/«haber leído», porque A.2 reemplaza deliberadamente el
+preámbulo y mantiene las mismas prohibiciones en rioplatense.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | No |
+| Reinicio del servicio | Sí — la caché de agentes es por proceso |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de A.2>
+```
+El bot volvería a negar su ubicación; `pages.py` quedaría sin consumidores.
+
+### Desvíos respecto del roadmap
+El diff literal carecía del operador de concatenación y produjo `SyntaxError`.
+La realidad exigió agregar `+`. El roadmap afirmaba que el test existente no
+cambiaría, pero dos aserciones comprobaban literalmente el texto sustituido.
+
+### Notas para el commit siguiente
+Ninguna.
 
 ---

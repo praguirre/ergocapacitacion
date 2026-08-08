@@ -334,6 +334,9 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   dispone ahora de título humano, ruta y propósito estáticos. Cuatro pruebas
   cubren el catálogo, la integridad de las fichas y el fallo cerrado; la suite
   alcanza 273 pruebas.
+- **07/08/2026 — Chat IA A.2 / preámbulo v2.0:** el agente declara al inicio
+  la pantalla actual con título, ruta y propósito, y diferencia ubicación de
+  datos no visibles. Tres regresiones nuevas elevan la suite a 276 pruebas.
 
 ### Registro de cambios documentales
 
