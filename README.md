@@ -365,6 +365,13 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   slugs recorre las plantillas reales de la raíz y de las apps, comprueba ambos
   sentidos y distingue respaldos de valores dinámicos. Una inyección temporal
   confirmó que rechaza `slug_fantasma`; la suite alcanza 289 pruebas.
+- **07/08/2026 — Chat IA A.10 / cierre de Fase A:** los cinco hallazgos y dos
+  guardas adicionales quedan corregidos. El contrato de identidad cubre 32/32
+  pantallas, el promedio documental baja 51,7 % (33.249 → 16.070), `crear`
+  reduce su contexto global 67,5 % y pasan 289 pruebas. `collectstatic` reunió
+  196 archivos y el humo local respondió como se esperaba. La aceptación
+  generativa externa queda explícitamente pendiente por política de egreso;
+  las pruebas estructurales, de integración y de navegador están en verde.
 
 ### Registro de cambios documentales
 

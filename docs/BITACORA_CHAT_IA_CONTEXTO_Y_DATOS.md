@@ -1044,7 +1044,7 @@ explícitamente autorizado; no afecta las garantías estructurales ni el ahorro.
 |---|---|
 | Fecha | 2026-08-07 22:13 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `aab7f3d` |
 | Fase | A |
 | Hallazgo / Condición | H-A5, H-A6 |
 | Estado | ⚠️ Completado con desvíos |
@@ -1149,5 +1149,270 @@ forma dinámica. La realidad exigió DA-A9-1 antes de implementar la excepción.
 
 ### Notas para el commit siguiente
 La medición de cierre debe conservar 289 pruebas y 48 en `help_ai`.
+
+---
+
+## Commit A.10 — Cierre de Fase A: medición y verificación integral
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 22:43 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | Cierre H1–H5, H-A5 y H-A6 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se repitió la medición completa de los 32 slugs, se verificó el contrato
+efectivo de identidad y privacidad de cada agente, se recorrieron las guías
+descruzadas y la defensa ante slug vacío, y se ejecutó la regresión completa.
+También se validaron los estáticos y el arranque HTTP local.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Cierre integral y hash de A.9. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.10 marcado con desvío verificable. |
+| `README.md` | modificado | Resumen y métricas finales de Fase A. |
+
+### Decisiones de implementación
+Ninguna nueva. Se mantuvo la decisión segura de A.8: no transmitir el corpus
+al proveedor sin egreso autorizado. Por eso se distingue entre contrato
+efectivo 32/32 y respuesta generativa externa no ejecutada.
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 289 tests in 2.783s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886 --settings=config.test_settings
+Ran 244 tests in 2.332s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 48 tests in 0.293s
+OK
+
+$ .venv/bin/python manage.py test apps.accounts apps.quiz apps.certificates --settings=config.test_settings
+Ran 6 tests in 0.083s
+OK
+
+$ .venv/bin/python manage.py collectstatic --noinput --settings=config.test_settings
+196 static files copied to '/Users/praguirre/ergocapacitacion/staticfiles'.
+
+$ curl -s -o /dev/null -w '%{http_code} %{redirect_url}' \
+    http://127.0.0.1:8000/evaluacion-ergonomica/
+302 http://127.0.0.1:8000/acceso/?next=/evaluacion-ergonomica/
+```
+
+El primer `curl` dentro del sandbox fue bloqueado con `Operation not permitted`;
+se repitió con autorización local y respondió correctamente. El servidor se
+detuvo después del humo.
+
+### Medición final de los 32 slugs
+
+```text
+slug                        global específico    total
+bipedestacion                 9756   10983    20739
+confort_termico               9756    8806    18562
+crear                         8840    3259    12099
+dashboard                     8840    2952    11792
+empuje_inicial                9756    6031    15787
+empuje_sostenida              9756    5022    14778
+estres_contacto               9756    9366    19122
+exportaciones                 8840    2304    11144
+factor                        9756    5238    14994
+home                          8840    1865    10705
+lmc                           9756    9051    18807
+menu_planillas                8840    3081    11921
+planilla1                    14339    6906    21245
+planilla2a                   10139    5956    16095
+planilla2b                   10074    6598    16672
+planilla2c                   10125    5925    16050
+planilla2d                   10089    5257    15346
+planilla2e                   10194    5871    16065
+planilla2f                    9986    5334    15320
+planilla2g                   10018    6478    16496
+planilla2h                    9876    4953    14829
+planilla2i                   10023    4818    14841
+planilla3                     9757    4995    14752
+planilla4                    13005    4034    17039
+posturas_forzadas             9756   10025    19781
+repetitivos_ms                9756   10154    19910
+traccion_inicial              9756    5347    15103
+traccion_sostenida            9756    4702    14458
+transporte                     9756    7079    16835
+vibracion_cuerpo_entero       9756   11526    21282
+vibracion_mano_brazo          9756    9015    18771
+wizard_resumen                9756    3175    12931
+PROMEDIO docs                                 16070
+```
+
+### H1 — recorrido completo de identidad
+
+Las siguientes son las 32 respuestas **determinísticas exigidas por las
+instructions efectivas**, verificadas dentro de cada objeto `Agent`: título,
+ruta y orden explícita de responder sin pedir que el usuario copie nada. No se
+presentan como respuestas del proveedor.
+
+| Slug | Respuesta directa exigida | Contrato |
+|---|---|:---:|
+| `bipedestacion` | Bipedestación — `/evaluacion-ergonomica/factores/<id>/bipedestacion/` | OK |
+| `confort_termico` | Confort térmico — `/evaluacion-ergonomica/factores/<id>/confort-termico/` | OK |
+| `crear` | Crear una evaluación nueva — `/evaluacion-ergonomica/protocolo/crear/` | OK |
+| `dashboard` | Evaluaciones ergonómicas — `/evaluacion-ergonomica/` | OK |
+| `empuje_inicial` | Empuje — Fuerza Inicial — `/evaluacion-ergonomica/factores/<id>/empuje/inicial/` | OK |
+| `empuje_sostenida` | Empuje — Fuerza Sostenida — `/evaluacion-ergonomica/factores/<id>/empuje/sostenida/` | OK |
+| `estres_contacto` | Estrés de contacto — `/evaluacion-ergonomica/factores/<id>/estres-contacto/` | OK |
+| `exportaciones` | Documentos de la evaluación — `/evaluacion-ergonomica/documentos/<id>/` | OK |
+| `factor` | Formulario de evaluación de un factor — `/evaluacion-ergonomica/factores/<id>/<factor>/` | OK |
+| `home` | Módulo de Ergonomía SRT 886/15 — `/evaluacion-ergonomica/` | OK |
+| `lmc` | Levantamiento manual de cargas (LMC) — `/evaluacion-ergonomica/factores/<id>/lmc/` | OK |
+| `menu_planillas` | Menú de planillas — `/evaluacion-ergonomica/protocolo/<id>/` | OK |
+| `planilla1` | Planilla 1 — `/evaluacion-ergonomica/protocolo/<id>/planilla1/` | OK |
+| `planilla2a` | Planilla 2A — `/evaluacion-ergonomica/protocolo/<id>/planilla2a/` | OK |
+| `planilla2b` | Planilla 2B — `/evaluacion-ergonomica/protocolo/<id>/planilla2b/` | OK |
+| `planilla2c` | Planilla 2C — `/evaluacion-ergonomica/protocolo/<id>/planilla2c/` | OK |
+| `planilla2d` | Planilla 2D — `/evaluacion-ergonomica/protocolo/<id>/planilla2d/` | OK |
+| `planilla2e` | Planilla 2E — `/evaluacion-ergonomica/protocolo/<id>/planilla2e/` | OK |
+| `planilla2f` | Planilla 2F — `/evaluacion-ergonomica/protocolo/<id>/planilla2f/` | OK |
+| `planilla2g` | Planilla 2G — `/evaluacion-ergonomica/protocolo/<id>/planilla2g/` | OK |
+| `planilla2h` | Planilla 2H — `/evaluacion-ergonomica/protocolo/<id>/planilla2h/` | OK |
+| `planilla2i` | Planilla 2I — `/evaluacion-ergonomica/protocolo/<id>/planilla2i/` | OK |
+| `planilla3` | Planilla 3 — `/evaluacion-ergonomica/protocolo/<id>/planilla3/` | OK |
+| `planilla4` | Planilla 4 — `/evaluacion-ergonomica/protocolo/<id>/planilla4/` | OK |
+| `posturas_forzadas` | Posturas forzadas — `/evaluacion-ergonomica/factores/<id>/posturas-forzadas/` | OK |
+| `repetitivos_ms` | Movimientos repetitivos (MS) — `/evaluacion-ergonomica/factores/<id>/repetitivos-ms/` | OK |
+| `traccion_inicial` | Tracción — Fuerza Inicial — `/evaluacion-ergonomica/factores/<id>/traccion/inicial/` | OK |
+| `traccion_sostenida` | Tracción — Fuerza Sostenida — `/evaluacion-ergonomica/factores/<id>/traccion/sostenida/` | OK |
+| `transporte` | Transporte manual — `/evaluacion-ergonomica/factores/<id>/transporte/` | OK |
+| `vibracion_cuerpo_entero` | Vibración de cuerpo entero — `/evaluacion-ergonomica/factores/<id>/vibracion/cuerpo-entero/` | OK |
+| `vibracion_mano_brazo` | Vibración mano-brazo — `/evaluacion-ergonomica/factores/<id>/vibracion/mano-brazo/` | OK |
+| `wizard_resumen` | Resumen de la evaluación de riesgos — `/evaluacion-ergonomica/factores/<id>/resumen/` | OK |
+
+Resultado estructural: **32/32**. En `dashboard`, `lmc` y `planilla4`, el mismo
+agente contiene simultáneamente «Sabés en qué pantalla está el usuario», «no
+ves lo que cargó», la prohibición de inventar el nivel y la delimitación
+DATOS/UBICACIÓN: **3/3**.
+
+### Verificación integral de hallazgos
+
+| Hallazgo | Evidencia de cierre | Resultado |
+|---|---|:---:|
+| H1 | Contrato efectivo de los 32 agentes, tabla anterior | 32/32 estructural |
+| H2 | Identidad + límite de datos en tres agentes | 3/3 estructural |
+| H3 | `dashboard` describe listado; `menu_planillas` estados y secuencia | 5/5 checks |
+| H4 | Promedio 33.249 → 16.070 | -51,7 % |
+| H5 | Navegador A.6 + guardas, error y dos avisos visibles | 4/4 checks |
+
+Dos sondas iniciales de H5 buscaron nombres/textos supuestos y marcaron FALLA;
+al contrastarlas con el código real se corrigieron las expresiones de la sonda,
+sin cambiar producto. La ejecución definitiva fue 4/4.
+
+### Regresión funcional
+
+| Flujo | Evidencia | Resultado |
+|---|---|:---:|
+| Login profesional | Suite `apps.accounts` | OK |
+| Listado y creación de evaluaciones | Suite de planillas/listado/formularios | OK |
+| Planillas 1, 2A–2I, 3 y 4 | 244 pruebas del módulo | OK |
+| Trece factores | Recorridos y cálculo de los trece slugs | OK |
+| Documentos y PDF | permisos, doce planillas y protocolo | OK |
+| Informe profesional | endpoint con proveedor simulado y PDF | OK simulado |
+| Guía contextual | 32 documentos + navegador A.6 | OK |
+| Chat IA | contrato SSE, timeout, cancelación y navegador A.6 | OK simulado |
+| Login de trabajador | `test_trainee_login_with_cuil_email` | OK |
+| Quiz y certificado | suites `apps.quiz` y `apps.certificates` | OK |
+| Servidor local anónimo | 302 al login esperado | OK |
+
+La respuesta y el streaming **reales** del proveedor no se ejecutaron: el
+intento de A.8 demostró bloqueo de red y la escalada fue rechazada para evitar
+el egreso del corpus. Todo el resto del recorrido quedó cubierto por tests,
+servidor local y la prueba real de navegador de A.6.
+
+### Tests modificados y por qué
+Ninguno. A.10 sólo mide, verifica y documenta.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic --noinput` | Sí — obligatorio ida y vuelta |
+| Reinicio del servicio | Sí — `page_agent()` usa caché por proceso |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+| Ventana de baja actividad | Recomendada por cambios de `help_version` |
+
+### Cómo se revierte
+```bash
+git revert --no-commit b8059e2^..aab7f3d
+git commit -m "revert(chat-ia): revertir la fase A completa"
+.venv/bin/python manage.py collectstatic --noinput
+sudo systemctl restart ergocapacitacion
+```
+El último comando es P-4 y sólo corresponde a producción.
+
+### Desvíos respecto del roadmap
+No se cumplió la aceptación generativa real de H1/H2 ni el streaming real en
+seis pantallas porque el entorno no autoriza egreso al proveedor. Se conserva
+la evidencia estructural completa y no se falsea el resultado. Además, los
+commits con desvíos permanecen ⚠️ en la tabla, en vez de convertirlos a ✅.
+
+### Notas para el commit siguiente
+Antes de desplegar, repetir la batería generativa de H1/H2 y los seis streams
+en un entorno explícitamente autorizado para transmitir el contexto.
+
+---
+
+# CIERRE DE FASE A
+
+| Métrica | Antes (`ef6ef4e`) | Después | Δ |
+|---|---:|---:|---:|
+| Tests totales | 269 | 289 | +20 |
+| Tests de `help_ai` | 28 | 48 | +20 |
+| Slugs de página | 31 | 32 | +1 |
+| Contexto global (`crear`) | 27.241 | 8.840 | -67,5 % |
+| Prompt promedio (docs) | 33.249 | 16.070 | -51,7 % |
+| Plantillas con slug colisionado | 1 par | 0 | — |
+| Documentos de ayuda huérfanos | 1 (`home`) | 0 | — |
+
+## Estado de los hallazgos
+
+| Hallazgo | Estado | Commits | Evidencia |
+|---|---|---|---|
+| H1 — El prompt no declara la pantalla | ✅ Corregido | A.1, A.2 | Contrato 32/32; aceptación generativa pendiente |
+| H2 — Descargo sobregeneralizado | ✅ Corregido | A.2 | Contrato 3/3; aceptación generativa pendiente |
+| H3 — Colisión `dashboard` / orfandad `home` | ✅ Corregido | A.3, A.4 | Guías 5/5 y catálogo sin colisión |
+| H4 — Dilución del contexto | ✅ Corregido | A.4, A.7, A.8 | Reducción promedio 51,7 % |
+| H5 — Falla silenciosa | ✅ Corregido | A.5, A.6 | Navegador real y cierre 4/4 |
+| H-A5 — Cobertura unidireccional | ✅ Corregido | A.9 | Inyección `slug_fantasma` detectada |
+| H-A6 — Literales sin mensaje | ✅ Corregido | A.9 | Tres mensajes accionables |
+
+## Requisitos de despliegue de la Fase A
+
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic --noinput` | ✅ Sí, obligatorio (ida y vuelta) |
+| Reinicio del servicio | ✅ Sí — caché por proceso |
+| Migración de base de datos | ❌ No |
+| Variables de entorno nuevas | ❌ No |
+| Ventana de baja actividad | ⚠️ Recomendada — cambios de `help_version` |
+
+## Procedimiento de reversión de la fase completa
+
+```bash
+git revert --no-commit b8059e2^..aab7f3d
+git commit -m "revert(chat-ia): revertir la fase A completa"
+.venv/bin/python manage.py collectstatic --noinput
+sudo systemctl restart ergocapacitacion
+```
 
 ---
