@@ -376,6 +376,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   paquete no deprecado `uvicorn-worker` quedan declarados, instalados y
   protegidos por contrato. Las versiones verificadas son 23.0.0 y 0.4.0; la
   suite alcanza 290 pruebas y el despliegue debe reinstalar requirements.
+- **08/08/2026 — Chat IA B.1 / WhiteNoise condicional:** nginx ya sirve los
+  estáticos desde el `STATIC_ROOT` real (`app/staticfiles`), por lo que
+  WhiteNoise sale del middleware productivo y permanece en desarrollo. El
+  manifiesto comprimido conserva sus hashes y la cadena ASGI queda sin
+  componentes sync-only; pasan 290 pruebas.
 
 ### Registro de cambios documentales
 

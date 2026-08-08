@@ -63,9 +63,18 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 # Puede volver temporalmente a observación mediante la variable de entorno.
 CSP_REPORT_ONLY = env.bool("CSP_REPORT_ONLY", default=False)
 
+# WhiteNoise 6.11 no declara `async_capable`, de modo que Django lo trata
+# como sync-only (core/handlers/base.py usa getattr con default False) y,
+# bajo ASGI, adapta con async_to_sync toda la cadena que tiene por debajo,
+# incluida la vista SSE del Chat IA. En produccion nginx ya sirve /static/
+# desde STATIC_ROOT, asi que el middleware no hace falta. En desarrollo queda
+# activo por default con DEBUG=True; un runserver con DEBUG=False debe definir
+# SERVE_STATIC_WITH_WHITENOISE=True de forma explícita.
+#
+# Esto NO desactiva el manifiesto con hash: eso lo aporta STORAGES, que queda
+# intacto y es lo que resuelve {% static %}.
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "config.middleware.ContentSecurityPolicyMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -74,6 +83,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if env.bool("SERVE_STATIC_WITH_WHITENOISE", default=DEBUG):
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 ROOT_URLCONF = "config.urls"
 

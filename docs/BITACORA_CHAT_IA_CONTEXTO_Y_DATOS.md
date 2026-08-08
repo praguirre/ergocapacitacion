@@ -1439,7 +1439,7 @@ publicada sin trabajo local pendiente.
 |---|---|
 | Fecha | 2026-08-08 11:32 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `bc09172` |
 | Fase | B |
 | Hallazgo / Condición | H-A2 |
 | Estado | ✅ Completado |
@@ -1552,5 +1552,253 @@ reproducir el bloqueo del sandbox; se instaló exactamente desde requirements.
 ### Notas para el commit siguiente
 B.1 no puede modificar `MIDDLEWARE` hasta recibir evidencia literal de que
 nginx sirve `/static/` en producción.
+
+---
+
+## Commit B.1 — WhiteNoise condicional
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-08 12:34 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | B |
+| Hallazgo / Condición | H-A1 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+WhiteNoise queda presente por defecto en desarrollo (`DEBUG=True`) y ausente
+en producción, donde nginx ya sirve `STATIC_ROOT`. No se tocó `STORAGES`: el
+backend de manifiesto y compresión sigue activo. Se corrigió en propuesta y
+roadmap la ruta real del alias nginx comprobada en producción.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `config/settings.py` | modificado | Middleware WhiteNoise condicionado por entorno. |
+| `docs/PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Alias nginx corregido a `app/staticfiles`. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | DA-B1-1 y estado con desvío. |
+| `docs/DEPLOY_CLAUDE_RUNBOOK.md` | modificado | Variable de rollback y ruta real de estáticos. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Evidencia P-4, B.1 y hash de B.0. |
+| `README.md` | modificado | Registro funcional de B.1. |
+
+### Decisiones de implementación
+**DA-B1-1:** el site efectivo se llama `ergosolutions` y sirve estáticos desde
+`/srv/ergocapacitacion/app/staticfiles/`. La ruta asumida por el diseño,
+`/srv/ergocapacitacion/static/`, existe vacía. Se corrigieron los comandos y el
+bloque nginx futuro antes de implementar.
+
+La advertencia del asistente de producción sobre `STORAGES` se revisó y no
+aplica al cambio: B.1 no elimina la dependencia WhiteNoise ni el backend
+`CompressedManifestStaticFilesStorage`; sólo retira su middleware del request
+path productivo. La validación con `DEBUG=False` confirmó los nombres con hash.
+
+### Evidencia previa H-A1
+
+```text
+sync  async  middleware
+True  True   django.middleware.security.SecurityMiddleware
+True  False  whitenoise.middleware.WhiteNoiseMiddleware
+True  True   config.middleware.ContentSecurityPolicyMiddleware
+True  True   django.contrib.sessions.middleware.SessionMiddleware
+True  True   django.middleware.common.CommonMiddleware
+True  True   django.middleware.csrf.CsrfViewMiddleware
+True  True   django.contrib.auth.middleware.AuthenticationMiddleware
+True  True   django.contrib.messages.middleware.MessageMiddleware
+True  True   django.middleware.clickjacking.XFrameOptionsMiddleware
+
+módulos de whitenoise: ['base', 'compress', 'media_types', 'middleware',
+'responders', 'runserver_nostatic', 'storage', 'string_utils']
+ASGIWhiteNoise: NO existe en esta versión
+```
+
+### Detención P-4 — salida literal de producción
+
+```text
+RESPUESTA PRODUCCIÓN — B.1 / P-4
+
+Resultado: NO APTO
+
+$ date -Is
+2026-08-08T12:28:08-03:00
+
+$ hostname
+vps-4625086-x
+
+$ readlink -f /etc/nginx/sites-enabled/ergocapacitacion
+/etc/nginx/sites-enabled/ergocapacitacion
+readlink_exit=0
+(ATENCIÓN: readlink -f canonicaliza rutas inexistentes; el exit 0 es engañoso.
+ El archivo NO existe. Contenido real de /etc/nginx/sites-enabled/:
+   criaapp       -> /etc/nginx/sites-available/criaapp
+   ergosolutions -> /etc/nginx/sites-available/ergosolutions
+ El site de Ergo se llama "ergosolutions", no "ergocapacitacion".)
+
+$ grep -n -A8 -B2 "location /static/" /etc/nginx/sites-enabled/ergocapacitacion
+grep: /etc/nginx/sites-enabled/ergocapacitacion: No such file or directory
+grep_exit=2
+
+$ sudo nginx -T 2>/dev/null | grep -n -A8 -B2 "location /static/"
+201-
+202-    # TODO(Fase 8.1): confirmar paths finales contra el relevamiento del VPS compartido.
+203:    location /static/ {
+204-        alias /srv/criaapp/static/;
+205-        access_log off;
+206-        expires 30d;
+207-    }
+208-
+209-    location / {
+210-        proxy_pass http://unix:/srv/criaapp/run/criaapp.sock;
+211-        proxy_set_header Host $host;
+--
+293-
+294-    # --- Static (servido por Nginx, reduce carga a Gunicorn) ---
+295:    location /static/ {
+296-        alias /srv/ergocapacitacion/app/staticfiles/;
+297-        access_log off;
+298-        expires 30d;
+299-        add_header Cache-Control "public";
+300-    }
+301-
+302-    # --- Media (uploads, certificados PDF) ---
+303-    location /media/ {
+nginxT_grep_exit=0
+
+$ sudo test -f /srv/ergocapacitacion/static/ayuda/css/help_widget.css ; echo "archivo_static_exit=$?"
+archivo_static_exit=1
+
+$ sudo stat -c '%A %U:%G %s %n' /srv/ergocapacitacion/static/ayuda/css/help_widget.css
+stat: cannot statx '/srv/ergocapacitacion/static/ayuda/css/help_widget.css': No such file or directory
+stat_exit=1
+
+$ sudo test -f /srv/ergocapacitacion/app/staticfiles/ayuda/css/help_widget.css ; echo "archivo_alias_real_exit=$?"
+archivo_alias_real_exit=0
+
+$ sudo stat -c '%A %U:%G %s %n' /srv/ergocapacitacion/app/staticfiles/ayuda/css/help_widget.css
+-rw-r--r-- deploy:deploy 2415 /srv/ergocapacitacion/app/staticfiles/ayuda/css/help_widget.css
+
+$ sudo ls -la /srv/ergocapacitacion/static/
+total 8
+drwxrwxr-x 2 deploy deploy 4096 Feb 20 14:52 .
+drwxr-xr-x 7 deploy deploy 4096 Aug  6 23:49 ..
+
+$ curl -sS -D - -o /dev/null https://www.ergosolutions.com.ar/static/ayuda/css/help_widget.css | sed -n '1,15p'
+HTTP/2 200
+server: nginx/1.18.0 (Ubuntu)
+date: Sat, 08 Aug 2026 15:28:37 GMT
+content-type: text/css
+content-length: 2415
+last-modified: Fri, 07 Aug 2026 02:48:50 GMT
+etag: "6a754792-96f"
+expires: Mon, 07 Sep 2026 15:28:37 GMT
+cache-control: max-age=2592000
+cache-control: public
+accept-ranges: bytes
+
+$ curl -sS -o /dev/null -w 'http_code=%{http_code} content_type=%{content_type} size=%{size_download}\n' https://www.ergosolutions.com.ar/static/ayuda/css/help_widget.css
+http_code=200 content_type=text/css size=2415
+
+Conclusión técnica:
+nginx SÍ sirve /static/ directamente para ErgoSolutions, pero desde
+/srv/ergocapacitacion/app/staticfiles/ y no desde /srv/ergocapacitacion/static/;
+el archivo existe en la ruta del alias, pesa 2415 bytes y la URL pública
+devuelve 200 text/css con content-length idéntico, servido por nginx.
+
+Cambios realizados en producción: NINGUNO
+```
+
+La clasificación recibida decía `NO APTO` porque comparaba contra la ruta
+equivocada del checklist. Evaluada contra el criterio material —configuración
+efectiva, archivo real y respuesta pública— la evidencia es **APTA para B.1**.
+
+### Validación ejecutada
+
+```text
+$ DJANGO_SETTINGS_MODULE=config.test_settings ...
+DEBUG: True
+WhiteNoise en MIDDLEWARE: True
+
+$ SERVE_STATIC_WITH_WHITENOISE=False DJANGO_SETTINGS_MODULE=config.test_settings ...
+Middlewares sync-only: ninguno
+
+$ SERVE_STATIC_WITH_WHITENOISE=False DJANGO_SETTINGS_MODULE=config.settings \
+    .venv/bin/python manage.py collectstatic --noinput
+0 static files copied, 196 unmodified, 584 post-processed.
+
+$ DEBUG=False SERVE_STATIC_WITH_WHITENOISE=False \
+    DJANGO_SETTINGS_MODULE=config.settings .venv/bin/python -c "..."
+DEBUG: False
+WhiteNoise middleware: False
+Backend: whitenoise.storage.CompressedManifestStaticFilesStorage
+CSS hash: /static/ayuda/css/help_widget.2674cac4e604.css
+JS hash: /static/ayuda/js/help_widget.226daaf5fa75.js
+Middlewares sync-only: ninguno
+
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 290 tests in 3.811s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.evaluaciones.tests_ui_dark --settings=config.test_settings
+Ran 3 tests in 0.355s
+OK
+
+$ curl http://127.0.0.1:8000/evaluacion-ergonomica/
+302 http://127.0.0.1:8000/acceso/?next=/evaluacion-ergonomica/
+
+$ curl http://127.0.0.1:8000/static/ayuda/css/help_widget.css
+200 text/css 2415
+```
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 290 | 290 |
+| Middlewares sync-only en producción | 1 | 0 |
+| WhiteNoise en desarrollo | presente | presente |
+| Manifiesto con hash sin middleware | no demostrado | demostrado |
+
+### Tests modificados y por qué
+Ninguno.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `pip install -r requirements.txt` | Sí — por B.0 |
+| `collectstatic` | Sí — despliegue integral de A + B |
+| Reinicio del servicio | Sí |
+| Migración de base de datos | No |
+| Variable nueva | `SERVE_STATIC_WITH_WHITENOISE`, default `DEBUG` |
+
+En producción, el default es `False`. El rollback inmediato, sin desplegar
+código, es definir `SERVE_STATIC_WITH_WHITENOISE=True` y reiniciar.
+
+### Cómo se revierte
+
+En producción, sin desplegar código:
+
+```bash
+echo 'SERVE_STATIC_WITH_WHITENOISE=True' >> /srv/ergocapacitacion/.env
+sudo systemctl restart ergocapacitacion
+```
+
+En el repositorio:
+
+```bash
+git revert <hash de B.1>
+```
+
+### Desvíos respecto del roadmap
+La ruta y el nombre del site nginx supuestos eran incorrectos. La evidencia
+real satisfizo el objetivo con `/srv/ergocapacitacion/app/staticfiles/`; se
+registró DA-B1-1 y se corrigió la propuesta.
+
+### Notas para el commit siguiente
+B.2 debe congelar por test que la cadena productiva siga sin middleware
+sync-only. La inyección temporal confirmará que el guardián falla.
 
 ---

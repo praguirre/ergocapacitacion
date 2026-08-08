@@ -348,7 +348,7 @@ PY
 | Commit | Título | Estado |
 |---|---|:---:|
 | B.0 | Declarar `gunicorn` y `uvicorn-worker` en requirements | ✅ |
-| B.1 | WhiteNoise condicional: liberar la cadena de middlewares | ⬜ |
+| B.1 | WhiteNoise condicional: liberar la cadena de middlewares | ⚠️ |
 | B.2 | Test de contrato del stack ASGI | ⬜ |
 | B.3 | 🛑 Upgrade de hardware y aislamiento de recursos *(Pablo)* | ⬜ |
 | B.4 | 🛑 Migración de la unidad systemd y de nginx a ASGI *(Pablo)* | ⬜ |
@@ -2390,6 +2390,16 @@ Inocua. Los paquetes quedan instalados en el venv y no molestan.
 ---
 
 ## Commit B.1 — WhiteNoise condicional: liberar la cadena de middlewares
+
+> **Decisión de Arquitectura DA-B1-1 — `STATIC_ROOT` real de producción
+> (ejecución 08/08/2026).** El relevamiento P-4 demostró que el site efectivo
+> se llama `ergosolutions` y que nginx sirve `/static/` desde
+> `/srv/ergocapacitacion/app/staticfiles/`, coherente con
+> `STATIC_ROOT = BASE_DIR / "staticfiles"`. La ruta
+> `/srv/ergocapacitacion/static/` supuesta por el diseño existe vacía y no es
+> el `STATIC_ROOT`. Todos los bloques nginx y comandos de verificación de esta
+> fase usan desde ahora la ruta real. `STORAGES` permanece intacto: B.1 sólo
+> condiciona el middleware, no elimina WhiteNoise ni su backend de manifiesto.
 
 ### Objetivo
 Cerrar el hallazgo **H-A1**, el obstáculo real de la migración: WhiteNoise es el único middleware sync-only de la cadena, y bajo ASGI fuerza que Django adapte con `async_to_sync` todo lo que tiene debajo, incluida la vista SSE.

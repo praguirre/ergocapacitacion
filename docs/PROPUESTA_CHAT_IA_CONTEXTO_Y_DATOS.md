@@ -2047,12 +2047,21 @@ location /evaluacion-ergonomica/ayuda/chat/ {
 # Estáticos servidos por nginx: requisito para poder sacar WhiteNoise
 # de la cadena de middlewares.
 location /static/ {
-    alias /srv/ergocapacitacion/static/;
+    # Verificado en producción el 08/08/2026: STATIC_ROOT es
+    # BASE_DIR/staticfiles, es decir /srv/ergocapacitacion/app/staticfiles/.
+    alias /srv/ergocapacitacion/app/staticfiles/;
     access_log off;
     expires 30d;
     add_header Cache-Control "public, immutable";
 }
 ```
+
+> **Desvío verificado DA-B1-1.** La ruta propuesta inicialmente
+> (`/srv/ergocapacitacion/static/`) existe vacía y no es el `STATIC_ROOT` real.
+> El bloque efectivo del site `ergosolutions` ya usa la ruta corregida y sirve
+> el CSS con HTTP 200. Este ajuste no cambia `STORAGES`: el backend
+> `CompressedManifestStaticFilesStorage` sigue generando nombres con hash y
+> nginx sirve el resultado de `collectstatic`.
 
 La vista ya emite `X-Accel-Buffering: no` ([views.py:379](apps/ergonomia_886/help_ai/views.py:379)), que por sí solo desactiva el buffering en nginx. El bloque explícito es cinturón y tiradores, y documenta la intención.
 

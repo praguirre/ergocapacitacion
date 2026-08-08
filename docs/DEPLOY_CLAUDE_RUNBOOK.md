@@ -112,6 +112,13 @@ está deprecado. Todo despliegue que cambie `requirements.txt` debe repetir
 - Permisos recomendados:
   - owner deploy, modo 600
 
+`SERVE_STATIC_WITH_WHITENOISE` controla sólo el middleware de servicio de
+estáticos. Su default es `DEBUG`: en desarrollo queda activo y en producción
+queda fuera de la cadena ASGI. Rollback de estáticos sin desplegar código:
+definir `SERVE_STATIC_WITH_WHITENOISE=True` y reiniciar. El backend
+`CompressedManifestStaticFilesStorage` permanece siempre activo para generar
+el manifiesto con hash y los archivos comprimidos.
+
 ### 3.8 Configuración Django para producción
 Claude debe verificar en el proyecto:
 - `SECRET_KEY` desde env
@@ -152,6 +159,20 @@ falla — y falla **en tiempo de request**, no al arrancar.
   - proxy_pass al socket de gunicorn
   - servir `/static/` y `/media/`
 - `nginx -t` + `systemctl reload nginx`
+
+Configuración verificada del site `ergosolutions`:
+
+```nginx
+location /static/ {
+    alias /srv/ergocapacitacion/app/staticfiles/;
+    access_log off;
+    expires 30d;
+    add_header Cache-Control "public";
+}
+```
+
+`STATIC_ROOT` es `/srv/ergocapacitacion/app/staticfiles/`. El directorio
+`/srv/ergocapacitacion/static/` no es el destino de `collectstatic`.
 
 ### 3.12 SSL (recomendado)
 - certbot + nginx plugin
