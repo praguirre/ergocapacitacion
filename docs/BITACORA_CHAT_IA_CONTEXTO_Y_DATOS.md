@@ -773,7 +773,7 @@ Ninguna.
 |---|---|
 | Fecha | 2026-08-07 22:04 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `5fa171c` |
 | Fase | A |
 | Hallazgo / Condición | H4 |
 | Estado | ✅ Completado |
@@ -877,5 +877,163 @@ reconstrucción exacta y el tamaño global de 27.241 son los criterios duros.
 
 ### Notas para el commit siguiente
 Usar el orden literal registrado arriba para la composición por perfiles.
+
+---
+
+## Commit A.8 — Composición del contexto global por perfil de página
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 22:08 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H4 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+Se activó la composición por perfiles: todas las pantallas reciben el núcleo y
+sólo el anexo normativo pertinente. Los 32 slugs tienen perfil explícito y un
+slug desconocido degrada al global completo.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `apps/ergonomia_886/help_ai/profiles.py` | creado | Mapa completo y fallback conservador. |
+| `apps/ergonomia_886/help_ai/prompts.py` | modificado | Composición efectiva según slug. |
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Seis pruebas de perfiles y versiones. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.8 y hash de A.7. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.8 marcado con desvío. |
+| `README.md` | modificado | Registro funcional y métricas. |
+
+### Decisiones de implementación
+Ninguna en el código. Ante el bloqueo de egreso del entorno para llamar al
+proveedor, se aplicó la alternativa segura: comprobar en cada contexto efectivo
+la presencia literal del material que responde las seis preguntas.
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 287 tests in 2.487s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 46 tests in 0.273s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai.tests.ContentProfileTests --settings=config.test_settings
+Ran 6 tests in 0.039s
+OK
+
+Promedio docs: 16070  (línea base: 33.249)
+Reducción: -51.7 %
+```
+
+### Medición por slug
+| slug | Antes | Después | Δ |
+|---|---:|---:|---:|
+| `bipedestacion` | 38224 | 20739 | -45.7% |
+| `confort_termico` | 36047 | 18562 | -48.5% |
+| `crear` | 27687 | 12099 | -56.3% |
+| `dashboard` | 27773 | 11792 | -57.5% |
+| `empuje_inicial` | 33272 | 15787 | -52.6% |
+| `empuje_sostenida` | 32263 | 14778 | -54.2% |
+| `estres_contacto` | 36607 | 19122 | -47.8% |
+| `exportaciones` | 29545 | 11144 | -62.3% |
+| `factor` | 32479 | 14994 | -53.8% |
+| `home` | 27580 | 10705 | -61.2% |
+| `lmc` | 36292 | 18807 | -48.2% |
+| `menu_planillas` | — | 11921 | nuevo |
+| `planilla1` | 34147 | 21245 | -37.8% |
+| `planilla2a` | 33197 | 16095 | -51.5% |
+| `planilla2b` | 33839 | 16672 | -50.7% |
+| `planilla2c` | 33166 | 16050 | -51.6% |
+| `planilla2d` | 32498 | 15346 | -52.8% |
+| `planilla2e` | 33112 | 16065 | -51.5% |
+| `planilla2f` | 32575 | 15320 | -53.0% |
+| `planilla2g` | 33719 | 16496 | -51.1% |
+| `planilla2h` | 32194 | 14829 | -53.9% |
+| `planilla2i` | 32059 | 14841 | -53.7% |
+| `planilla3` | 32236 | 14752 | -54.2% |
+| `planilla4` | 31275 | 17039 | -45.5% |
+| `posturas_forzadas` | 37266 | 19781 | -46.9% |
+| `repetitivos_ms` | 37395 | 19910 | -46.8% |
+| `traccion_inicial` | 32588 | 15103 | -53.7% |
+| `traccion_sostenida` | 31943 | 14458 | -54.7% |
+| `transporte` | 34320 | 16835 | -50.9% |
+| `vibracion_cuerpo_entero` | 38767 | 21282 | -45.1% |
+| `vibracion_mano_brazo` | 36256 | 18771 | -48.2% |
+| `wizard_resumen` | 30416 | 12931 | -57.5% |
+
+### Batería funcional de seis preguntas
+
+La llamada real al proveedor se intentó una vez y produjo literalmente:
+
+```text
+openai.APIConnectionError: Connection error.
+httpcore.ConnectError: [Errno 8] nodename nor servname provided, or not known
+```
+
+La reejecución con permiso de red fue rechazada por la política del entorno
+porque implicaba enviar el corpus completo a un servicio externo. No se buscó
+ningún bypass. Alternativa segura ejecutada sobre los contextos efectivos:
+
+| Pantalla | Evidencia presente |
+|---|---|
+| `planilla2h` | Curva de Confort de Fanger; temperatura, humedad y zona de confort. |
+| `planilla4` | Fecha de cierre = fecha de verificación de efectividad, no implementación. |
+| `crear` | CIIU = código de la actividad económica principal. |
+| `lmc` | Paso 3 exige profesional con conocimientos en ergonomía. |
+| `dashboard` | Eliminación permanente, arrastra planillas/factores/medidas/documentos. |
+| `planilla1` | Matriz de nueve factores A–I por tarea y continuidad a Planillas 2. |
+
+Resultado determinístico: 6/6 contextos conservan la respuesta fuente. La
+batería generativa con proveedor queda pendiente de un entorno con egreso
+explícitamente autorizado.
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 281 | 287 |
+| Tests de `help_ai` | 40 | 46 |
+| Prompt promedio (docs) | 33.249 | 16.070 (-51,7 %) |
+| Perfiles declarados | 0 | 32 |
+
+### Tests modificados y por qué
+Ninguno existente. Se agregaron seis pruebas.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | Sí — obligatorio ida y vuelta |
+| Reinicio del servicio | Sí — caché de agentes por proceso |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+Cambian los 32 `help_version`: se espera una oleada controlada de HTTP 409 con
+«Recargá la guía». Desplegar en horario de baja actividad.
+
+### Cómo se revierte
+```bash
+git revert <hash de A.8>
+.venv/bin/python manage.py collectstatic --noinput
+sudo systemctl restart ergocapacitacion
+```
+El reinicio indicado corresponde sólo a producción y es P-4.
+
+### Desvíos respecto del roadmap
+La batería con respuestas reales no pudo ejecutarse por la política de egreso
+del entorno. Se dejó evidencia literal del bloqueo y se validó 6/6 la presencia
+de las respuestas fuente sin transmitir el corpus.
+
+### Notas para el commit siguiente
+La aceptación generativa con proveedor debe repetirse cuando exista egreso
+explícitamente autorizado; no afecta las garantías estructurales ni el ahorro.
 
 ---

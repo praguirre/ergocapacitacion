@@ -363,6 +363,81 @@ class GlobalContentPartitionTests(SimpleTestCase):
                 self.assertTrue(md(nombre).strip())
 
 
+class ContentProfileTests(TestCase):
+    """Hallazgo 4: el contexto global se compone según la pantalla."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(
+            username="content-profile-user",
+            email="content-profile@example.com",
+            password="test-password",
+        )
+
+    def test_todo_slug_tiene_perfil_declarado(self):
+        from apps.ergonomia_886.help_ai.profiles import ANEXOS
+
+        self.assertEqual(
+            set(ANEXOS), set(PAGE_HELP_SLUGS),
+            "Hay slugs sin perfil de contexto: recibirían el global completo.",
+        )
+
+    def test_el_contexto_global_se_reduce_en_las_paginas_pobres(self):
+        for slug in ("crear", "dashboard", "menu_planillas", "home", "exportaciones"):
+            with self.subTest(slug=slug):
+                self.assertLess(
+                    len(page_help_context(slug).global_markdown), 12_000,
+                    "El perfil de esta página no está recortando el global.",
+                )
+
+    def test_las_paginas_normativas_conservan_su_anexo(self):
+        casos = {
+            "planilla1": "PASO 1",
+            "planilla2h": "Confort Térmico",
+            "planilla3": "PASO 4",
+            "planilla4": "PASO 5",
+            "lmc": "PASO 3",
+        }
+        for slug, marca in casos.items():
+            with self.subTest(slug=slug):
+                self.assertIn(marca, page_help_context(slug).global_markdown)
+
+    def test_una_planilla2_no_recibe_las_subguias_de_las_otras(self):
+        """El corazón del ahorro: 2H no necesita 2A..2G ni 2I."""
+        contexto = page_help_context("planilla2h").global_markdown
+        self.assertIn("Confort Térmico", contexto)
+        for ajena in (
+            "Levantamiento y/o Descenso",
+            "Empuje y Arrastre",
+            "Estrés de Contacto",
+        ):
+            with self.subTest(ajena=ajena):
+                self.assertNotIn(ajena, contexto)
+
+    def test_un_slug_sin_perfil_degrada_al_global_completo(self):
+        """Red de seguridad: nunca menos contexto del que había."""
+        from apps.ergonomia_886.help_ai.profiles import documentos_globales
+
+        self.assertEqual(
+            documentos_globales("slug-inexistente"),
+            ("guia_para_el_usuario", "guia_general"),
+        )
+
+    def test_guia_y_chat_comparten_version_tras_la_composicion(self):
+        """El contrato help_version sobrevive a la composición por perfil."""
+        self.client.force_login(self.user)
+        for slug in PAGE_HELP_SLUGS:
+            with self.subTest(slug=slug):
+                respuesta = self.client.get(
+                    reverse("help_ai:help_guide", kwargs={"slug": slug})
+                )
+                self.assertEqual(respuesta.status_code, 200)
+                self.assertEqual(
+                    respuesta["X-Help-Content-Version"],
+                    page_help_context(slug).version,
+                )
+
+
 class PreambleTests(SimpleTestCase):
     """Hallazgos 1 y 2: el prompt afirma la pantalla y acota el descargo."""
 

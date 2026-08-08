@@ -10,6 +10,8 @@ from pathlib import Path
 
 from django.conf import settings
 
+from .profiles import documentos_globales
+
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +58,12 @@ def md(name: str) -> str:
 
 def page_help_context(slug: str) -> PageHelpContext:
     """Construye el contexto y un hash común para la Guía y el Chat."""
-    global_markdown = md("guia_para_el_usuario") + "\n\n" + md("guia_general")
+    # Hallazgo 4: el global se compone según la pantalla. La versión se
+    # calcula sobre la composición EFECTIVA, de modo que la Guía y el Chat
+    # siguen compartiendo exactamente el mismo hash para el mismo slug.
+    global_markdown = "\n\n".join(
+        md(nombre) for nombre in documentos_globales(slug)
+    )
     specific_markdown = md(slug)
     version_payload = (
         f"slug:{slug}\n"

@@ -356,6 +356,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   conserva como maestro y se deriva en 15 piezas temáticas. Dos pruebas
   reconstruyen el original carácter por carácter; la suite alcanza 281 y el
   contexto servido todavía permanece en 27.241 caracteres.
+- **07/08/2026 — Chat IA A.8 / perfiles de contexto:** los 32 slugs reciben
+  núcleo más anexos pertinentes y degradan al global completo ante omisiones.
+  El promedio documental baja de 33.249 a 16.070 caracteres (-51,7 %) y la
+  suite alcanza 287; la batería externa quedó restringida por política de
+  egreso, con 6/6 fuentes verificadas localmente.
 
 ### Registro de cambios documentales
 
