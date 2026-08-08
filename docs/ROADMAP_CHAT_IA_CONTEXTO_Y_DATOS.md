@@ -338,7 +338,7 @@ PY
 | A.4 | Reescribir y enriquecer los cuatro documentos cruzados | H3 + H4 | ✅ |
 | A.5 | Respaldo del slug y guarda en la vista genérica | H5 | ⚠️ |
 | A.6 | Defensa activa en el cliente: la falla deja de ser muda | H5 | ✅ |
-| A.7 | Partir `guia_general.md` en núcleo y anexos | H4 | ⬜ |
+| A.7 | Partir `guia_general.md` en núcleo y anexos | H4 | ✅ |
 | A.8 | Composición del contexto global por perfil de página | H4 | ⬜ |
 | A.9 | Cobertura bidireccional de slugs y mensajes de inventario | H-A5 + H-A6 | ⬜ |
 | A.10 | Cierre de Fase A: medición, verificación integral y `push` | — | ⬜ |

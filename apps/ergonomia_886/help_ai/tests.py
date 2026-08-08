@@ -331,6 +331,37 @@ CLAUSULAS_INVARIANTES = (
     "No pidas nombres de trabajadores",
 )
 
+PARTES_DEL_GLOBAL = (
+    "guia_general_nucleo",
+    "guia_general_paso1",
+    "guia_general_paso2",
+    "guia_general_paso2a", "guia_general_paso2b", "guia_general_paso2c",
+    "guia_general_paso2d", "guia_general_paso2e", "guia_general_paso2f",
+    "guia_general_paso2g", "guia_general_paso2h", "guia_general_paso2i",
+    "guia_general_paso3", "guia_general_paso4", "guia_general_paso5",
+)
+
+
+class GlobalContentPartitionTests(SimpleTestCase):
+    """El maestro y sus partes no pueden divergir en silencio."""
+
+    def test_las_partes_reconstruyen_el_documento_maestro(self):
+        from apps.ergonomia_886.help_ai.prompts import md
+
+        reconstruido = "".join(md(nombre) for nombre in PARTES_DEL_GLOBAL)
+        self.assertEqual(
+            reconstruido, md("guia_general"),
+            "Las partes del contexto global ya no reconstruyen guia_general.md. "
+            "Actualizá el maestro o las partes: no pueden divergir.",
+        )
+
+    def test_ninguna_parte_esta_vacia(self):
+        from apps.ergonomia_886.help_ai.prompts import md
+
+        for nombre in PARTES_DEL_GLOBAL:
+            with self.subTest(parte=nombre):
+                self.assertTrue(md(nombre).strip())
+
 
 class PreambleTests(SimpleTestCase):
     """Hallazgos 1 y 2: el prompt afirma la pantalla y acota el descargo."""

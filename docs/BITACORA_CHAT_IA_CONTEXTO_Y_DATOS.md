@@ -666,7 +666,7 @@ Ninguna.
 |---|---|
 | Fecha | 2026-08-07 22:01 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `e2ed314` |
 | Fase | A |
 | Hallazgo / Condición | H5 |
 | Estado | ✅ Completado |
@@ -764,5 +764,118 @@ Ninguno.
 
 ### Notas para el commit siguiente
 Ninguna.
+
+---
+
+## Commit A.7 — Partir `guia_general.md` en núcleo y anexos
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 22:04 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se partió mecánicamente el documento maestro en núcleo, cinco pasos y nueve
+subguías del Paso 2. Dos pruebas garantizan que las 15 partes no están vacías
+y reconstruyen `guia_general.md` carácter por carácter.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `static/ayuda/help_texts/guia_general_nucleo.md` | creado | Cabecera, introducción y diagrama. |
+| `static/ayuda/help_texts/guia_general_paso1.md` | creado | Paso 1. |
+| `static/ayuda/help_texts/guia_general_paso2.md` | creado | Cabecera del Paso 2. |
+| `static/ayuda/help_texts/guia_general_paso2a.md` … `paso2i.md` | creados | Nueve subguías. |
+| `static/ayuda/help_texts/guia_general_paso3.md` … `paso5.md` | creados | Pasos 3, 4 y 5. |
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Reconstrucción e integridad. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.7 y hash de A.6. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.7 completado. |
+| `README.md` | modificado | Registro funcional de A.7. |
+
+### Decisiones de implementación
+La generación del parche fue mecánica a partir de los encabezados del maestro.
+Se retiró el único salto final agregado por la herramienta de parcheo al último
+anexo para conservar la igualdad byte a byte. El maestro no cambió.
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 281 tests in 2.392s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai.tests.GlobalContentPartitionTests --settings=config.test_settings
+Ran 2 tests in 0.002s
+OK
+
+$ ls static/ayuda/help_texts/guia_general_*.md | wc -l
+15
+
+guia_general_nucleo            1702 chars
+guia_general_paso1             5497 chars
+guia_general_paso2              502 chars
+guia_general_paso2a             793 chars
+guia_general_paso2b             728 chars
+guia_general_paso2c             779 chars
+guia_general_paso2d             743 chars
+guia_general_paso2e             848 chars
+guia_general_paso2f             640 chars
+guia_general_paso2g             672 chars
+guia_general_paso2h             530 chars
+guia_general_paso2i             677 chars
+guia_general_paso3              914 chars
+guia_general_paso4              915 chars
+guia_general_paso5             4163 chars
+Reconstrucción idéntica al maestro: True
+global crear: 27241
+```
+
+Orden literal de concatenación:
+
+```text
+['guia_general_nucleo', 'guia_general_paso1', 'guia_general_paso2', 'guia_general_paso2a', 'guia_general_paso2b', 'guia_general_paso2c', 'guia_general_paso2d', 'guia_general_paso2e', 'guia_general_paso2f', 'guia_general_paso2g', 'guia_general_paso2h', 'guia_general_paso2i', 'guia_general_paso3', 'guia_general_paso4', 'guia_general_paso5']
+```
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 279 | 281 |
+| Tests de `help_ai` | 38 | 40 |
+| Archivos derivados | 0 | 15 |
+| Contexto global de `crear` | 27.241 | 27.241 |
+
+### Tests modificados y por qué
+Ninguno existente. Se agregaron dos pruebas.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | Sí — obligatorio ida y vuelta |
+| Reinicio del servicio | No |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de A.7>
+.venv/bin/python manage.py collectstatic --noinput
+```
+Si A.8 está aplicado, debe revertirse primero.
+
+### Desvíos respecto del roadmap
+Los tamaños reales difieren levemente de los aproximados del roadmap; la
+reconstrucción exacta y el tamaño global de 27.241 son los criterios duros.
+
+### Notas para el commit siguiente
+Usar el orden literal registrado arriba para la composición por perfiles.
 
 ---

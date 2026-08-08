@@ -352,6 +352,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   la Guía y el Chat muestran un aviso y la consola registra `[ayuda-886]`.
   La prueba real en navegador cubrió camino normal, apertura, envío y recarga;
   el despliegue exige `collectstatic`.
+- **07/08/2026 — Chat IA A.7 / núcleo y anexos:** `guia_general.md` se
+  conserva como maestro y se deriva en 15 piezas temáticas. Dos pruebas
+  reconstruyen el original carácter por carácter; la suite alcanza 281 y el
+  contexto servido todavía permanece en 27.241 caracteres.
 
 ### Registro de cambios documentales
 
