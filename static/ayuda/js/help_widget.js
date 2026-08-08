@@ -101,9 +101,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // El widget entero depende de data-page-slug. Si falta, el panel quedaba
+  // mudo sin ningún síntoma: ni mensaje, ni consola, ni log de servidor.
+  // Esta función convierte esa falla silenciosa en una falla observable.
+  // D-P-4: sin endpoint de telemetría — el mensaje visible ya garantiza el
+  // reporte del usuario, y un endpoint nuevo agrega superficie por poco.
+  function reportarSlugAusente(origen) {
+    console.error("[ayuda-886] El panel de ayuda no recibió data-page-slug.", {
+      origen,
+      url: window.location.pathname,
+    });
+  }
+
+  function mostrarAyudaNoDisponible() {
+    guideContentEl.replaceChildren();
+    const aviso = document.createElement("p");
+    aviso.className = "text-warning";
+    aviso.textContent =
+      "La ayuda contextual no está disponible en esta pantalla. "
+      + "Avisale al equipo técnico indicando en qué página estabas.";
+    guideContentEl.appendChild(aviso);
+  }
+
   helpWidgetElement.addEventListener("show.bs.offcanvas", async () => {
     const slug = helpWidgetElement.dataset.pageSlug;
-    if (!slug) return;
+    if (!slug) {
+      reportarSlugAusente("show.bs.offcanvas");
+      mostrarAyudaNoDisponible();
+      return;
+    }
     try {
       await loadGuide(slug);
     } catch {
@@ -166,7 +192,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function sendToAI(message) {
     const slug = helpWidgetElement.dataset.pageSlug;
-    if (!slug) return;
+    if (!slug) {
+      reportarSlugAusente("sendToAI");
+      renderOrUpdateAIMessage(
+        "⚠️ La ayuda contextual no está disponible en esta pantalla.",
+      );
+      return;
+    }
 
     chatInput.disabled = true;
     submitButton.disabled = true;

@@ -567,7 +567,7 @@ Redacción pendiente de revisión de Pablo. No bloquea el avance del roadmap.
 |---|---|
 | Fecha | 2026-08-07 21:54 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `48d081b` |
 | Fase | A |
 | Hallazgo / Condición | H5 |
 | Estado | ⚠️ Completado con desvíos |
@@ -654,6 +654,113 @@ La reproducción indicada de comentar sólo `'help_slug': help_slug` no puede
 activar una guarda ubicada al inicio de la función: el parámetro sigue siendo
 no vacío. Se reprodujo correctamente llamando la misma vista con `help_slug=''`
 y se confirmó por `rg` que la línea de contexto quedó intacta.
+
+### Notas para el commit siguiente
+Ninguna.
+
+---
+
+## Commit A.6 — Defensa activa en el cliente: la falla deja de ser muda
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 22:01 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+El widget informa visualmente cuando falta `data-page-slug` y registra dos
+errores identificables según el origen: apertura del panel o envío al Chat IA.
+D-P-4 se resolvió con mensaje + consola, sin telemetría.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `static/ayuda/js/help_widget.js` | modificado | Aviso visible y `console.error` ante slug ausente. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.6 y hash de A.5. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.6 completado. |
+| `README.md` | modificado | Registro funcional de A.6. |
+
+### Decisiones de implementación
+D-P-4: Opción A. No se agregó `sendBeacon` ni endpoint. El aviso ya permite
+que el usuario reporte la pantalla y evita ampliar superficie, CSRF y límites.
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 279 tests in 2.383s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 38 tests in 0.237s
+OK
+
+$ grep -nE "onclick|onload|onerror|innerHTML...<script" static/ayuda/js/help_widget.js || echo "OK — sin handlers inline ni script inyectado"
+OK — sin handlers inline ni script inyectado
+```
+
+Prueba funcional en navegador local con un arnés temporal eliminado antes del
+cierre:
+
+```text
+Camino normal:
+guía: # Guía normal
+help_version: version-de-prueba
+errores nuevos de consola: []
+
+Slug vacío al abrir:
+La ayuda contextual no está disponible en esta pantalla. Avisale al equipo técnico indicando en qué página estabas.
+
+Slug vacío al enviar:
+prueba
+⚠️ La ayuda contextual no está disponible en esta pantalla.
+
+Consola:
+[ayuda-886] El panel de ayuda no recibió data-page-slug. Object
+[ayuda-886] El panel de ayuda no recibió data-page-slug. Object
+```
+
+La recarga con slug normal volvió a cargar la guía y dejó la consola limpia.
+El servidor local se detuvo y no quedó ningún archivo del arnés.
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 279 | 279 |
+| Tests de `help_ai` | 38 | 38 |
+| Falla con slug vacío | silenciosa | aviso + error de consola |
+
+### Tests modificados y por qué
+Ninguno.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | Sí — obligatorio ida y vuelta |
+| Reinicio del servicio | No |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+El archivo servido será `help_widget.<hash>.js`; sin `collectstatic` el
+navegador conservaría la versión anterior.
+
+### Cómo se revierte
+```bash
+git revert <hash de A.6>
+.venv/bin/python manage.py collectstatic --noinput
+```
+
+### Desvíos respecto del roadmap
+Ninguno.
 
 ### Notas para el commit siguiente
 Ninguna.

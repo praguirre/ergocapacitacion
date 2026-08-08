@@ -348,6 +348,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
 - **07/08/2026 — Chat IA A.5 / slug con respaldo:** la plantilla genérica de
   Planillas 2 cae a la guía `home` y la vista rechaza configuraciones vacías
   con un error explícito. Dos pruebas nuevas elevan la suite a 279.
+- **07/08/2026 — Chat IA A.6 / falla visible:** si el widget no recibe slug,
+  la Guía y el Chat muestran un aviso y la consola registra `[ayuda-886]`.
+  La prueba real en navegador cubrió camino normal, apertura, envío y recarga;
+  el despliegue exige `collectstatic`.
 
 ### Registro de cambios documentales
 
