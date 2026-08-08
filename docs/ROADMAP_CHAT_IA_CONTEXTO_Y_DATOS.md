@@ -332,7 +332,7 @@ PY
 | Commit | Título | Hallazgo | Estado |
 |---|---|:---:|:---:|
 | A.0 | Crear rama de trabajo y bitácora de ejecución | — | ✅ |
-| A.1 | Registro de páginas: `pages.py` y su cobertura | H1 | ⬜ |
+| A.1 | Registro de páginas: `pages.py` y su cobertura | H1 | ✅ |
 | A.2 | Preámbulo v2.0: declarar la pantalla y acotar el descargo | H1 + H2 | ⬜ |
 | A.3 | Separar el slug del detalle: `menu_planillas` | H3 | ⬜ |
 | A.4 | Reescribir y enriquecer los cuatro documentos cruzados | H3 + H4 | ⬜ |

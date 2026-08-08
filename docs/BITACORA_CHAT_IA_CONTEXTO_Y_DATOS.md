@@ -54,7 +54,7 @@ ejecuciones.
 |---|---|
 | Fecha | 2026-08-07 21:40 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `a5e6642` |
 | Fase | A |
 | Hallazgo / Condición | — |
 | Estado | ✅ Completado |
@@ -135,5 +135,95 @@ Ninguno.
 
 ### Notas para el commit siguiente
 La ficha `menu_planillas` se creará en A.1 antes de ingresar al catálogo en A.3.
+
+---
+
+## Commit A.1 — Registro de páginas: `pages.py` y su cobertura
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 21:43 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H1 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se creó el registro estático que traduce cada slug a título humano, ruta y
+propósito. Las fichas de los 13 factores se derivan del catálogo canónico y la
+cobertura falla cerrado ante slugs desconocidos o rutas concretas inventadas.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `apps/ergonomia_886/help_ai/pages.py` | creado | Registro de identidad de las 32 pantallas. |
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Cuatro pruebas del contrato del registro. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.1 y hash de A.0. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.1 marcado como completado. |
+| `README.md` | modificado | Registro funcional de A.1. |
+
+### Decisiones de implementación
+Ninguna. `menu_planillas` queda deliberadamente como ficha sin slug hasta A.3.
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 273 tests in 2.441s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 32 tests in 0.218s
+OK
+
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python -c "<resolver de rutas>"
+listado  : /evaluacion-ergonomica/
+crear    : /evaluacion-ergonomica/protocolo/crear/
+detalle  : /evaluacion-ergonomica/protocolo/1/
+planilla1: /evaluacion-ergonomica/protocolo/1/planilla1/
+docs     : /evaluacion-ergonomica/documentos/1/
+
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python -c "<cobertura de fichas>"
+fichas: 32 | catálogo: 31
+sin ficha: ninguno
+ficha sin slug: ['menu_planillas']
+```
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 269 | 273 |
+| Tests de `help_ai` | 28 | 32 |
+| Fichas / catálogo | 0 / 31 | 32 / 31 |
+
+### Tests modificados y por qué
+Ninguno existente. Se agregaron cuatro pruebas nuevas.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | No |
+| Reinicio del servicio | No |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de A.1>
+```
+Seguro: todavía ningún componente de runtime consume `pages.py`.
+
+### Desvíos respecto del roadmap
+Ninguno.
+
+### Notas para el commit siguiente
+La ficha `menu_planillas` es la única que aún no pertenece al catálogo; A.3
+cerrará esa diferencia.
 
 ---

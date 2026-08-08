@@ -330,6 +330,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   en `feature/chat-ia-contexto`, con propuesta técnica, roadmap commit por
   commit y bitácora de ejecución. La línea base reproducida es de 269 pruebas,
   sin migraciones pendientes ni issues del sistema.
+- **07/08/2026 — Chat IA A.1 / registro de pantallas:** cada slug de ayuda
+  dispone ahora de título humano, ruta y propósito estáticos. Cuatro pruebas
+  cubren el catálogo, la integridad de las fichas y el fallo cerrado; la suite
+  alcanza 273 pruebas.
 
 ### Registro de cambios documentales
 

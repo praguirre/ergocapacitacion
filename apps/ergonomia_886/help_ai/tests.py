@@ -208,6 +208,46 @@ class HelpContentCoverageTests(SimpleTestCase):
         )
 
 
+class HelpPageRegistryTests(SimpleTestCase):
+    """El registro de pantallas debe cubrir el catálogo y ser coherente."""
+
+    def test_toda_pagina_habilitada_tiene_ficha_de_pantalla(self):
+        from apps.ergonomia_886.help_ai.pages import PAGE_INFO
+
+        faltantes = set(PAGE_HELP_SLUGS) - set(PAGE_INFO)
+        self.assertEqual(
+            faltantes, set(),
+            f"Slugs del catálogo sin ficha en pages.PAGE_INFO: {sorted(faltantes)}",
+        )
+
+    def test_cada_ficha_declara_titulo_ruta_y_proposito(self):
+        from apps.ergonomia_886.help_ai.pages import PAGE_INFO
+
+        for slug, info in PAGE_INFO.items():
+            with self.subTest(slug=slug):
+                self.assertTrue(info.titulo.strip(), "Título vacío")
+                self.assertTrue(info.ruta.startswith("/"), "La ruta debe ser absoluta")
+                self.assertTrue(info.proposito.strip(), "Propósito vacío")
+
+    def test_page_info_falla_cerrado_ante_un_slug_desconocido(self):
+        from apps.ergonomia_886.help_ai.pages import page_info
+
+        with self.assertRaises(KeyError):
+            page_info("pantalla-que-no-existe")
+
+    def test_las_rutas_con_parametro_usan_marcador_generico(self):
+        """El prompt no puede afirmar un identificador que no conoce."""
+        import re
+        from apps.ergonomia_886.help_ai.pages import PAGE_INFO
+
+        for slug, info in PAGE_INFO.items():
+            with self.subTest(slug=slug):
+                self.assertIsNone(
+                    re.search(r"/\d+/", info.ruta),
+                    f"La ruta de {slug} contiene un identificador concreto: {info.ruta}",
+                )
+
+
 class ChatSecurityTests(TestCase):
     @classmethod
     def setUpTestData(cls):
