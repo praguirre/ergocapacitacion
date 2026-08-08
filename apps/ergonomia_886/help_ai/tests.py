@@ -244,6 +244,31 @@ class HelpPageRegistryTests(SimpleTestCase):
                     f"La ruta de {slug} contiene un identificador concreto: {info.ruta}",
                 )
 
+    def test_cada_slug_de_pagina_lo_declara_a_lo_sumo_una_plantilla(self):
+        """Regresión del Hallazgo 3: dos pantallas no pueden compartir slug."""
+        import re
+        from collections import Counter
+        from pathlib import Path
+        from django.conf import settings
+
+        patron = re.compile(
+            r"{%\s*block\s+help_slug\s*%}\s*([a-z0-9_-]+)\s*{%\s*endblock\s*%}"
+        )
+        raiz = Path(settings.BASE_DIR) / "apps" / "ergonomia_886"
+        encontrados = Counter()
+        for plantilla in raiz.rglob("*.html"):
+            if "templates" not in plantilla.parts:
+                continue
+            encontrados.update(patron.findall(plantilla.read_text(encoding="utf-8")))
+
+        repetidos = {slug: n for slug, n in encontrados.items() if n > 1}
+        self.assertEqual(
+            repetidos, {},
+            f"Slugs declarados por más de una pantalla: {repetidos}. "
+            "Dos pantallas con el mismo slug reciben la misma guía y el mismo "
+            "contexto de chat, y una de las dos siempre va a estar equivocada.",
+        )
+
 
 CLAUSULAS_INVARIANTES = (
     "no ves lo que cargó",

@@ -50,7 +50,7 @@ class DarkThemeJourneyTests(TestCase):
             (
                 "03-detalle",
                 reverse("planillas:detalle_evaluacion", args=[evaluacion_id]),
-                "dashboard",
+                "menu_planillas",
             ),
             ("04-planilla1", reverse("planillas:planilla1", args=[evaluacion_id]), "planilla1"),
         ]

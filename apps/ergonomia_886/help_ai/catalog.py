@@ -11,6 +11,7 @@ GLOBAL_HELP_SLUGS = (
 PAGE_HELP_SLUGS = (
     "home",
     "dashboard",
+    "menu_planillas",
     "crear",
     "planilla1",
     "planilla2a",

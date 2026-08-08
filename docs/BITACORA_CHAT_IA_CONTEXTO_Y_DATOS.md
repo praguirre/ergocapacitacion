@@ -234,7 +234,7 @@ cerrará esa diferencia.
 |---|---|
 | Fecha | 2026-08-07 21:47 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `78e478b` |
 | Fase | A |
 | Hallazgo / Condición | H1 + H2 |
 | Estado | ⚠️ Completado con desvíos |
@@ -329,5 +329,138 @@ cambiaría, pero dos aserciones comprobaban literalmente el texto sustituido.
 
 ### Notas para el commit siguiente
 Ninguna.
+
+---
+
+## Commit A.3 — Separar el slug del detalle: `menu_planillas`
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-07 21:49 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | A |
+| Hallazgo / Condición | H3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+El listado conserva `dashboard` y el detalle recibe `menu_planillas`. Se movió
+el contenido existente a su slug correcto, se registró el slug nuevo y se
+agregó una regresión que prohíbe que dos pantallas compartan slug.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `apps/ergonomia_886/help_ai/catalog.py` | modificado | Alta de `menu_planillas`. |
+| `apps/ergonomia_886/planillas/templates/planillas/detalle_evaluacion.html` | modificado | Slug del detalle. |
+| `static/ayuda/help_texts/menu_planillas.md` | creado | Contenido anterior de `dashboard.md`. |
+| `static/ayuda/help_texts/dashboard.md` | modificado | Contenido anterior de `home.md`. |
+| `apps/ergonomia_886/evaluaciones/tests_ui_dark.py` | modificado | Recorrido actualizado al slug deliberado. |
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Test anti-colisión. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada A.3 y hash de A.2. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | A.3 completado. |
+| `README.md` | modificado | Registro funcional de A.3. |
+
+### Decisiones de implementación
+Ninguna.
+
+### Mapeo antes → después
+| Pantalla | Antes | Después | Documento servido |
+|---|---|---|---|
+| Listado | `dashboard` | `dashboard` | Contenido del listado |
+| Detalle | `dashboard` | `menu_planillas` | Contenido del menú de planillas |
+| Respaldo | `home` huérfano | `home` deliberado | Provisional hasta A.4 |
+
+### Contenidos originales íntegros
+
+`dashboard.md` original:
+
+```markdown
+# Guía del Menú de Planillas
+
+Esta pantalla es el centro de comando de tu evaluación. Desde aquí puedes acceder a cada una de las planillas del protocolo 886/15.
+
+- Las planillas marcadas como **"Pendiente"** o **"Completar"** requieren tu atención.
+- Las planillas marcadas como **"Completa"** ya tienen datos guardados.
+
+Sigue el orden lógico del protocolo: comienza con la **Planilla 1**, luego las **Planillas 2** correspondientes, seguido de la **Planilla 3** si hay riesgos, y finalmente la **Planilla 4** para el seguimiento.
+```
+
+`home.md` original:
+
+```markdown
+# Guía del Dashboard Principal
+
+Bienvenido a ErgoApp. Desde esta pantalla puedes:
+
+- **Crear Nueva Evaluación:** Inicia un nuevo protocolo para un establecimiento.
+- **Ver/Editar:** Accede a una evaluación existente para completar o modificar las planillas.
+- **Eliminar:** Borra permanentemente una evaluación y todos sus datos asociados.
+```
+
+### Validación ejecutada
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 277 tests in 2.311s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.evaluaciones.tests_ui_dark --settings=config.test_settings
+Ran 3 tests in 0.336s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 36 tests in 0.229s
+OK
+
+$ DJANGO_SETTINGS_MODULE=config.test_settings .venv/bin/python -c "<igualdad catálogo/fichas>"
+catálogo: 32 | fichas: 32
+coinciden: True
+
+$ for f in dashboard menu_planillas home; do ...; done
+dashboard        # Guía del Dashboard Principal
+menu_planillas   # Guía del Menú de Planillas
+home             # Guía del Dashboard Principal
+```
+
+| Comprobación | Antes | Después |
+|---|---|---|
+| Tests totales | 276 | 277 |
+| Tests de `help_ai` | 35 | 36 |
+| Slugs | 31 | 32 |
+| Pares de plantillas con slug repetido | 1 | 0 |
+
+### Tests modificados y por qué
+`tests_ui_dark.py` cambió la expectativa del detalle de `dashboard` a
+`menu_planillas`: el comportamiento viejo codificaba la colisión que A.3
+corrige deliberadamente. No se borró ninguna prueba.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | Sí — obligatorio ida y vuelta |
+| Reinicio del servicio | Sí — caché de agentes por proceso |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de A.3>
+.venv/bin/python manage.py collectstatic --noinput
+```
+Vuelve la colisión. Si A.4 existe, se revierten A.4 y A.3 en ese orden.
+
+### Desvíos respecto del roadmap
+Ninguno.
+
+### Notas para el commit siguiente
+Los títulos provisionales `dashboard` y `home` son deliberadamente iguales;
+A.4 reescribe los cuatro documentos.
 
 ---
