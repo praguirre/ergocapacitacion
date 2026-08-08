@@ -95,6 +95,12 @@ Instalar:
 - `pip install -U pip`
 - `pip install -r requirements.txt`
 
+El servidor de producción y su worker ASGI están declarados en el archivo de
+dependencias: `gunicorn` y el paquete independiente `uvicorn-worker`. La clase
+se importa como `uvicorn_worker.UvicornWorker`; no usar `uvicorn.workers`, que
+está deprecado. Todo despliegue que cambie `requirements.txt` debe repetir
+`pip install -r requirements.txt` antes de reiniciar el servicio.
+
 ### 3.7 Variables de entorno (archivo .env en server)
 - Crear `/srv/ergocapacitacion/.env` con:
   - SECRET_KEY

@@ -1158,7 +1158,7 @@ La medición de cierre debe conservar 289 pruebas y 48 en `help_ai`.
 |---|---|
 | Fecha | 2026-08-07 22:43 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `90360b7` |
 | Fase | A |
 | Hallazgo / Condición | Cierre H1–H5, H-A5 y H-A6 |
 | Estado | ⚠️ Completado con desvíos |
@@ -1414,5 +1414,143 @@ git commit -m "revert(chat-ia): revertir la fase A completa"
 .venv/bin/python manage.py collectstatic --noinput
 sudo systemctl restart ergocapacitacion
 ```
+
+---
+
+## Línea base al retomar la Fase B
+
+| Comprobación | Resultado |
+|---|---|
+| Árbol | limpio; rama sincronizada con `origin/feature/chat-ia-contexto` |
+| `test apps` | `Ran 289 tests in 2.907s` — `OK` |
+| `test apps.ergonomia_886` | `Ran 244 tests in 2.490s` — `OK` |
+| `test apps.ergonomia_886.help_ai` | `Ran 48 tests in 0.300s` — `OK` |
+| `makemigrations --check` | `No changes detected` |
+| `check` | `System check identified no issues (0 silenced).` |
+
+La ejecución se retoma en B.0 sobre `90360b7`; la Fase A estaba cerrada y
+publicada sin trabajo local pendiente.
+
+---
+
+## Commit B.0 — Declarar gunicorn y uvicorn-worker en requirements
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-08 11:32 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | B |
+| Hallazgo / Condición | H-A2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se declararon el servidor de producción `gunicorn` y el paquete independiente
+`uvicorn-worker`. El contrato de `help_ai` exige ambas dependencias y comprueba
+que la ruta no deprecada `uvicorn_worker` sea importable. El runbook aclara la
+ruta de clase y obliga a instalar requirements antes del reinicio.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `requirements.txt` | modificado | `gunicorn` y `uvicorn-worker` declarados con cotas. |
+| `apps/ergonomia_886/help_ai/tests.py` | modificado | Contrato de dependencias y worker no deprecado. |
+| `docs/DEPLOY_CLAUDE_RUNBOOK.md` | modificado | Nota operativa de instalación e import. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Línea base, B.0 y hash de A.10. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | B.0 completado. |
+| `README.md` | modificado | Registro funcional de B.0. |
+
+### Decisiones de implementación
+Ninguna. Se aplicaron las versiones y la ruta de importación declaradas por el
+roadmap. No se usó `uvicorn.workers.UvicornWorker`.
+
+### Validación ejecutada
+
+Defecto reproducido antes de corregir:
+
+```text
+$ grep -c '^gunicorn' requirements.txt
+0
+
+$ .venv/bin/python -c 'import gunicorn'
+ModuleNotFoundError: No module named 'gunicorn'
+
+$ .venv/bin/python -c 'import uvicorn.workers'
+ModuleNotFoundError: No module named 'gunicorn'
+```
+
+La primera instalación dentro del sandbox no pudo resolver PyPI
+(`nodename nor servname provided`). Se repitió con el permiso de red previsto:
+
+```text
+$ .venv/bin/pip install -r requirements.txt
+Successfully installed gunicorn-23.0.0 uvicorn-worker-0.4.0
+
+$ .venv/bin/python -c "import gunicorn, uvicorn_worker, uvicorn; ..."
+gunicorn       23.0.0
+uvicorn        0.40.0
+uvicorn_worker 0.4.0
+UvicornWorker importable sin DeprecationWarning: OK
+
+$ .venv/bin/pip check
+No broken requirements found.
+
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 290 tests in 2.811s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 49 tests in 0.302s
+OK
+
+$ curl -s -o /dev/null -w '%{http_code} %{redirect_url}' \
+    http://127.0.0.1:8000/evaluacion-ergonomica/
+302 http://127.0.0.1:8000/acceso/?next=/evaluacion-ergonomica/
+```
+
+El humo local usó `config.test_settings`; el aviso de migraciones corresponde
+a la base efímera de `runserver`, mientras que `makemigrations --check` quedó
+limpio. El proceso se detuvo después de verificar el redirect anónimo.
+
+| Comprobación | Antes | Después |
+|---|---:|---:|
+| Tests totales | 289 | 290 |
+| Tests de `help_ai` | 48 | 49 |
+| gunicorn declarado/importable | No / No | Sí / 23.0.0 |
+| worker ASGI no deprecado | No | `uvicorn-worker` 0.4.0 |
+
+### Tests modificados y por qué
+Se amplió `test_asgi_stack_and_production_server_are_explicit` para que una
+reconstrucción limpia no omita el servidor ni su worker. Se agregó una prueba
+que exige el módulo no deprecado. No se eliminó ni debilitó cobertura.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `pip install -r requirements.txt` | Sí — obligatorio antes del reinicio |
+| `collectstatic` | No |
+| Reinicio del servicio | No por B.0 aislado |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de B.0>
+```
+Los paquetes instalados pueden quedar en el venv sin afectar WSGI.
+
+### Desvíos respecto del roadmap
+Ninguno funcional. La instalación necesitó habilitar egreso de red después de
+reproducir el bloqueo del sandbox; se instaló exactamente desde requirements.
+
+### Notas para el commit siguiente
+B.1 no puede modificar `MIDDLEWARE` hasta recibir evidencia literal de que
+nginx sirve `/static/` en producción.
 
 ---

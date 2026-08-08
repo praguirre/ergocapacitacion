@@ -909,6 +909,20 @@ class ChatSecurityTests(TestCase):
             "config.asgi.application",
         )
         self.assertIn("uvicorn", requirements)
+        # H-A2: el servidor de producción tiene que estar declarado. Un venv
+        # reconstruido desde requirements.txt debe poder levantar el servicio.
+        self.assertIn("gunicorn", requirements)
+        self.assertIn("uvicorn-worker", requirements)
+
+    def test_el_worker_asgi_no_usa_el_modulo_deprecado(self):
+        """`uvicorn.workers` está deprecado desde uvicorn 0.30."""
+        import importlib
+
+        self.assertIsNotNone(
+            importlib.util.find_spec("uvicorn_worker"),
+            "Falta el paquete uvicorn-worker: la unidad systemd de producción "
+            "apunta a uvicorn_worker.UvicornWorker.",
+        )
 
 
 class WireThreadContractTests(TestCase):

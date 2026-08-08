@@ -17,3 +17,13 @@ pillow>=10.0,<14.0
 openai>=2.0,<3.0
 openai-agents>=0.6,<1.0
 uvicorn>=0.30,<1.0
+
+# Servidor de produccion. Estaba instalado en el servidor pero no declarado
+# aca: una reconstruccion limpia del venv producia un despliegue que no
+# arranca. Mismo caso que pillow (hallazgo N8).
+gunicorn>=23.0,<24.0
+
+# Worker ASGI para gunicorn. Reemplaza a `uvicorn.workers`, deprecado desde
+# uvicorn 0.30: al importarlo emite DeprecationWarning y remite a este
+# paquete. Verificado sobre uvicorn 0.40.0.
+uvicorn-worker>=0.3,<1.0

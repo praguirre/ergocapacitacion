@@ -347,7 +347,7 @@ PY
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| B.0 | Declarar `gunicorn` y `uvicorn-worker` en requirements | ⬜ |
+| B.0 | Declarar `gunicorn` y `uvicorn-worker` en requirements | ✅ |
 | B.1 | WhiteNoise condicional: liberar la cadena de middlewares | ⬜ |
 | B.2 | Test de contrato del stack ASGI | ⬜ |
 | B.3 | 🛑 Upgrade de hardware y aislamiento de recursos *(Pablo)* | ⬜ |

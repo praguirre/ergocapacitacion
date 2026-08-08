@@ -372,6 +372,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   196 archivos y el humo local respondió como se esperaba. La aceptación
   generativa externa queda explícitamente pendiente por política de egreso;
   las pruebas estructurales, de integración y de navegador están en verde.
+- **08/08/2026 — Chat IA B.0 / dependencias de producción:** `gunicorn` y el
+  paquete no deprecado `uvicorn-worker` quedan declarados, instalados y
+  protegidos por contrato. Las versiones verificadas son 23.0.0 y 0.4.0; la
+  suite alcanza 290 pruebas y el despliegue debe reinstalar requirements.
 
 ### Registro de cambios documentales
 
