@@ -36,6 +36,8 @@ puntos de entrada del repositorio y de los asistentes de desarrollo.
   diseño y auditoría de viabilidad. **Estado: borrador pendiente de aprobación.**
 - [Roadmap de ejecución](ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md): plan commit por commit.
 - [Bitácora de ejecución](BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md): registro de trazabilidad.
+- [Handoff de producción — Fase B](HANDOFF_PRODUCCION_FASE_B.md): canal
+  documental de diagnósticos P-4, con comandos y formato de respuesta literal.
 
 ## Operación y despliegue
 

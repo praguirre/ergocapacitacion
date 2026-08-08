@@ -372,6 +372,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   196 archivos y el humo local respondió como se esperaba. La aceptación
   generativa externa queda explícitamente pendiente por política de egreso;
   las pruebas estructurales, de integración y de navegador están en verde.
+- **08/08/2026 — Canal documental de producción para Fase B:** se creó un
+  handoff de sólo lectura en una rama independiente. Pablo actúa como puente;
+  producción ejecuta diagnósticos P-4 explícitos y devuelve salida literal,
+  sin mezclar documentación con despliegues ni cambios de servicios.
 
 ### Registro de cambios documentales
 
