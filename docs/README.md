@@ -30,6 +30,13 @@ puntos de entrada del repositorio y de los asistentes de desarrollo.
 - [Plan maestro — Etapa 3: Perfil Empresa](PLAN_MAESTRO_ETAPA_3_PERFIL_EMPRESA.md)
 - [Plan de capacitaciones personalizadas](PLAN_CAPACITACIONES_PERSONALIZADAS.md)
 
+## Chat IA — contexto y datos
+
+- [Propuesta técnica: contexto de pantalla y acceso a base de datos](PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md):
+  diseño y auditoría de viabilidad. **Estado: borrador pendiente de aprobación.**
+- [Roadmap de ejecución](ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md): plan commit por commit.
+- [Bitácora de ejecución](BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md): registro de trazabilidad.
+
 ## Operación y despliegue
 
 - [Runbook de despliegue](DEPLOY_CLAUDE_RUNBOOK.md)

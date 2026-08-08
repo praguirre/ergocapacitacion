@@ -326,6 +326,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   Iluminación, Ruido, Carga Térmica, Puesta a Tierra y Contaminantes Químicos
   se presentan como próximos módulos sin enlaces. El listado 886 incorpora un
   breadcrumb de regreso. La suite alcanza 272 pruebas y no hay migraciones.
+- **07/08/2026 — Inicio de Chat IA: contexto y datos:** se abrió la iniciativa
+  en `feature/chat-ia-contexto`, con propuesta técnica, roadmap commit por
+  commit y bitácora de ejecución. La línea base reproducida es de 269 pruebas,
+  sin migraciones pendientes ni issues del sistema.
 
 ### Registro de cambios documentales
 
