@@ -1561,7 +1561,7 @@ nginx sirve `/static/` en producción.
 |---|---|
 | Fecha | 2026-08-08 12:34 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `e18e7e6` |
 | Fase | B |
 | Hallazgo / Condición | H-A1 |
 | Estado | ⚠️ Completado con desvíos |
@@ -1800,5 +1800,107 @@ registró DA-B1-1 y se corrigió la propuesta.
 ### Notas para el commit siguiente
 B.2 debe congelar por test que la cadena productiva siga sin middleware
 sync-only. La inyección temporal confirmará que el guardián falla.
+
+---
+
+## Commit B.2 — Test de contrato del stack ASGI
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-08 12:37 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash |  |
+| Fase | B |
+| Hallazgo / Condición | H-A1, V3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se agregó un contrato permanente que prohíbe middlewares sync-only en la
+cadena productiva. También congela las capacidades del CSP, `ATOMIC_REQUESTS`
+desactivado y la ausencia de routers implícitos de base de datos.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `config/tests.py` | modificado | Cuatro pruebas del contrato ASGI. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Entrada B.2 y hash de B.1. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | B.2 completado. |
+| `README.md` | modificado | Registro funcional de B.2. |
+
+### Decisiones de implementación
+Ninguna. Se copió el contrato del roadmap y se ejercitó con el stub temporal
+prescripto.
+
+### Validación ejecutada
+
+Prueba negativa con `config._mw_prueba.MiddlewareSyncOnly` agregado
+temporalmente:
+
+```text
+$ .venv/bin/python manage.py test config --settings=config.test_settings
+FAIL: test_ningun_middleware_es_sync_only_en_produccion
+AssertionError: Lists differ: ['config._mw_prueba.MiddlewareSyncOnly'] != []
+Middlewares sync-only en la cadena de producción:
+['config._mw_prueba.MiddlewareSyncOnly']. Cada uno obliga a Django a adaptar
+con async_to_sync todo lo que tiene por debajo, y anula el beneficio de ASGI
+para el SSE.
+Ran 7 tests in 0.001s
+FAILED (failures=1)
+```
+
+Después se retiraron la entrada y `config/_mw_prueba.py`. `git status --short`
+mostró únicamente `config/tests.py` antes de documentar.
+
+```text
+$ .venv/bin/python manage.py test config --settings=config.test_settings
+Ran 7 tests in 0.001s
+OK
+
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 290 tests in 3.741s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+
+$ DEBUG=False SERVE_STATIC_WITH_WHITENOISE=False ...
+Middlewares sync-only: ninguno
+
+$ curl http://127.0.0.1:8000/evaluacion-ergonomica/
+302 http://127.0.0.1:8000/acceso/?next=/evaluacion-ergonomica/
+```
+
+| Comprobación | Antes | Después |
+|---|---:|---:|
+| Tests de `apps` | 290 | 290 |
+| Tests de `config` | 3 | 7 |
+| Contrato automático de cadena async | No | Sí |
+
+### Tests modificados y por qué
+Ninguno existente. Se agregaron cuatro pruebas.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | No |
+| Reinicio del servicio | No |
+| Migración de base de datos | No |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+```bash
+git revert <hash de B.2>
+```
+Sólo retira guardas; no cambia runtime.
+
+### Desvíos respecto del roadmap
+Ninguno.
+
+### Notas para el commit siguiente
+B.3 requiere decisión D-P-7, upgrade de VPS y evidencia literal de siete
+verificaciones productivas antes de poder documentarse o commitearse.
 
 ---

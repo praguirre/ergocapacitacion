@@ -55,3 +55,47 @@ class ContentSecurityPolicyMiddlewareTests(SimpleTestCase):
 
         self.assertLess(whitenoise, csp)
         self.assertLess(csp, session)
+
+
+class AsgiStackContractTests(SimpleTestCase):
+    """El stack tiene que poder correr bajo ASGI sin adaptaciones."""
+
+    def test_ningun_middleware_es_sync_only_en_produccion(self):
+        """H-A1: un solo middleware sync-only degrada toda la cadena.
+
+        Django (core/handlers/base.py) usa
+        `getattr(mw, "async_capable", False)`. Un middleware que no lo
+        declare se trata como sync-only y obliga a envolver con
+        async_to_sync todo lo que tenga por debajo, incluida la vista SSE
+        del Chat IA. Ése fue exactamente el caso de WhiteNoise.
+        """
+        from django.utils.module_loading import import_string
+
+        # Se evalúa la cadena de PRODUCCIÓN: sin el WhiteNoise de desarrollo.
+        cadena = [m for m in settings.MIDDLEWARE if "whitenoise" not in m]
+
+        sync_only = [
+            path for path in cadena
+            if not getattr(import_string(path), "async_capable", False)
+        ]
+        self.assertEqual(
+            sync_only, [],
+            f"Middlewares sync-only en la cadena de producción: {sync_only}. "
+            "Cada uno obliga a Django a adaptar con async_to_sync todo lo que "
+            "tiene por debajo, y anula el beneficio de ASGI para el SSE.",
+        )
+
+    def test_el_middleware_de_csp_declara_ambas_capacidades(self):
+        from config.middleware import ContentSecurityPolicyMiddleware as CSP
+
+        self.assertTrue(CSP.sync_capable)
+        self.assertTrue(CSP.async_capable)
+        self.assertTrue(hasattr(CSP, "__acall__"))
+
+    def test_atomic_requests_sigue_desactivado(self):
+        """Con ATOMIC_REQUESTS=True habría que revisar cada vista async."""
+        self.assertFalse(settings.DATABASES["default"].get("ATOMIC_REQUESTS", False))
+
+    def test_no_hay_routers_de_base_de_datos(self):
+        """El ruteo debe ser explícito con .using(), nunca implícito."""
+        self.assertEqual(getattr(settings, "DATABASE_ROUTERS", []), [])

@@ -381,6 +381,10 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   WhiteNoise sale del middleware productivo y permanece en desarrollo. El
   manifiesto comprimido conserva sus hashes y la cadena ASGI queda sin
   componentes sync-only; pasan 290 pruebas.
+- **08/08/2026 — Chat IA B.2 / contrato ASGI:** cuatro pruebas impiden
+  reintroducir middlewares sync-only y congelan las capacidades del CSP,
+  `ATOMIC_REQUESTS=False` y la ausencia de routers implícitos. Una inyección
+  temporal confirmó que el guardián falla; `apps` mantiene 290 pruebas.
 
 ### Registro de cambios documentales
 

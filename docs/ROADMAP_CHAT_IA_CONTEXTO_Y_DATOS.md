@@ -349,7 +349,7 @@ PY
 |---|---|:---:|
 | B.0 | Declarar `gunicorn` y `uvicorn-worker` en requirements | ✅ |
 | B.1 | WhiteNoise condicional: liberar la cadena de middlewares | ⚠️ |
-| B.2 | Test de contrato del stack ASGI | ⬜ |
+| B.2 | Test de contrato del stack ASGI | ✅ |
 | B.3 | 🛑 Upgrade de hardware y aislamiento de recursos *(Pablo)* | ⬜ |
 | B.4 | 🛑 Migración de la unidad systemd y de nginx a ASGI *(Pablo)* | ⬜ |
 | B.5 | 🛑 Verificación post-migración V1–V7 y runbook *(Pablo + asistente)* | ⬜ |
