@@ -201,6 +201,9 @@ Avisame cuando esté hecho y sigo con el commit <N.M> sin detenerme.
 | **R-12** | Los mensajes de commit se copian **literalmente** de este documento |
 | **R-13** | **Los tests nunca se corren en el servidor de producción.** Sólo en local y en CI, con `--settings=config.test_settings` |
 | **R-14** | Si un commit cambia `static/`, el despliegue **exige `collectstatic`**, ida y vuelta. Se anota en la bitácora |
+| **R-15** | **CriaApp no se toca.** Ningún commit modifica `/srv/criaapp`, la base `criaapp`, sus unidades `criaapp-gunicorn`, `criaapp-celery-worker`, `criaapp-celery-beat` ni su site nginx. Toda operación de host verifica después que sus tres servicios sigan activos y su URL responda 200 |
+| **R-16** | nginx y PostgreSQL son compartidos. En nginx: `nginx -t` antes de `reload`, nunca `restart`. Todo reinicio de PostgreSQL requiere una ventana coordinada porque interrumpe CriaApp |
+| **R-17** | El rol del bot queda confinado a `ergocapacitacion_db`: no se usa `ALTER DEFAULT PRIVILEGES`, no recibe permisos sobre `criaapp` y debe demostrarse que no puede conectarse a esa base |
 
 ---
 
@@ -313,8 +316,8 @@ PY
 | **D-P-3** | Transparencia hacia el usuario | Encender el interruptor (C.15) | Opción A — aviso en la pestaña + política de privacidad |
 | **D-P-4** | Endpoint de telemetría del Hallazgo 5 | Alcance de A.6 | Opción A — sólo `console.error` + mensaje visible |
 | **D-P-5** | ¿El alias `readonly` falla cerrado? | C.2 | Opción A — fallar cerrado |
-| **D-P-6** | ¿Separar las dos apps en VPS distintos? | Alcance de B.3 | Opción A — un solo servidor más grande |
-| **D-P-7** | Escenario de hardware | B.3 | Opción B — 8 GB / 4 vCPU |
+| **D-P-6** | ¿Separar las dos apps en VPS distintos? | Resuelta 09/08/2026 | Opción A — un solo servidor; CriaApp queda fuera del alcance operativo |
+| **D-P-7** | Escenario de hardware | Resuelta 09/08/2026 | **Opción A — 4 GB / 2 vCPU**, adecuada al tráfico actual; reevaluar con V4/V7 |
 | **D-P-8** | Modelo para el flujo con herramientas | Nada — ajuste de `.env` | Opción A — empezar con `gpt-4.1-mini` |
 
 > **D-P-4 ya está resuelta en este roadmap** con la recomendación (Opción A), porque no tiene impacto sobre datos ni sobre producción. Si Pablo prefiere la Opción B, se agrega como commit adicional en Fase D.
@@ -350,7 +353,7 @@ PY
 | B.0 | Declarar `gunicorn` y `uvicorn-worker` en requirements | ✅ |
 | B.1 | WhiteNoise condicional: liberar la cadena de middlewares | ⚠️ |
 | B.2 | Test de contrato del stack ASGI | ✅ |
-| B.3 | 🛑 Upgrade de hardware y aislamiento de recursos *(Pablo)* | ⬜ |
+| B.3 | 🛑 Upgrade de hardware y aislamiento de recursos *(Pablo)* | ✅ |
 | B.4 | 🛑 Migración de la unidad systemd y de nginx a ASGI *(Pablo)* | ⬜ |
 | B.5 | 🛑 Verificación post-migración V1–V7 y runbook *(Pablo + asistente)* | ⬜ |
 | B.6 | Cierre de Fase B: ventana de estabilización | ⬜ |
@@ -2256,6 +2259,12 @@ La Fase A es desplegable de forma independiente. Si Pablo quiere ponerla en prod
 > **Bloquea la Fase C** (condición C5). Cuatro de los siete commits requieren intervención de Pablo (P-4).
 >
 > ⚠️ **Regla de oro específica de esta fase:** los commits B.3, B.4 y B.5 operan sobre **producción**. La validación no la hace la suite de tests: la hacen los criterios V1–V7, y la ejecuta Pablo con la salida pegada en la bitácora. **No se marca un commit de esta fase como ✅ sin salida literal del servidor.**
+>
+> **Frontera operativa verificada (09/08/2026):** el VPS también aloja CriaApp,
+> beta con usuarios reales. Esa aplicación no forma parte de este roadmap y
+> no se modifica. nginx, PostgreSQL, RAM y CPU son compartidos; después de toda
+> operación de host se verifican sus tres unidades reales y su HTTP 200. El
+> rollback de cada paso sólo revierte cambios de ErgoSolutions.
 
 ---
 
@@ -2693,91 +2702,47 @@ Sólo tests.
 ## Commit B.3 — 🛑 Upgrade de hardware y aislamiento de recursos
 
 ### Objetivo
-Provisionar la infraestructura que la migración a ASGI necesita, y aislar los recursos entre ErgoSolutions, la segunda aplicación y sus Celery.
+Provisionar la infraestructura que la migración a ASGI necesita y limitar el
+consumo máximo de ErgoSolutions sin modificar CriaApp.
 
 ### Referencia de diseño
 Propuesta, [Cap. 7.1](PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md) y [Cap. 7.2](PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md).
 
 > 🛑 **Commit íntegramente de Pablo (P-4).** El asistente prepara el contenido, ejecuta la detención, espera la confirmación y documenta la salida.
 
-### Paso 1 — 🛑 DETENCIÓN P-4 y P-5
+### Paso 1 — Upgrade y línea base confirmados
 
-```
-🛑 DETENCIÓN — Commit B.3 — Motivo P-4 + P-5
+🟢 **VERIFICADO 09/08/2026:** Pablo eligió el Escenario A. Producción reporta
+3911 MB de RAM, 2 vCPU, 2453 MB disponibles, 27 MB de swap, carga 0,00 y
+`vm.swappiness=10`. PostgreSQL conserva `shared_buffers=128MB`. ErgoSolutions,
+CriaApp y sus dos servicios Celery están activos; ambas URLs responden 200.
 
-Necesito dos cosas tuyas, Pablo:
+El host ya tenía `/etc/sysctl.d/99-swap.conf` con el mismo valor. El archivo
+`99-swappiness.conf` creado durante el relevamiento es redundante pero inocuo;
+se conserva para no ampliar B.3 con una eliminación innecesaria.
 
-1. DECISIÓN D-P-7 — escenario de hardware:
+### Paso 2 — Drop-in exclusivo de ErgoSolutions
 
-   | | Escenario A (piso) | Escenario B (recomendado) |
-   |---|---|---|
-   | RAM / vCPU | 4 GB / 2 vCPU | 8 GB / 4 vCPU |
-   | Total comprometido | ~1.700 MB | ~4.230 MB |
-   | Margen | ~2.400 MB (58 %) | ~3.960 MB (48 %) |
-   | Resuelve contención de CPU | ❌ No | ✅ Sí |
-   | PostgreSQL shared_buffers | 128 MB (va a disco) | 2 GB (working set en RAM) |
-
-   Recomendación del diseño: Escenario B. El objetivo declarado es que
-   AMBAS aplicaciones queden óptimas, y con 2 vCPU compartidos entre dos
-   apps web, cuatro Celery y PostgreSQL eso no se consigue.
-
-2. EJECUCIÓN en el servidor, una vez redimensionada la VPS:
-
-    # Política de swap: red de seguridad, no memoria de trabajo
-    sudo sysctl -w vm.swappiness=10
-    echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
-
-    # PostgreSQL — sólo en el Escenario B
-    sudo -u postgres psql -c "ALTER SYSTEM SET shared_buffers = '2GB';"
-    sudo systemctl restart postgresql
-
-    # Línea base posterior al upgrade
-    free -m
-    nproc
-    systemctl status ergocapacitacion <servicio-2da-app> <servicio-celery> --no-pager | head -30
-
-Motivo: no tengo acceso al servidor ni al panel del proveedor, y la
-decisión de presupuesto es tuya.
-
-Qué hago cuando termines: pegás la salida de `free -m`, `nproc` y los
-`systemctl status`, y yo la registro en la bitácora, aplico las cuotas de
-systemd del paso 2 y sigo con B.4.
-
-Avisame cuando esté hecho y sigo sin detenerme.
-```
-
-### Paso 2 — Cuotas de systemd para las tres unidades
-
-Una vez confirmado el upgrade, preparar los *drop-in* de aislamiento. **Sin cuotas en las tres unidades el aislamiento es unilateral y no sirve.**
+CriaApp queda fuera de alcance. El límite sólo impide que ErgoSolutions pueda
+acaparar el host; no pretende administrar recursos de la otra aplicación.
 
 ```ini
 # /etc/systemd/system/ergocapacitacion.service.d/10-recursos.conf
 [Service]
-# Escenario B: 4 workers ASGI × ~180 MB estimados + margen.
+# Escenario A: 2 workers ASGI × ~180 MB estimados + margen amplio.
 # Ajustar con la medición real del criterio V7 tras la migración.
 MemoryMax=1200M
 CPUQuota=150%
 ```
 
-```ini
-# /etc/systemd/system/<segunda-app>.service.d/10-recursos.conf
-[Service]
-MemoryMax=800M
-CPUQuota=100%
-```
-
-```ini
-# /etc/systemd/system/<celery>.service.d/10-recursos.conf
-[Service]
-MemoryMax=600M
-CPUQuota=100%
-```
-
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl restart ergocapacitacion <segunda-app> <celery>
+sudo systemctl restart ergocapacitacion
 systemctl show ergocapacitacion -p MemoryMax -p CPUQuota
 ```
+
+No se crean drop-ins ni se reinician `criaapp-gunicorn`,
+`criaapp-celery-worker` o `criaapp-celery-beat`.
 
 ### ✅ VALIDACIÓN
 
@@ -2787,9 +2752,9 @@ systemctl show ergocapacitacion -p MemoryMax -p CPUQuota
 |---|---|---|
 | V-1 | `free -m` | RAM total según el escenario elegido; **swap en 0 o cerca** |
 | V-2 | `nproc` | vCPU según el escenario |
-| V-3 | `systemctl is-active ergocapacitacion <2da-app> <celery>` | los tres `active` |
-| V-4 | `curl -s -o /dev/null -w '%{http_code}' https://<dominio>/` | `200` |
-| V-5 | `curl -s -o /dev/null -w '%{http_code}' https://<dominio-2da-app>/` | `200` |
+| V-3 | `systemctl is-active ergocapacitacion criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat` | los cuatro `active` |
+| V-4 | `curl … https://www.ergosolutions.com.ar/` | `200` |
+| V-5 | `curl … https://criaapp.iainsanedev.com/` | `200`; línea base ≈ 0,09 s |
 | V-6 | `systemctl show ergocapacitacion -p MemoryMax -p CPUQuota` | Las cuotas aplicadas |
 | V-7 | `cat /proc/sys/vm/swappiness` | `10` |
 
@@ -2813,12 +2778,15 @@ git commit -m "docs(infra): registrar el upgrade del servidor y las cuotas de sy
 
 ### ↩️ REVERSIÓN
 
-**El upgrade de hardware no se revierte** (no habría motivo). Las cuotas sí:
+**El upgrade de hardware no se revierte** (no habría motivo). El drop-in sí:
 
 ```bash
-sudo rm /etc/systemd/system/*.service.d/10-recursos.conf
+sudo rm /etc/systemd/system/ergocapacitacion.service.d/10-recursos.conf
 sudo systemctl daemon-reload
-sudo systemctl restart ergocapacitacion <segunda-app> <celery>
+sudo systemctl restart ergocapacitacion
+systemctl is-active criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat
+curl -sS -o /dev/null -w 'criaapp http_code=%{http_code} time_total=%{time_total}\n' \
+  https://criaapp.iainsanedev.com/
 ```
 
 ---
@@ -2837,9 +2805,9 @@ Propuesta, [Cap. 7.2](PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md) y [Cap. 7.3 · paso
 
 ```bash
 sudo cp /etc/systemd/system/ergocapacitacion.service{,.wsgi.bak}
-sudo cp /etc/nginx/sites-available/ergocapacitacion{,.bak}
+sudo cp /etc/nginx/sites-available/ergosolutions{,.bak}
 cd /srv/ergocapacitacion/app && git rev-parse --short HEAD > /srv/ergocapacitacion/COMMIT_ANTES_ASGI.txt
-sudo -u postgres pg_dump ergosolutions > /srv/ergocapacitacion/backup_pre_asgi.sql
+sudo -u postgres pg_dump ergocapacitacion_db > /srv/ergocapacitacion/backup_pre_asgi.sql
 ```
 
 > ⚠️ **Sin los tres primeros archivos no hay rollback rápido.** El `pg_dump` es red de seguridad: **esta migración no toca la base**, así que no debería hacer falta.
@@ -2902,7 +2870,9 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-> ⚠️ **`nginx -t` antes de `reload`, sin excepción.** Un `reload` con configuración inválida deja el sitio caído.
+> ⚠️ El site real es `/etc/nginx/sites-available/ergosolutions`. `nginx -t`
+> va antes de `reload`, sin excepción, y nginx **nunca se reinicia**: el proceso
+> es compartido con CriaApp. Después del reload se verifican ambas URLs.
 
 ### ✅ VALIDACIÓN
 
@@ -2914,6 +2884,7 @@ sudo systemctl reload nginx
 | V-4 | Los estáticos los sirve nginx | `curl -sI https://<dominio>/static/ayuda/css/help_widget.css` | `200`, `Server: nginx` |
 | V-5 | Recorrido V6 completo | los 12 flujos del Paso 2 | todos OK |
 | V-6 | Sin errores en el log | `journalctl -u ergocapacitacion -n 100` | sin tracebacks |
+| V-7 | CriaApp intacta | sus tres unidades `active` y URL en 200 | sin cambios respecto de la línea base |
 
 > ⚠️ **Los criterios V1–V7 completos se ejecutan en B.5.** Acá sólo se verifica que el servicio levantó y responde. Separarlos permite que, si algo falla en la verificación profunda, el rollback sea de un commit y no de dos.
 
@@ -2943,6 +2914,9 @@ sudo systemctl daemon-reload
 sudo systemctl restart ergocapacitacion
 systemctl is-active ergocapacitacion
 curl -sI https://<dominio>/ | head -1
+systemctl is-active criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat
+curl -sS -o /dev/null -w 'criaapp http_code=%{http_code} time_total=%{time_total}\n' \
+  https://criaapp.iainsanedev.com/
 
 # Si el problema fueron los estáticos, además:
 echo 'SERVE_STATIC_WITH_WHITENOISE=True' >> /srv/ergocapacitacion/.env
@@ -3026,15 +3000,20 @@ done
 
 > ⚠️ **Esta medición hay que tomarla ANTES de B.4 para poder compararla.** Si no se tomó, registrarlo como desvío y usar la percepción cualitativa, señalando la limitación.
 
-#### V5 — La segunda aplicación quedó intacta
+#### V5 — CriaApp quedó intacta
 
 ```bash
-systemctl is-active <servicio-2da-app> <servicio-celery>
-curl -s -o /dev/null -w '%{http_code}\n' https://<dominio-2da-app>/
+systemctl is-active criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat
+curl -sS -o /dev/null \
+  -w 'criaapp http_code=%{http_code} time_total=%{time_total}\n' \
+  https://criaapp.iainsanedev.com/
 free -m
 ```
 
-**Criterio:** ambos activos, 200, y **swap sin crecimiento** respecto de la línea base de B.3.
+**Criterio:** los tres servicios activos, HTTP 200 sin degradación material
+frente a ≈ 0,09 s, y **swap sin crecimiento** respecto de la línea base de
+B.3. Esta es sólo una comprobación; ninguna unidad ni archivo de CriaApp se
+modifica.
 
 #### V6 — Recorrido funcional completo
 
@@ -3056,7 +3035,7 @@ ps -o pid,rss,cmd -p $(pgrep -f 'config.asgi') | awk '{print $1, $2/1024 " MB"}'
 | V-2 | SSE escalonado | primer delta < 3 s |
 | V-3 | Middlewares sync-only | `ninguno` |
 | V-4 | Latencia p50 | ≤ +10 % |
-| V-5 | Segunda app | activa, 200, swap estable |
+| V-5 | CriaApp | 3 servicios activos, 200, swap estable |
 | V-6 | Recorrido funcional | 12/12 |
 | V-7 | RSS por worker | medido y registrado |
 
@@ -5107,7 +5086,7 @@ Propuesta, [Cap. 6.2](PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md).
 
 Necesito que ejecutes vos esto en el servidor, Pablo:
 
-    sudo -u postgres psql ergosolutions
+    sudo -u postgres psql ergocapacitacion_db
 
     -- Rol dedicado. NUNCA se usa para migraciones ni para la app.
     CREATE ROLE ergo_bot_ro WITH LOGIN PASSWORD 'ELEGÍ_UNA_CLAVE_FUERTE';
@@ -5119,14 +5098,13 @@ Necesito que ejecutes vos esto en el servidor, Pablo:
     -- Ninguna consulta del bot puede colgar una conexión.
     ALTER ROLE ergo_bot_ro SET statement_timeout = '5s';
 
-    GRANT CONNECT ON DATABASE ergosolutions TO ergo_bot_ro;
+    GRANT CONNECT ON DATABASE ergocapacitacion_db TO ergo_bot_ro;
     GRANT USAGE ON SCHEMA public TO ergo_bot_ro;
     GRANT SELECT ON ALL TABLES IN SCHEMA public TO ergo_bot_ro;
     GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO ergo_bot_ro;
 
-    -- Las tablas que cree una migración futura también quedan legibles.
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public
-        GRANT SELECT ON TABLES TO ergo_bot_ro;
+    -- No usar ALTER DEFAULT PRIVILEGES. Las tablas futuras requieren un
+    -- GRANT SELECT explícito y revisado después de cada migración.
 
 Y después, la PRUEBA DE FUEGO — esto DEBE fallar:
 
@@ -5136,9 +5114,15 @@ Y después, la PRUEBA DE FUEGO — esto DEBE fallar:
     -- ERROR: cannot execute INSERT in a read-only transaction
     RESET ROLE;
 
+Y demostrar el aislamiento de la otra aplicación — esto DEBE fallar:
+
+    psql "postgres://ergo_bot_ro:LA_CLAVE@localhost:5432/criaapp" \
+      -c 'SELECT 1;'
+    -- ERROR: permission denied for database criaapp
+
 Por último, en /srv/ergocapacitacion/.env:
 
-    DATABASE_READONLY_URL=postgres://ergo_bot_ro:LA_CLAVE@localhost:5432/ergosolutions
+    DATABASE_READONLY_URL=postgres://ergo_bot_ro:LA_CLAVE@localhost:5432/ergocapacitacion_db
 
 Motivo: no puedo crear roles de base de datos ni manipular el .env real.
 

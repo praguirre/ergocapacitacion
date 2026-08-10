@@ -1322,20 +1322,24 @@ CREATE ROLE ergo_bot_ro WITH LOGIN PASSWORD 'REEMPLAZAR_POR_UNA_CLAVE_FUERTE';
 -- si algo intentara escribir, PostgreSQL lo rechaza antes de tocar la tabla.
 ALTER ROLE ergo_bot_ro SET default_transaction_read_only = on;
 
-GRANT CONNECT ON DATABASE ergosolutions TO ergo_bot_ro;
+GRANT CONNECT ON DATABASE ergocapacitacion_db TO ergo_bot_ro;
 GRANT USAGE ON SCHEMA public TO ergo_bot_ro;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO ergo_bot_ro;
 GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO ergo_bot_ro;
 
--- Las tablas que cree una migración futura también quedan legibles,
--- sin necesidad de volver a correr GRANT a mano.
-ALTER DEFAULT PRIVILEGES IN SCHEMA public
-    GRANT SELECT ON TABLES TO ergo_bot_ro;
+-- No usar ALTER DEFAULT PRIVILEGES. Las tablas que cree una migración futura
+-- reciben un GRANT SELECT explícito, revisado y ejecutado sólo en esta base.
 
 -- Comprobación: esto DEBE fallar.
 -- SET ROLE ergo_bot_ro; INSERT INTO planillas_evaluacion (id) VALUES (999999);
 -- ERROR: cannot execute INSERT in a read-only transaction
 ```
+
+🟢 **FRONTERA MULTIAPLICACIÓN, verificada 09/08/2026.** PostgreSQL aloja
+también la base `criaapp`. El rol debe crearse conectado exclusivamente a
+`ergocapacitacion_db`, no recibe ningún permiso sobre `criaapp` y la aceptación
+incluye un intento de conexión a `criaapp` que debe ser rechazado. CriaApp no
+forma parte de esta iniciativa.
 
 🟢 **VERIFICADO — interacciones con la configuración actual:**
 
@@ -1821,9 +1825,14 @@ workers_asgi = vCPU        (mínimo 2, para que un deploy o un crash no deje el 
 | **Resuelve** | El ahogo de memoria y el swap. Permite ASGI con 2 workers. | Todo lo de A, más contención de CPU y latencia de base de datos. |
 | **No resuelve** | La contención de CPU: 2 vCPU compartidos entre dos aplicaciones web, 4 Celery y PostgreSQL. Un pico de Celery sigue degradando a Ergo. `shared_buffers` de 128 MB obliga a PostgreSQL a ir a disco. | — |
 | **Riesgo residual** | Medio. Cumple «funciona», no cumple «óptimo para ambas». | Bajo. |
-| **Recomendación** | Piso absoluto. **Aceptable sólo si el presupuesto lo exige.** | ✅ **Recomendado.** Es lo que pide el objetivo de «ambas aplicaciones óptimas». |
+| **Recomendación actual** | ✅ **Elegido 09/08/2026.** Adecuado mientras Ergo no tenga tráfico y CriaApp conserve carga marginal; reevaluar con V4/V7. | Ampliación prevista si la medición demuestra contención o crecimiento sostenido. |
 
-**Justificación del Escenario B.** El cuello de botella no medido es la CPU: hoy conviven en 2 vCPU dos aplicaciones web, cuatro workers Celery y PostgreSQL. Los 4 vCPU permiten aislar por `cpuset` o `CPUQuota` de systemd. Y los 2 GB de `shared_buffers` hacen que el conjunto de trabajo de la base entre en memoria, lo cual **baja la latencia de todas las consultas del sistema**, no sólo las del bot.
+**Resolución D-P-7.** Se eligió el Escenario A porque ErgoSolutions todavía no
+tiene tráfico y CriaApp tiene una carga marginal. La línea base posterior al
+upgrade mostró 3911 MB totales, 2453 MB disponibles y carga 0,00. El riesgo de
+CPU queda aceptado y se reevalúa con latencia, swap y RSS reales en B.5. En este
+escenario `shared_buffers` permanece en 128 MB: modificarlo exige reiniciar la
+instancia PostgreSQL compartida y cortaría también CriaApp.
 
 #### Política de swap
 
@@ -1931,13 +1940,14 @@ WantedBy=multi-user.target
 
 🟢 **VERIFICADO:** este proyecto **no tiene Celery ni Redis** — no hay dependencias en `requirements.txt` ni configuración en `settings.py`. Los cuatro procesos Celery observados pertenecen a la segunda aplicación.
 
-**Recomendación: no tocarlas.** La migración a ASGI es exclusiva de `ergocapacitacion.service`. Ahora bien, dado que comparten hardware, sí conviene:
-
-1. **Aislarlas con systemd** (`MemoryMax`, `CPUQuota`) en las tres unidades, no sólo en la de Ergo. Sin cuotas, el aislamiento es unilateral y no sirve.
-2. **Verificar que la segunda aplicación quedó intacta** tras cada paso (ver [7.6](#76-criterios-de-verificación-post-migración)).
-3. **Reducir la concurrencia de Celery** si tras el upgrade se observa contención de CPU (`--concurrency 2` en lugar de 4). Es un cambio del dueño de esa aplicación, no de esta migración.
-
-🔴 **DECISIÓN PENDIENTE (D-P-6):** si conviene separar las dos aplicaciones en VPS distintos en vez de agrandar uno solo. **Recomendación: agrandar uno solo**, por ahora. Dos servidores duplican superficie de mantenimiento, backups y certificados, para un beneficio que el Escenario B ya consigue con cuotas de systemd. Conviene reevaluarlo si la segunda aplicación crece.
+**Regla innegociable: no tocarlas.** La migración a ASGI y el único drop-in de
+recursos son exclusivos de `ergocapacitacion.service`. No se modifican ni se
+reinician `criaapp-gunicorn.service`, `criaapp-celery-worker.service` o
+`criaapp-celery-beat.service`. Después de toda operación sobre nginx, systemd,
+PostgreSQL o recursos del host se comprueba que las tres sigan activas y que
+`https://criaapp.iainsanedev.com/` responda 200. El límite unilateral sobre
+Ergo protege a CriaApp de un pico de Ergo; el riesgo inverso se observa y, si
+aparece, se resuelve ampliando o separando infraestructura, no alterando CriaApp.
 
 ### 7.3 Plan de migración WSGI → ASGI
 
@@ -2132,7 +2142,7 @@ sudo systemctl restart ergocapacitacion
 | **Antes del upgrade** | **Hallazgos 1 a 5 completos** (Fase A): registro de páginas, preámbulo v2.0, corrección del cruce `dashboard`/`home`, núcleo + anexos, `\|default:` y defensas. Despliegue normal con `collectstatic`. | ❌ **No** |
 | **Antes del upgrade** | Agregar `gunicorn` y `uvicorn-worker` a `requirements.txt`; sacar WhiteNoise del `MIDDLEWARE` bajo WSGI (pasos 1, 3 y 4 de 7.3). | ❌ **No** |
 | **Antes del upgrade** | Escribir el código de tools, DTOs y tests en local/CI. **Sin desplegar.** | ❌ **No** |
-| **Durante el upgrade** | Redimensionar la VPS. Ajustar `shared_buffers` de PostgreSQL y `vm.swappiness`. Aplicar cuotas de systemd a las tres unidades. | ✅ |
+| **Durante el upgrade** | Redimensionar a 4 GB / 2 vCPU, conservar `shared_buffers=128MB`, fijar `vm.swappiness=10` y aplicar el drop-in sólo a ErgoSolutions. Verificar CriaApp sin modificarla. | ✅ |
 | **Inmediatamente después** | Migración a ASGI (pasos 5 a 8 de 7.3). Verificación completa. **Ventana de estabilización de al menos una semana con el chat funcionando sin tools.** | ✅ |
 | **Después de la estabilización** | Crear el rol de lectura de PostgreSQL, configurar el alias `readonly`, habilitar `CHAT_AI_TOOLS_ENABLED` de forma gradual. | ✅ |
 
@@ -2191,15 +2201,19 @@ done
 
 **Criterio:** el p50 no empeora más de un 10 %. Un ligero aumento es esperable en vistas sync (pasan por el ejecutor de hilos); una degradación mayor indica que quedó un middleware sync-only o que faltan workers.
 
-#### V5 — La segunda aplicación quedó intacta
+#### V5 — CriaApp quedó intacta
 
 ```bash
-systemctl is-active <servicio-segunda-app> <servicio-celery>
-curl -s -o /dev/null -w '%{http_code}\n' https://<dominio-segunda-app>/
+systemctl is-active criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat
+curl -sS -o /dev/null \
+  -w 'criaapp http_code=%{http_code} time_total=%{time_total}\n' \
+  https://criaapp.iainsanedev.com/
 free -m
 ```
 
-**Criterio:** ambos servicios activos, la segunda app responde 200, y `free -m` muestra **swap sin crecimiento** respecto de la línea base.
+**Criterio:** los tres servicios activos, CriaApp responde 200 sin degradación
+material frente a la línea base de ≈0,09 s, y `free -m` muestra **swap sin
+crecimiento**. Esta verificación no autoriza modificar CriaApp.
 
 #### V6 — Recorrido funcional completo
 
@@ -3808,7 +3822,7 @@ gantt
 |---|---|
 | `requirements.txt` completo | `pip install -r requirements.txt` en un venv limpio produce un despliegue que arranca |
 | WhiteNoise fuera de la cadena | `/static/` responde 200 desde nginx; el sitio conserva estilos |
-| Servidor redimensionado | Escenario A o B provisionado; `vm.swappiness=10`; cuotas de systemd en las tres unidades |
+| Servidor redimensionado | Escenario A provisionado; `vm.swappiness=10`; drop-in sólo en ErgoSolutions; CriaApp intacta |
 | Migración a ASGI | Criterios **V1 a V7** del [7.6](#76-criterios-de-verificación-post-migración) |
 | Estabilización | **Una semana** con el chat sin tools, sin incidentes |
 

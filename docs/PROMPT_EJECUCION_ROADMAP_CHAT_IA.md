@@ -240,6 +240,9 @@ Están auditados y verificados. **No los re-audites**: andá directo a corregirl
 | **R-12** | Los mensajes de commit se copian **literalmente** del roadmap |
 | **R-13** | **Los tests nunca se corren en el servidor de producción.** Sólo local o CI, con `--settings=config.test_settings` |
 | **R-14** | Si un commit toca `static/`, el despliegue exige `collectstatic` — **ida y vuelta**. Se anota en la bitácora |
+| **R-15** | **CriaApp no se toca:** ni `/srv/criaapp`, ni su base, ni sus unidades, ni su site nginx. Toda operación compartida verifica después sus tres servicios y su HTTP 200 |
+| **R-16** | nginx y PostgreSQL son compartidos. `nginx -t` antes de `reload`, nunca `restart`; reiniciar PostgreSQL requiere ventana coordinada |
+| **R-17** | `ergo_bot_ro` queda confinado a `ergocapacitacion_db`, sin `ALTER DEFAULT PRIVILEGES`, y debe probarse que no conecta a `criaapp` |
 
 ---
 
@@ -253,6 +256,7 @@ Están auditados y verificados. **No los re-audites**: andá directo a corregirl
 - ❌ **No borres ni desactives tests** para que la suite pase.
 - ❌ **No pidas aprobación** para avanzar. Salvo P-1 a P-5, seguís.
 - ❌ **No ejecutes comandos en el servidor de producción.** Eso es P-4, siempre.
+- ❌ **No modifiques CriaApp.** Sólo se consulta su salud como prueba de no regresión.
 - ❌ **No pongas contenido de datos en los logs.** El proyecto ya tiene la política escrita: identificadores y métricas, nunca payloads.
 
 ---

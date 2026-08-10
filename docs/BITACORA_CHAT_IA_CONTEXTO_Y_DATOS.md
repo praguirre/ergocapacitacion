@@ -1809,7 +1809,7 @@ sync-only. La inyección temporal confirmará que el guardián falla.
 |---|---|
 | Fecha | 2026-08-08 12:37 |
 | Rama | `feature/chat-ia-contexto` |
-| Hash |  |
+| Hash | `6e81a21` |
 | Fase | B |
 | Hallazgo / Condición | H-A1, V3 |
 | Estado | ✅ Completado |
@@ -1902,5 +1902,257 @@ Ninguno.
 ### Notas para el commit siguiente
 B.3 requiere decisión D-P-7, upgrade de VPS y evidencia literal de siete
 verificaciones productivas antes de poder documentarse o commitearse.
+
+---
+
+## Commit B.3 — Upgrade de hardware y aislamiento de recursos
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-09 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash | pendiente |
+| Fase | B |
+| Hallazgo / Condición | C5, D-P-6, D-P-7, R-15 a R-17 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Pablo resolvió D-P-7 por el Escenario A y amplió el VPS a 4 GB / 2 vCPU.
+Producción confirmó la capacidad, la política de swap, la línea base de
+recursos, los nombres reales de las unidades y la salud HTTP de ambas apps.
+
+El relevamiento reveló que CriaApp es una beta con usuarios reales y queda
+fuera del alcance del roadmap. Se incorporó esa frontera como regla permanente:
+ningún archivo, base o servicio de CriaApp se modifica; sólo se comprueba su
+salud después de operaciones sobre recursos compartidos.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Escenario A resuelto, unidades reales, aislamiento sólo de Ergo y reglas multiaplicación. |
+| `docs/PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Se corrigieron contradicciones del diseño frente al host compartido real. |
+| `docs/PROMPT_EJECUCION_ROADMAP_CHAT_IA.md` | modificado | Reglas permanentes de aislamiento. |
+| `docs/DEPLOY_CLAUDE_RUNBOOK.md` | modificado | Línea base, comprobación de CriaApp y rollback acotado. |
+| `docs/BITACORA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Evidencia y trazabilidad de B.3. |
+
+### Decisiones de implementación
+- **D-P-7:** Escenario A, 4 GB / 2 vCPU. El tráfico actual no justifica aún
+  8 GB / 4 vCPU; V4 y V7 determinan si hace falta ampliar.
+- `shared_buffers` permanece en 128 MB. PostgreSQL es compartido y reiniciarlo
+  interrumpe CriaApp.
+- Sólo `ergocapacitacion.service` recibe `MemoryMax=1200M` y
+  `CPUQuota=150%`. No se crean drop-ins ni se reinician unidades de CriaApp.
+- Se conserva `/etc/sysctl.d/99-swap.conf`, que ya declaraba swappiness 10, y
+  también el duplicado inocuo creado en la Etapa 1. Limpiarlo no aporta una
+  mejora funcional y ampliaría innecesariamente el cambio de producción.
+- En C.13, `ergo_bot_ro` se confina a `ergocapacitacion_db`, se prohíbe
+  `ALTER DEFAULT PRIVILEGES` y se agrega una prueba negativa sobre `criaapp`.
+
+### Validación ejecutada — Etapa 1 de producción
+
+Salida literal relevante recibida del servidor:
+
+```text
+$ date -Is
+2026-08-09T19:42:13-03:00
+
+$ hostname
+vps-4625086-x
+
+$ free -m
+               total        used        free      shared  buff/cache   available
+Mem:            3911        1151        1950          20         809        2516
+Swap:           2047          27        2020
+
+$ nproc
+2
+
+$ uptime
+ 19:42:13 up  2:54,  0 users,  load average: 0.00, 0.00, 0.00
+
+$ sudo sysctl -w vm.swappiness=10
+vm.swappiness = 10
+
+$ cat /proc/sys/vm/swappiness
+10
+
+$ sudo grep -rn "swappiness" /etc/sysctl.conf /etc/sysctl.d/
+/etc/sysctl.d/99-swap.conf:1:vm.swappiness=10
+/etc/sysctl.d/99-swappiness.conf:1:vm.swappiness=10
+
+$ systemctl list-units --type=service --all | grep -Ei 'ergo|cria|celery'
+  criaapp-celery-beat.service     loaded active running CriaApp Celery beat (beta)
+  criaapp-celery-worker.service   loaded active running CriaApp Celery worker (beta)
+  criaapp-gunicorn.service        loaded active running CriaApp Gunicorn (beta)
+  ergocapacitacion.service        loaded active running Gunicorn service for ergocapacitacion (ErgoSolutions)
+
+$ sudo -u postgres psql -Atqc "SHOW shared_buffers;"
+could not change directory to "/home/deploy": Permission denied
+128MB
+
+$ sudo -u postgres psql -Atqc "SHOW max_connections;"
+could not change directory to "/home/deploy": Permission denied
+100
+
+$ systemctl is-active postgresql
+active
+
+$ free -m
+               total        used        free      shared  buff/cache   available
+Mem:            3911        1214        1885          21         811        2453
+Swap:           2047          27        2020
+
+ergo_www http_code=200 content_type=text/html; charset=utf-8 size=9875 time_total=0.193340
+ergo_sin_www http_code=200 content_type=text/html; charset=utf-8 size=9875 time_total=0.042812
+criaapp http_code=200 content_type=text/html; charset=utf-8 size=9952 time_total=0.089770
+```
+
+El aviso de `psql` es benigno: el usuario postgres no puede entrar al directorio
+actual del invocante, pero las consultas se ejecutaron. El proceso de 328704 KB
+observado en el listado era el asistente administrativo y no integra la carga
+productiva; el relevamiento calculó ≈885 MB para ambas aplicaciones.
+
+### Validación ejecutada — Etapa 2 de producción
+
+Salida literal relevante recibida del servidor:
+
+```text
+$ date -Is
+2026-08-10T10:20:54-03:00
+
+$ free -m
+               total        used        free      shared  buff/cache   available
+Mem:            3911        1178        1830          31         902        2471
+Swap:           2047          29        2018
+
+$ nproc
+2
+
+$ cat /proc/sys/vm/swappiness
+10
+
+$ systemctl is-active ergocapacitacion
+active
+
+$ systemctl is-active criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat
+active
+active
+active
+
+$ sudo test -e /etc/systemd/system/ergocapacitacion.service.d/10-recursos.conf ; echo "dropin_preexistente_exit=$?"
+dropin_preexistente_exit=1
+
+$ sudo sed -n '1,20p' /etc/systemd/system/ergocapacitacion.service.d/10-recursos.conf
+[Service]
+# Escenario A: límite exclusivo de ErgoSolutions.
+# Revisar MemoryMax después de medir el RSS real bajo ASGI en B.5.
+MemoryMax=1200M
+CPUQuota=150%
+
+$ systemctl is-active ergocapacitacion
+active
+
+$ systemctl status ergocapacitacion --no-pager | sed -n '1,35p'
+● ergocapacitacion.service - Gunicorn service for ergocapacitacion (ErgoSolutions)
+     Loaded: loaded (/etc/systemd/system/ergocapacitacion.service; enabled; vendor preset: enabled)
+    Drop-In: /etc/systemd/system/ergocapacitacion.service.d
+             └─10-recursos.conf
+     Active: active (running) since Mon 2026-08-10 10:21:23 -03; 3s ago
+   Main PID: 25014 (gunicorn)
+      Tasks: 6 (limit: 4591)
+     Memory: 157.0M (max: 1.1G available: 1.0G)
+        CPU: 1.309s
+     CGroup: /system.slice/ergocapacitacion.service
+             ├─25014 gunicorn --workers 4 --timeout 180 ... config.wsgi:application
+
+$ systemctl show ergocapacitacion -p MemoryMax -p CPUQuotaPerSecUSec -p ControlGroup
+ControlGroup=/system.slice/ergocapacitacion.service
+CPUQuotaPerSecUSec=1.500000s
+MemoryMax=1258291200
+
+$ sudo journalctl -u ergocapacitacion --since "-5 minutes" --no-pager | tail -60
+Aug 10 10:21:23 vps-4625086-x systemd[1]: Stopping Gunicorn service for ergocapacitacion (ErgoSolutions)...
+Aug 10 10:21:23 vps-4625086-x systemd[1]: ergocapacitacion.service: Deactivated successfully.
+Aug 10 10:21:23 vps-4625086-x systemd[1]: Stopped Gunicorn service for ergocapacitacion (ErgoSolutions).
+Aug 10 10:21:23 vps-4625086-x systemd[1]: Started Gunicorn service for ergocapacitacion (ErgoSolutions).
+
+ergo_www http_code=200 content_type=text/html; charset=utf-8 size=9875 time_total=1.044335
+ergo_sin_www http_code=200 content_type=text/html; charset=utf-8 size=9875 time_total=1.087594
+ergo_www intento1 http_code=200 time_total=0.038697
+ergo_www intento2 http_code=200 time_total=0.037478
+ergo_www intento3 http_code=200 time_total=0.036750
+ergo_www intento4 http_code=200 time_total=0.992147
+
+$ systemctl is-active criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat
+active
+active
+active
+
+Id=criaapp-gunicorn.service
+ActiveEnterTimestampMonotonic=5987488
+Id=criaapp-celery-worker.service
+ActiveEnterTimestampMonotonic=8010913
+Id=criaapp-celery-beat.service
+ActiveEnterTimestampMonotonic=8009681
+
+criaapp http_code=200 content_type=text/html; charset=utf-8 size=9952 time_total=0.190849
+
+$ free -m
+               total        used        free      shared  buff/cache   available
+Mem:            3911        1139        1275          31        1496        2507
+Swap:           2047          29        2018
+
+$ cat /proc/sys/vm/swappiness
+10
+```
+
+Los tres `ActiveEnterTimestampMonotonic` de CriaApp fueron idénticos antes y
+después. Ergo continuó bajo `config.wsgi:application`, como exige B.3. Los
+primeros accesos pagaron el calentamiento de workers; en estado estable se
+midieron 0,036–0,038 s. El pico aislado queda como línea base para V4.
+
+Validación local posterior, completa:
+
+```text
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 290 tests in 4.013s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+```
+
+### Tests modificados y por qué
+Ninguno. B.3 documenta y valida infraestructura.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | No |
+| Reinicio de ErgoSolutions | Sí, sólo al aplicar el drop-in pendiente |
+| Reinicio de CriaApp | **Prohibido** |
+| Reinicio de PostgreSQL/nginx | No |
+| Migración de base | No |
+
+### Cómo se revierte
+Retirar únicamente
+`/etc/systemd/system/ergocapacitacion.service.d/10-recursos.conf`, ejecutar
+`daemon-reload`, reiniciar `ergocapacitacion.service` y volver a verificar las
+tres unidades y la URL de CriaApp. El upgrade de hardware no se revierte.
+
+### Desvíos respecto del roadmap
+El diseño original proponía cuotas sobre la segunda aplicación y sus Celery.
+La realidad operacional lo contradice: CriaApp tiene usuarios reales y está
+fuera del alcance. También eran incorrectos el nombre genérico
+`criaapp.service`, la base `ergosolutions` y la premisa de que Redis/Celery
+pertenecían a ErgoSolutions. La propuesta y el roadmap quedaron corregidos.
+
+### Notas para el commit siguiente
+B.4 migra únicamente `ergocapacitacion.service` a ASGI. Antes de escribir debe
+relevar la unidad y el site nginx reales completos, confirmar el socket actual,
+tomar la latencia WSGI comparable y preparar rollback sin tocar CriaApp.
 
 ---

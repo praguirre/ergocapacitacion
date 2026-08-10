@@ -20,6 +20,42 @@ Realizar deploy completo de la app Django en un servidor Ubuntu (DonWeb), usando
 3. **Cambios reversibles**: cada bloque debe poder deshacerse (backup de configs).
 4. **Confirmación antes de comandos peligrosos**: `rm`, `dropdb`, cambios Nginx/systemd, migraciones destructivas.
 5. **Siempre mostrar comandos exactos** y pedir que el usuario pegue la salida si hay errores.
+6. **CriaApp queda fuera de alcance.** Este VPS también aloja
+   `/srv/criaapp/app`, la base `criaapp` y las unidades
+   `criaapp-gunicorn.service`, `criaapp-celery-worker.service` y
+   `criaapp-celery-beat.service`. No modificar ni reiniciar ninguna.
+7. **Servicios compartidos:** ejecutar `nginx -t` antes de
+   `systemctl reload nginx`; nunca reiniciar nginx. PostgreSQL es una única
+   instancia para ambas aplicaciones: todo cambio que requiera reinicio exige
+   una ventana coordinada y no se considera no disruptivo.
+8. **Comprobación post-cambio de host:**
+
+   ```bash
+   systemctl is-active criaapp-gunicorn criaapp-celery-worker criaapp-celery-beat
+   curl -sS -o /dev/null \
+     -w 'criaapp http_code=%{http_code} time_total=%{time_total}\n' \
+     https://criaapp.iainsanedev.com/
+   ```
+
+   Resultado exigido: tres `active` y HTTP 200. Esta comprobación es de sólo
+   lectura y no autoriza cambios sobre CriaApp.
+
+### 0.1 Línea base de infraestructura para la migración ASGI (09/08/2026)
+
+- VPS: 4 GB RAM (3911 MB visibles), 2 vCPU y 2 GB swap.
+- Línea base: 2453 MB disponibles, 27 MB swap usados, carga 0,00.
+- `vm.swappiness=10`; conservar el archivo preexistente
+  `/etc/sysctl.d/99-swap.conf` y no duplicar la declaración.
+- PostgreSQL: `shared_buffers=128MB`, `max_connections=100`. No cambiar ni
+  reiniciar en el Escenario A.
+- Drop-in permitido: exclusivamente
+  `/etc/systemd/system/ergocapacitacion.service.d/10-recursos.conf`, con
+  `MemoryMax=1200M` y `CPUQuota=150%`, sujeto a ajuste tras medir ASGI.
+- Valores efectivos verificados: `MemoryMax=1258291200` y
+  `CPUQuotaPerSecUSec=1.500000s`; Ergo y CriaApp respondieron 200, sin reinicios
+  de ninguna unidad de CriaApp.
+- Rollback del drop-in: retirarlo, `daemon-reload` y reiniciar únicamente
+  `ergocapacitacion.service`; cerrar con la comprobación de CriaApp anterior.
 
 ---
 

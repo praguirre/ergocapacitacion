@@ -385,6 +385,11 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   reintroducir middlewares sync-only y congelan las capacidades del CSP,
   `ATOMIC_REQUESTS=False` y la ausencia de routers implícitos. Una inyección
   temporal confirmó que el guardián falla; `apps` mantiene 290 pruebas.
+- **10/08/2026 — Chat IA B.3 / infraestructura para ASGI:** el VPS quedó en
+  4 GB RAM / 2 vCPU, con `vm.swappiness=10` y PostgreSQL en 128 MB. Un drop-in
+  exclusivo de ErgoSolutions aplica `MemoryMax=1200M` y `CPUQuota=150%`;
+  CriaApp quedó formalmente fuera de alcance y sus tres servicios conservaron
+  timestamps, estado activo y HTTP 200. La suite mantiene 290 pruebas.
 
 ### Registro de cambios documentales
 
