@@ -17,7 +17,7 @@
 
 Es un **plan de ejecución commit por commit**. No es un documento de diseño: el diseño ya está resuelto, verificado y justificado en `PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md`. Acá sólo se ejecuta.
 
-**35 commits, 3 fases ejecutables + 1 fase diferida.** Cada commit es autocontenido: tiene su objetivo, sus archivos, su código, su validación, su documentación obligatoria, su mensaje de commit y su procedimiento de reversión. Se ejecutan **en orden**, sin saltear.
+**36 commits, 3 fases ejecutables + 1 fase diferida.** Cada commit es autocontenido: tiene su objetivo, sus archivos, su código, su validación, su documentación obligatoria, su mensaje de commit y su procedimiento de reversión. Se ejecutan **en orden**, sin saltear. El commit correctivo B.4a se agregó al reproducirse una dependencia HTTPS preexistente durante el primer corte ASGI.
 
 | Fase | Qué resuelve | Commits | ¿Depende de infraestructura? | Bloquea la siguiente |
 |---|---|:---:|:---:|:---:|
@@ -354,6 +354,7 @@ PY
 | B.1 | WhiteNoise condicional: liberar la cadena de middlewares | ⚠️ |
 | B.2 | Test de contrato del stack ASGI | ✅ |
 | B.3 | 🛑 Upgrade de hardware y aislamiento de recursos *(Pablo)* | ✅ |
+| B.4a | HTTPS explícito detrás del proxy para CSRF bajo ASGI | ✅ |
 | B.4 | 🛑 Migración de la unidad systemd y de nginx a ASGI *(Pablo)* | ⬜ |
 | B.5 | 🛑 Verificación post-migración V1–V7 y runbook *(Pablo + asistente)* | ⬜ |
 | B.6 | Cierre de Fase B: ventana de estabilización | ⬜ |
@@ -2254,7 +2255,7 @@ La Fase A es desplegable de forma independiente. Si Pablo quiere ponerla en prod
 
 # FASE B — INFRAESTRUCTURA Y MIGRACIÓN A ASGI
 
-> **7 commits.** Al terminar, el SSE se sirve sin degradación y el servidor tiene margen de memoria.
+> **8 commits.** Al terminar, el SSE se sirve sin degradación y el servidor tiene margen de memoria. B.4a se incorporó durante la ejecución al reproducirse en producción una dependencia WSGI que la auditoría previa ya había advertido.
 >
 > **Bloquea la Fase C** (condición C5). Cuatro de los siete commits requieren intervención de Pablo (P-4).
 >
@@ -2791,6 +2792,81 @@ curl -sS -o /dev/null -w 'criaapp http_code=%{http_code} time_total=%{time_total
 
 ---
 
+## Commit B.4a — HTTPS explícito detrás del proxy para CSRF bajo ASGI
+
+### Objetivo
+Eliminar la dependencia implícita de `secure_scheme_headers` de Gunicorn WSGI
+antes de reintentar ASGI. Con Uvicorn sobre socket Unix, el par no tiene IP y
+`X-Forwarded-Proto` no se aplicaba: Django veía HTTP y rechazaba con 403 el
+`Origin: https://…` de todos los POST.
+
+### Referencia de diseño
+Desvío de ejecución DA-B4-1, confirmado en producción el 10/08/2026. Coincide
+con H10 del informe de auditoría y §4.2.2 del estado técnico consolidado, pero
+ese prerrequisito no había sido trasladado al roadmap de Chat IA.
+
+### Archivos
+| Archivo | Acción |
+|---|---|
+| `config/settings.py` | Declarar `SECURE_PROXY_SSL_HEADER` y los dos orígenes HTTPS canónicos. |
+| `config/tests.py` | Contrato de esquema seguro y POST CSRF real al login. |
+| documentación de la iniciativa | Registrar causa, rollback y corrección del runbook. |
+
+### Implementación
+
+```python
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = [
+    "https://ergosolutions.com.ar",
+    "https://www.ergosolutions.com.ar",
+]
+```
+
+La confianza es válida para este despliegue porque nginx reemplaza
+`X-Forwarded-Proto` con `$scheme` y el socket Unix sólo es accesible localmente.
+No se usa `forwarded_allow_ips="*"` y no se cambia el bind productivo.
+
+### ✅ VALIDACIÓN
+
+```bash
+.venv/bin/python manage.py test config --settings=config.test_settings
+.venv/bin/python manage.py test apps --settings=config.test_settings
+.venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+.venv/bin/python manage.py check --settings=config.test_settings
+```
+
+Resultados exigidos:
+
+- Request con `X-Forwarded-Proto: https` → `is_secure() == True`.
+- POST a `/auth/login/` con CSRF y `Origin: https://www…` → no 403.
+- Config: 9 tests; apps: 290 tests; migraciones y check limpios.
+
+### 📝 DOCUMENTACIÓN
+- [x] D-1 — Bitácora B.4a con el fallo ASGI y rollback literal relevante.
+- [x] D-2 — Roadmap §0.9 y prerrequisito de B.4.
+- [x] D-3 — README.
+- [x] D-4 — Propuesta, porque la ejecución contradijo su secuencia.
+- [x] D-6 — Runbook: no hacer `source .env`, verificar dumps con permisos correctos y probar socket Unix.
+
+### 💾 GIT
+
+```bash
+git add -A
+git commit -m "fix(config): declarar https detras del proxy para csrf bajo asgi"
+git push origin feature/chat-ia-contexto
+```
+
+### ↩️ REVERSIÓN
+
+```bash
+git revert <hash de B.4a>
+```
+
+El servidor permanece WSGI hasta desplegar este commit y demostrar que el
+login sigue funcionando. Recién después se reintenta B.4.
+
+---
+
 ## Commit B.4 — 🛑 Migración de la unidad systemd y de nginx a ASGI
 
 ### Objetivo
@@ -2816,17 +2892,22 @@ sudo -u postgres pg_dump ergocapacitacion_db > /srv/ergocapacitacion/backup_pre_
 
 ```bash
 cd /srv/ergocapacitacion/app
-source /srv/ergocapacitacion/venv/bin/activate
-set -a && source /srv/ergocapacitacion/.env && set +a
 
-gunicorn config.asgi:application \
+/srv/ergocapacitacion/venv/bin/gunicorn config.asgi:application \
     --worker-class uvicorn_worker.UvicornWorker \
     --workers 2 \
-    --bind 127.0.0.1:8001 \
+    --bind unix:/tmp/ergocapacitacion-asgi-preflight.sock \
     --timeout 300
 ```
 
-En otra sesión, recorrer **todos** los flujos del criterio V6 contra `http://127.0.0.1:8001`:
+> ⚠️ El preflight debe usar un socket Unix, igual que producción. La prueba
+> original sobre TCP ocultó DA-B4-1 porque Uvicorn sí confía por defecto en el
+> par `127.0.0.1` y corrigió el esquema con `X-Forwarded-Proto`.
+
+En otra sesión, hacer el smoke técnico contra el socket con
+`curl --unix-socket /tmp/ergocapacitacion-asgi-preflight.sock http://localhost/`.
+El recorrido funcional completo se ejecuta inmediatamente después del corte,
+contra el dominio HTTPS, con una identidad de prueba autorizada:
 
 | # | Flujo | Criterio |
 |---|---|---|
@@ -3130,7 +3211,7 @@ Marcar en §0.9 del roadmap:
 
 ### 📝 DOCUMENTACIÓN
 - [ ] D-1 — Sección «CIERRE DE FASE B» completa
-- [ ] D-2 — Roadmap §0.9: B.6 ✅ y **los 7 commits de la Fase B en ✅**, más la nota de la ventana
+- [ ] D-2 — Roadmap §0.9: B.6 ✅ y **los 8 commits de la Fase B en ✅**, más la nota de la ventana
 - [ ] D-3 — `README.md`: resumen de la Fase B con las métricas
 - [ ] Completar el hash de B.5
 
@@ -5637,6 +5718,7 @@ Se registra para que quede explícito qué **no** entra ahora y bajo qué condic
 | B.1 | `refactor(config): condicionar whitenoise para liberar la cadena asgi` | `config/settings.py` |
 | B.2 | `test(config): congelar el contrato asgi de la cadena de middlewares` | `config/tests.py` |
 | B.3 | `docs(infra): registrar el upgrade del servidor y las cuotas de systemd` | documentación |
+| B.4a | `fix(config): declarar https detras del proxy para csrf bajo asgi` | `config/settings.py`, `config/tests.py`, documentación |
 | B.4 | `docs(infra): migrar produccion de wsgi a asgi con worker de uvicorn` | systemd, nginx, `RUNBOOK` |
 | B.5 | `docs(infra): registrar la verificacion post-migracion asgi` | `RUNBOOK` |
 | B.6 | `docs(chat-ia): cerrar la fase B y abrir la ventana de estabilizacion` | documentación |
@@ -5675,6 +5757,7 @@ Se registra para que quede explícito qué **no** entra ahora y bajo qué condic
 | B.1 | ❌ | ✅ | ❌ | ✅ Sí — o `.env` sin desplegar |
 | B.2 | ❌ | ❌ | ❌ | ✅ Sí |
 | B.3 | ❌ | ✅ | ❌ | Sólo las cuotas |
+| B.4a | ❌ | ✅ | ❌ | ✅ Sí; volvería a depender del comportamiento WSGI |
 | B.4 | ❌ | ✅ | ❌ | ✅ Restaurar la unidad `.bak` |
 | C.1 – C.8 | ❌ | ✅ | ❌ | ✅ Sí — sin efecto en runtime |
 | C.9, C.10 | ❌ | ✅ | ❌ | ✅ Sí |
@@ -5758,5 +5841,5 @@ Se registra para que quede explícito qué **no** entra ahora y bajo qué condic
 
 **Fin del roadmap.**
 
-Total: **35 commits** — 11 en la Fase A, 7 en la Fase B, 17 en la Fase C.
+Total: **36 commits** — 11 en la Fase A, 8 en la Fase B, 17 en la Fase C.
 Estimación de esfuerzo: **≈ 18,5 jornadas** de desarrollo, más las intervenciones de Pablo y las ventanas de observación.

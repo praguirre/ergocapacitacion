@@ -1880,6 +1880,30 @@ Además, `import uvicorn.workers` **falla** si gunicorn no está instalado — y
 +uvicorn-worker>=0.3,<1.0
 ```
 
+#### Prerrequisito HTTPS detrás del proxy — DA-B4-1
+
+🔴 **VERIFICADO EN PRODUCCIÓN 10/08/2026.** El primer corte ASGI dejó todos
+los POST en 403. Gunicorn WSGI convertía implícitamente
+`X-Forwarded-Proto: https` en `wsgi.url_scheme=https`; Uvicorn, sobre socket
+Unix, recibe `scope["client"] = None` y no confía en esa cabecera con su lista
+por defecto de IPs. Django veía HTTP y rechazaba el `Origin` HTTPS del login.
+
+La auditoría anterior ya describía esta dependencia, pero la secuencia de esta
+propuesta no la incorporó. Antes de ASGI son obligatorios:
+
+```python
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = [
+    "https://ergosolutions.com.ar",
+    "https://www.ergosolutions.com.ar",
+]
+```
+
+Es seguro en esta topología porque el site nginx reemplaza
+`X-Forwarded-Proto` con `$scheme`; no reenvía un valor elegido por el cliente.
+No se usa `forwarded_allow_ips="*"`. Toda prueba paralela debe enlazar un
+socket Unix, no TCP loopback, para reproducir la topología productiva.
+
 #### Unidad systemd propuesta
 
 ```ini
@@ -1888,37 +1912,32 @@ Además, `import uvicorn.workers` **falla** si gunicorn no está instalado — y
 #    sudo cp /etc/systemd/system/ergocapacitacion.service{,.wsgi.bak}
 
 [Unit]
-Description=ErgoSolutions (Django ASGI)
-After=network.target postgresql.service
-Requires=postgresql.service
+Description=Gunicorn ASGI service for ergocapacitacion (ErgoSolutions)
+After=network.target
 
 [Service]
-Type=notify
 User=deploy
 Group=www-data
 WorkingDirectory=/srv/ergocapacitacion/app
 EnvironmentFile=/srv/ergocapacitacion/.env
+Environment="PATH=/srv/ergocapacitacion/venv/bin"
+UMask=007
 
 ExecStart=/srv/ergocapacitacion/venv/bin/gunicorn \
     config.asgi:application \
     --worker-class uvicorn_worker.UvicornWorker \
     --workers 2 \
-    --bind unix:/srv/ergocapacitacion/gunicorn.sock \
+    --bind unix:/srv/ergocapacitacion/ergocapacitacion.sock \
     --timeout 300 \
     --graceful-timeout 180 \
     --max-requests 2000 \
     --max-requests-jitter 200 \
-    --access-logfile /srv/ergocapacitacion/logs/access.log \
-    --error-logfile /srv/ergocapacitacion/logs/error.log
+    --access-logfile /srv/ergocapacitacion/logs/gunicorn-access.log \
+    --error-logfile /srv/ergocapacitacion/logs/gunicorn-error.log
 
 ExecReload=/bin/kill -s HUP $MAINPID
-Restart=on-failure
-RestartSec=5
-
-# Aislamiento de recursos: impide que un pico de Ergo ahogue a la segunda app.
-# Ajustar tras medir el RSS real por worker.
-MemoryMax=1200M
-CPUQuota=150%
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
@@ -1934,7 +1953,7 @@ WantedBy=multi-user.target
 | `--timeout 180` → **`300`** | Con workers async, `--timeout` es el latido de vida del worker, no el límite de una request. Se lo mantiene cómodamente por encima de `CHAT_AI_STREAM_TIMEOUT_SECONDS=120` para eliminar cualquier ambigüedad |
 | `--graceful-timeout 180` | Que un `reload` no corte streams SSE en curso |
 | `--max-requests` + jitter | Recicla workers periódicamente: red de seguridad barata contra fugas de memoria lentas |
-| `MemoryMax` / `CPUQuota` | Aislamiento respecto de la segunda aplicación |
+| `MemoryMax` / `CPUQuota` | Permanecen en el drop-in separado validado en B.3 |
 
 #### Qué pasa con Celery y con la segunda aplicación
 
@@ -2030,7 +2049,7 @@ for path in settings.MIDDLEWARE:
 
 ```nginx
 location / {
-    proxy_pass http://unix:/srv/ergocapacitacion/gunicorn.sock;
+    proxy_pass http://unix:/srv/ergocapacitacion/ergocapacitacion.sock;
     proxy_http_version 1.1;
     proxy_set_header Host              $host;
     proxy_set_header X-Real-IP         $remote_addr;
@@ -2042,7 +2061,7 @@ location / {
 # Server-Sent Events del Chat IA. Sin esto, nginx bufferea el stream
 # y los tokens llegan todos juntos al final.
 location /evaluacion-ergonomica/ayuda/chat/ {
-    proxy_pass http://unix:/srv/ergocapacitacion/gunicorn.sock;
+    proxy_pass http://unix:/srv/ergocapacitacion/ergocapacitacion.sock;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header Connection "";
@@ -2066,6 +2085,12 @@ location /static/ {
 }
 ```
 
+🟢 **REALIDAD PRODUCTIVA 10/08/2026:** el site real `ergosolutions` ya usa
+`ergocapacitacion.sock`, fija `X-Forwarded-Proto`, desactiva buffering y tiene
+timeout de 300 s en su `location /`. Por eso B.4 no edita ni recarga nginx;
+se limita a demostrar con `cmp` y `nginx -t` que quedó intacto. Esto reduce el
+riesgo sobre el proceso nginx compartido con CriaApp.
+
 > **Desvío verificado DA-B1-1.** La ruta propuesta inicialmente
 > (`/srv/ergocapacitacion/static/`) existe vacía y no es el `STATIC_ROOT` real.
 > El bloque efectivo del site `ergosolutions` ya usa la ruta corregida y sirve
@@ -2086,7 +2111,7 @@ La vista ya emite `X-Accel-Buffering: no` ([views.py:379](apps/ergonomia_886/hel
 | **2** | Correr **toda** la suite en local/CI con `--settings=config.test_settings`. **Los tests no se corren en producción.** | Suite en verde. En particular `help_ai/tests.py::test_asgi_response_exposes_first_delta_before_run_completion`, que ya cubre el streaming incremental bajo `AsyncClient` |
 | **3** | Verificar que nginx sirve `/static/`: `curl -I https://<dominio>/static/ayuda/css/help_widget.css` | HTTP 200 con `Server: nginx`, **sin** pasar por gunicorn |
 | **4** | Aplicar el cambio de `MIDDLEWARE` (WhiteNoise condicional) **todavía bajo WSGI** y reiniciar | El sitio conserva estilos. Este paso se despliega y valida **solo**, antes de tocar ASGI |
-| **5** | Levantar una segunda instancia con ASGI en un puerto alternativo, sin tocar el servicio productivo: `gunicorn config.asgi:application --worker-class uvicorn_worker.UvicornWorker --workers 2 --bind 127.0.0.1:8001` | Ver [7.6](#76-criterios-de-verificación-post-migración): recorrido funcional completo contra `:8001`, **incluida la generación de un informe profesional** (`asyncio.run()` en vista sync) |
+| **5** | Levantar una segunda instancia ASGI sobre un socket Unix temporal: `--bind unix:/tmp/ergocapacitacion-asgi-preflight.sock`. No usar TCP loopback: produjo un falso positivo en DA-B4-1. | Smoke técnico con `curl --unix-socket`; el recorrido autenticado completo se ejecuta contra HTTPS inmediatamente después del corte. |
 | **6** | Reemplazar la unidad systemd, `daemon-reload`, `restart` | `systemctl status` activo; `journalctl -u ergocapacitacion -n 100` sin errores |
 | **7** | Aplicar la configuración de nginx y recargar | `nginx -t` OK; `systemctl reload nginx` |
 | **8** | Verificación post-migración completa | Checklist de [7.6](#76-criterios-de-verificación-post-migración) |

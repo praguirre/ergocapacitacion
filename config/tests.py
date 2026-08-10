@@ -2,7 +2,7 @@ import re
 
 from django.conf import settings
 from django.http import HttpResponse
-from django.test import RequestFactory, SimpleTestCase, override_settings
+from django.test import Client, RequestFactory, SimpleTestCase, TestCase, override_settings
 
 from .middleware import ContentSecurityPolicyMiddleware
 
@@ -99,3 +99,47 @@ class AsgiStackContractTests(SimpleTestCase):
     def test_no_hay_routers_de_base_de_datos(self):
         """El ruteo debe ser explícito con .using(), nunca implícito."""
         self.assertEqual(getattr(settings, "DATABASE_ROUTERS", []), [])
+
+
+@override_settings(ALLOWED_HOSTS=["www.ergosolutions.com.ar"])
+class HttpsProxyContractTests(TestCase):
+    """nginx termina TLS y Django conserva el esquema HTTPS bajo ASGI."""
+
+    host = "www.ergosolutions.com.ar"
+    origin = f"https://{host}"
+
+    def test_x_forwarded_proto_https_marca_la_request_como_segura(self):
+        request = RequestFactory().get(
+            "/",
+            HTTP_HOST=self.host,
+            HTTP_X_FORWARDED_PROTO="https",
+        )
+
+        self.assertEqual(
+            settings.SECURE_PROXY_SSL_HEADER,
+            ("HTTP_X_FORWARDED_PROTO", "https"),
+        )
+        self.assertTrue(request.is_secure())
+        self.assertIn(self.origin, settings.CSRF_TRUSTED_ORIGINS)
+
+    def test_login_acepta_post_csrf_con_origin_https_detras_del_proxy(self):
+        client = Client(enforce_csrf_checks=True)
+        proxy_headers = {
+            "HTTP_HOST": self.host,
+            "HTTP_X_FORWARDED_PROTO": "https",
+        }
+        get_response = client.get("/auth/login/", **proxy_headers)
+        csrf_token = get_response.cookies["csrftoken"].value
+
+        response = client.post(
+            "/auth/login/",
+            {
+                "username": "cuenta-inexistente",
+                "password": "credencial-inexistente",
+                "csrfmiddlewaretoken": csrf_token,
+            },
+            HTTP_ORIGIN=self.origin,
+            **proxy_headers,
+        )
+
+        self.assertNotEqual(response.status_code, 403)

@@ -15,6 +15,17 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
+# nginx termina TLS y reemplaza X-Forwarded-Proto con el esquema real antes de
+# enviar la request por el socket Unix. Django debe confiar explícitamente en
+# esa cabecera: Gunicorn WSGI lo infería por defecto, pero Uvicorn no puede
+# identificar el par de un socket Unix y dejaba request.is_secure() en False.
+# El resultado era un 403 CSRF en todos los POST HTTPS bajo ASGI.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = [
+    "https://ergosolutions.com.ar",
+    "https://www.ergosolutions.com.ar",
+]
+
 # Para tests (django.test.Client usa host "testserver")
 if DEBUG and "testserver" not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append("testserver")

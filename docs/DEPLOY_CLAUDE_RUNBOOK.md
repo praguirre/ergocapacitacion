@@ -155,14 +155,32 @@ definir `SERVE_STATIC_WITH_WHITENOISE=True` y reiniciar. El backend
 `CompressedManifestStaticFilesStorage` permanece siempre activo para generar
 el manifiesto con hash y los archivos comprimidos.
 
+> **No ejecutar `source /srv/ergocapacitacion/.env`.** `EnvironmentFile` de
+> systemd y `django-environ` leen ese archivo directamente. Un valor de email
+> con `<…>` válido para esos parsers no es sintaxis válida de Bash y hace que
+> `source` aborte, dejando un entorno parcial.
+
 ### 3.8 Configuración Django para producción
 Claude debe verificar en el proyecto:
 - `SECRET_KEY` desde env
 - `DEBUG` desde env
 - `ALLOWED_HOSTS` desde env
 - `CSRF_TRUSTED_ORIGINS` si hay https + dominio
+- `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")` antes de
+  cualquier migración ASGI sobre socket Unix. nginx debe reemplazar, no sólo
+  reenviar, `X-Forwarded-Proto`.
 - `STATIC_ROOT` y `MEDIA_ROOT`
 - logging básico (opcional pero recomendado)
+
+El smoke ASGI paralelo debe usar un socket Unix temporal. Probar sobre
+`127.0.0.1` no es equivalente: Uvicorn confía en el par TCP loopback, mientras
+que un socket Unix no aporta `scope["client"]`; ese falso positivo ocultó un
+403 CSRF durante el primer intento de B.4.
+
+Para verificar un dump con modo `0600 root:root`, ejecutar `pg_restore --list`
+como root. Alternativamente, verificarlo como postgres **antes** de restringir
+propietario y permisos; nunca pedir a postgres que lea luego un archivo 0600
+propiedad de root.
 
 ### 3.9 Migraciones + collectstatic
 - `python manage.py migrate`
@@ -183,7 +201,7 @@ falla — y falla **en tiempo de request**, no al arrancar.
 
 ### 3.10 Gunicorn
 - Definir comando:
-  - `gunicorn config.wsgi:application --bind unix:/srv/ergocapacitacion/gunicorn.sock`
+  - `gunicorn config.asgi:application --worker-class uvicorn_worker.UvicornWorker --workers 2 --bind unix:/srv/ergocapacitacion/ergocapacitacion.sock`
 - Crear service systemd:
   - `/etc/systemd/system/ergocapacitacion.service`
 - Habilitar y arrancar:

@@ -2156,3 +2156,145 @@ relevar la unidad y el site nginx reales completos, confirmar el socket actual,
 tomar la latencia WSGI comparable y preparar rollback sin tocar CriaApp.
 
 ---
+
+## Commit B.4a — HTTPS explícito detrás del proxy para CSRF bajo ASGI
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-10 |
+| Rama | `feature/chat-ia-contexto` |
+| Hash | pendiente |
+| Hash anterior | `296eef0` (B.3) |
+| Fase | B |
+| Hallazgo / Condición | DA-B4-1, H10, C5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+Se declaró explícitamente que Django está detrás de un proxy HTTPS y se
+agregaron los dos orígenes canónicos de ErgoSolutions. Dos tests congelan que
+`X-Forwarded-Proto: https` produce una request segura y que un POST real al
+login con CSRF y origen HTTPS no vuelve a responder 403.
+
+El commit se incorporó al roadmap porque el primer corte ASGI reprodujo una
+dependencia preexistente que la auditoría de julio ya había documentado, pero
+que la propuesta y la secuencia original omitieron.
+
+### Archivos afectados
+| Archivo | Acción | Qué cambió |
+|---|---|---|
+| `config/settings.py` | modificado | `SECURE_PROXY_SSL_HEADER` y `CSRF_TRUSTED_ORIGINS`. |
+| `config/tests.py` | modificado | Dos pruebas del contrato HTTPS/CSRF. |
+| `docs/ROADMAP_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | Nuevo B.4a y preflight Unix representativo. |
+| `docs/PROPUESTA_CHAT_IA_CONTEXTO_Y_DATOS.md` | modificado | DA-B4-1, unidad y nginx reales. |
+| `docs/DEPLOY_CLAUDE_RUNBOOK.md` | modificado | Proxy HTTPS, `.env`, dump y socket Unix. |
+| `README.md` | modificado | Registro del correctivo. |
+
+### Decisiones de implementación
+- Corrección Django-side; no se usa `forwarded_allow_ips="*"` y no se cambia
+  nginx ni el bind Unix.
+- No se agregan todavía `SESSION_COOKIE_SECURE` ni `CSRF_COOKIE_SECURE`: son
+  hardening pendiente, no la causa del 403.
+- El preflight futuro usa socket Unix. TCP loopback no reproduce
+  `scope["client"] = None` y generó el falso positivo inicial.
+
+### Evidencia productiva del defecto y rollback
+
+```text
+RESPUESTA PRODUCCIÓN — B.4 / CORTE ASGI
+Resultado: NO APTO — ROLLBACK EJECUTADO
+
+El corte a ASGI se ejecutó correctamente a las 15:28:51 y superó toda la
+validación técnica (22/22 HTTP 200, NRestarts=0, sin traceback, 2 workers,
+límites conservados, CriaApp intacta).
+
+PERO al intentar iniciar sesión, /auth/login/ devolvió:
+    Prohibido (403) — Verificación CSRF fallida. Petición abortada.
+
+$ sudo systemctl daemon-reload ; sudo systemctl restart ergocapacitacion
+ROLLBACK_EJECUTADO
+
+systemctl is-active ergocapacitacion → active
+MainPID=34637
+ExecStart={ ... config.wsgi:application --workers 4 --timeout 180 ... }
+MemoryMax=1258291200   CPUQuotaPerSecUSec=1.500000s
+NRestarts=0
+ActiveEnterTimestamp=Mon 2026-08-10 15:37:32 -03
+
+ergo_rollback code=200 time=0.948985
+ergo_login    code=200 time=0.974776
+
+active / active / active
+ActiveEnterTimestampMonotonic = 5987488 / 8010913 / 8009681
+criaapp_post_rollback code=200 time=0.035428
+```
+
+Causa confirmada: Uvicorn no aplicó `X-Forwarded-Proto` sobre socket Unix
+porque `scope["client"]` era `None`; sin `SECURE_PROXY_SSL_HEADER`, Django
+construyó origen HTTP y rechazó el `Origin` HTTPS. WSGI funcionaba por el
+`secure_scheme_headers` implícito de Gunicorn.
+
+### Validación ejecutada
+
+La primera ejecución del test de login falló porque el host productivo no
+estaba en `ALLOWED_HOSTS` del propio caso y el GET devolvía 400 antes del token:
+
+```text
+$ .venv/bin/python manage.py test config --settings=config.test_settings
+ERROR: test_login_acepta_post_csrf_con_origin_https_detras_del_proxy
+KeyError: 'csrftoken'
+Ran 9 tests in 0.019s
+FAILED (errors=1)
+```
+
+Se acotó `ALLOWED_HOSTS` en la clase y se repitió todo:
+
+```text
+$ .venv/bin/python manage.py test config --settings=config.test_settings
+Ran 9 tests in 0.037s
+OK
+
+$ .venv/bin/python manage.py test apps --settings=config.test_settings
+Ran 290 tests in 4.095s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run --settings=config.test_settings
+No changes detected
+
+$ .venv/bin/python manage.py check --settings=config.test_settings
+System check identified no issues (0 silenced).
+```
+
+| Comprobación | Antes | Después |
+|---|---:|---:|
+| Tests de `config` | 7 | 9 |
+| Tests de `apps` | 290 | 290 |
+| HTTPS explícito detrás del proxy | No | Sí |
+| POST CSRF HTTPS cubierto | No | Sí |
+
+### Tests modificados y por qué
+Ninguno existente. Se agregaron dos pruebas de regresión.
+
+### Impacto en despliegue
+| Requisito | ¿Aplica? |
+|---|---|
+| `collectstatic` | No |
+| Reinicio de ErgoSolutions | Sí, primero bajo WSGI |
+| Migración de base | No |
+| nginx/PostgreSQL/CriaApp | Sin cambios |
+| Variable de entorno nueva | No |
+
+### Cómo se revierte
+`git revert <hash de B.4a>` y reinicio de `ergocapacitacion.service`. Bajo
+ASGI la reversión reintroduce el 403, por lo que sólo es válida tras restaurar
+WSGI.
+
+### Desvíos respecto del roadmap
+Se agregó un commit no previsto. La auditoría ya exigía
+`SECURE_PROXY_SSL_HEADER` antes de ASGI, pero el roadmap de Chat IA omitió ese
+orden. El preflight también era no representativo por usar TCP en vez de Unix.
+
+### Notas para el commit siguiente
+Desplegar B.4a y reiniciar todavía bajo WSGI; comprobar login con CSRF. Sólo
+después reintentar ASGI. El primer flujo post-corte vuelve a ser login.
+
+---

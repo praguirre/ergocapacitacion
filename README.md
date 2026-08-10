@@ -390,6 +390,12 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   exclusivo de ErgoSolutions aplica `MemoryMax=1200M` y `CPUQuota=150%`;
   CriaApp quedó formalmente fuera de alcance y sus tres servicios conservaron
   timestamps, estado activo y HTTP 200. La suite mantiene 290 pruebas.
+- **10/08/2026 — Chat IA B.4a / HTTPS detrás del proxy:** el primer corte ASGI
+  reveló que Gunicorn WSGI aportaba implícitamente el esquema HTTPS; Uvicorn
+  sobre socket Unix dejó el login en 403 CSRF y se ejecutó rollback. Django
+  ahora declara `SECURE_PROXY_SSL_HEADER` y los orígenes HTTPS canónicos; dos
+  tests de regresión elevan la suite de configuración de 7 a 9, mientras
+  `apps` conserva sus 290 pruebas.
 
 ### Registro de cambios documentales
 
