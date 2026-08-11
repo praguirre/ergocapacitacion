@@ -29,6 +29,9 @@ puntos de entrada del repositorio y de los asistentes de desarrollo.
 
 ## Planes de implementación
 
+- [Auditoría y plan — Canal de feedback para la beta profesional](AUDITORIA_Y_PLAN_FEEDBACK_BETA_PROFESIONALES_2026-08-11.md):
+  contrato aprobado de arquitectura, seguridad, implementación FB.0–FB.5,
+  validación y despliegue aditivo del canal privado para profesionales.
 - [Plan maestro — Fases 1 y 2](PLAN_MAESTRO_COMMITS_GENERAL_FASES_1_2.md)
 - [Plan maestro — Fases 3 a 6](PLAN_MAESTRO_COMMITS_FASES_3_4_5_6.md)
 - [Plan maestro — Etapa 3: Perfil Empresa](PLAN_MAESTRO_ETAPA_3_PERFIL_EMPRESA.md)

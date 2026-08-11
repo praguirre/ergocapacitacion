@@ -82,6 +82,16 @@ define el plan de trabajo priorizado para retomar el desarrollo.
 La [auditoría técnica de producción del 30/07/2026](docs/INFORME_TECNICO_AUDITORIA_PRODUCCION_2026-07-30.md)
 se conserva íntegra como fotografía histórica del despliegue auditado.
 
+### Canal de feedback beta — arquitectura aprobada
+
+La iniciativa del canal de comentarios para profesionales se rige por la
+[auditoría y plan de feedback beta](docs/AUDITORIA_Y_PLAN_FEEDBACK_BETA_PROFESIONALES_2026-08-11.md).
+El contrato aprobado (DA-FB-1 a DA-FB-10) exige acceso exclusivo para cuentas
+profesionales activas, persistencia durable previa al correo, adjuntos privados
+fuera de `MEDIA_ROOT`, destinatario fijo, límites de carga y separación CF-1
+entre la Ayuda Contextual y Ergobot docente. La implementación se ejecuta en la
+rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
+
 ### Integración del módulo de Ergonomía SRT 886/15
 
 - **02/08/2026 — Commit 0.0:** se abrió la rama
