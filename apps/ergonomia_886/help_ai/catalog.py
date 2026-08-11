@@ -28,6 +28,7 @@ PAGE_HELP_SLUGS = (
     "wizard_resumen",
     "factor",
     "exportaciones",
+    "feedback",
 ) + tuple(definition.help_slug for definition in FACTOR_DEFINITIONS)
 
 ALLOWED_HELP_SLUGS = frozenset(PAGE_HELP_SLUGS)

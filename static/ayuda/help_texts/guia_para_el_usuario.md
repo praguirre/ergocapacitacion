@@ -211,3 +211,10 @@ Serás redirigido automáticamente a la pantalla de inicio de sesión.
 ## 📌 Conclusión
 
 ErgoApp SRT 886 es una herramienta pensada para guiarte paso a paso a través del Protocolo de Evaluación Ergonómica exigido por la legislación argentina. Su diseño modular, intuitivo y seguro permite gestionar, registrar y controlar el estado de las evaluaciones desde una única plataforma.
+
+## Enviar errores o sugerencias de la beta
+
+Una cuenta profesional puede abrir Dashboard → Comentarios de la beta, o ir a
+`/dashboard/comentarios/`. Allí puede describir un error o mejora y adjuntar
+capturas o documentos. El canal no reemplaza la carga de la evaluación y no se
+deben incluir datos personales de trabajadores que no sean necesarios.

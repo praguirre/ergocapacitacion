@@ -66,10 +66,7 @@ class HelpContentCoverageTests(SimpleTestCase):
             Path(settings.BASE_DIR) / "static" / "ayuda" / "js" / "help_widget.js"
         ).read_text(encoding="utf-8")
         base_template = (
-            Path(settings.BASE_DIR)
-            / "templates"
-            / "ergonomia_886"
-            / "base_886.html"
+            Path(settings.BASE_DIR) / "templates" / "base_contextual_help.html"
         ).read_text(encoding="utf-8")
         self.assertIn("DOMPurify.sanitize", widget)
         self.assertIn('addEventListener("hidden.bs.offcanvas"', widget)
@@ -479,6 +476,17 @@ class ContentProfileTests(TestCase):
                     page_help_context(slug).version,
                 )
 
+    def test_feedback_guide_exposes_version_and_etag(self):
+        self.client.force_login(self.user)
+        response = self.client.get(
+            reverse("help_ai:help_guide", kwargs={"slug": "feedback"})
+        )
+        expected = page_help_context("feedback")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode(), expected.specific_markdown)
+        self.assertEqual(response["X-Help-Content-Version"], expected.version)
+        self.assertEqual(response["ETag"], f'"{expected.version}"')
+
 
 class PreambleTests(SimpleTestCase):
     """Hallazgos 1 y 2: el prompt afirma la pantalla y acota el descargo."""
@@ -493,6 +501,25 @@ class PreambleTests(SimpleTestCase):
                 self.assertIn(clausula, texto)
 
         self.assertNotIn("qué valores debe copiar en la consulta", texto)
+
+    def test_feedback_declara_ruta_y_limite_sobre_adjuntos(self):
+        from apps.ergonomia_886.help_ai.pages import page_info
+        from apps.ergonomia_886.help_ai.preamble import build_preamble
+
+        texto = build_preamble(slug="feedback", info=page_info("feedback"))
+        self.assertIn("/dashboard/comentarios/", texto)
+        self.assertIn("recibís, abrís ni leés", texto)
+        self.assertIn("contraseñas", texto)
+
+    @patch("apps.ergonomia_886.help_ai.agents.Agent")
+    def test_feedback_agent_knows_channel_without_openai_call(self, agent_cls):
+        contexto = page_help_context("feedback")
+        page_agent.cache_clear()
+        page_agent("feedback", contexto.version)
+        instrucciones = agent_cls.call_args.kwargs["instructions"]
+        self.assertIn("/dashboard/comentarios/", instrucciones)
+        self.assertIn("FB-XXXXXXXX", instrucciones)
+        self.assertIn("no recibe, abre", instrucciones)
 
     @patch("apps.ergonomia_886.help_ai.agents.Agent")
     def test_instructions_declaran_la_pantalla_actual(self, agent_cls):

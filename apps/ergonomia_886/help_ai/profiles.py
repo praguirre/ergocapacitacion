@@ -24,6 +24,7 @@ ANEXOS: dict[str, tuple[str, ...]] = {
     "menu_planillas": (),
     "crear": (),
     "exportaciones": (),
+    "feedback": (),
     "planilla1": ("guia_general_paso1",),
     "planilla2a": ("guia_general_paso2", "guia_general_paso2a"),
     "planilla2b": ("guia_general_paso2", "guia_general_paso2b"),

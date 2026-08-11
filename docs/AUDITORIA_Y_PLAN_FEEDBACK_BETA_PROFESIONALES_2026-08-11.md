@@ -1308,6 +1308,27 @@ Desvíos:             se modificó apps/dashboard/views.py, no previsto en el
                      home_company.html y preserva la regla de visibilidad.
 ```
 
+### FB.4 — Slug, base contextual y conocimiento de los bots
+
+```yaml
+Estado:              VALIDADO, pendiente de commit
+Tests específicos:  Ran 87 tests in 0.847s — OK
+Suite completa:      Ran 346 tests in 6.357s — OK
+Migraciones check:   No changes detected
+System check:        System check identified no issues (0 silenced)
+Herencia:            base_dashboard → base_contextual_help → base_886/feedback
+Slug feedback:       guía 200; ETag y X-Help-Content-Version coincidentes
+Assets:              feedback sin planilla_logic.js; páginas 886 con script
+CF-1:                apps help_ai y ergobot_ai separadas; sin cambios en
+                     normalize_thread() ni to_wire_thread(); sin API OpenAI
+Smoke autenticado:   login 302; feedback 200; listado 886 200; guía 200;
+                     servidor detenido y archivos temporales eliminados
+Static:              feedback.md y guia_para_el_usuario.md modificados;
+                     collectstatic requerido en producción
+Desvíos:             _help_widget_body.html recibió sólo la corrección del
+                     comentario que identifica su nueva base neutral
+```
+
 ---
 
 ## 20. Conclusión

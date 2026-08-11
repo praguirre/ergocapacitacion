@@ -121,6 +121,11 @@ PAGE_INFO: dict[str, PageInfo] = {
         "/evaluacion-ergonomica/documentos/<id>/",
         "descarga de planillas oficiales, protocolo completo, informes y paquete ZIP",
     ),
+    "feedback": PageInfo(
+        "Enviar comentarios de la beta",
+        "/dashboard/comentarios/",
+        "informar errores o mejoras y adjuntar evidencia privada para el equipo",
+    ),
     "home": PageInfo(
         "Módulo de Ergonomía SRT 886/15",
         "/evaluacion-ergonomica/",

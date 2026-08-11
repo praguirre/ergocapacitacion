@@ -58,6 +58,9 @@ class FeedbackAccessTests(TestCase):
         self.assertContains(response, 'enctype="multipart/form-data"')
         self.assertContains(response, "12 MiB")
         self.assertContains(response, "DNI")
+        self.assertContains(response, 'data-page-slug="feedback"')
+        self.assertContains(response, "ayuda/js/help_widget.js")
+        self.assertNotContains(response, "js/planilla_logic.js")
 
     def test_post_uses_authenticated_identity_and_prg(self):
         other = CustomUser.objects.create_professional(
@@ -94,6 +97,13 @@ class FeedbackAccessTests(TestCase):
             "/dashboard/comentarios/adjuntos/00000000-0000-0000-0000-000000000000/"
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_886_page_still_loads_planilla_logic(self):
+        self.client.force_login(self.professional)
+        response = self.client.get(reverse("ergonomia_886:evaluacion_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "js/planilla_logic.js")
+        self.assertContains(response, "ayuda/js/help_widget.js")
 
 
 class FeedbackDashboardTests(TestCase):

@@ -1,8 +1,10 @@
-{% extends "base_dashboard.html" %}
+{% extends "base_contextual_help.html" %}
+
+{% block help_slug %}feedback{% endblock %}
 
 {% block title %}Comentarios de la beta - ErgoSolutions{% endblock %}
 
-{% block content %}
+{% block content_with_help %}
 <main class="container py-4" aria-labelledby="feedback-title">
   <div class="row justify-content-center">
     <div class="col-lg-9 col-xl-8">

@@ -117,6 +117,16 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   una empresa sin perfil para que nunca renderice el dashboard profesional.
   La suite alcanza 341 pruebas y el smoke local verificó formulario 302 a
   login, dashboard 302 y login profesional 200. No hay cambios en `static/`.
+- **11/08/2026 — FB.4 / ayuda contextual y bots:** el widget pasó a
+  `base_contextual_help.html`; las pantallas 886 conservan `planilla_logic.js`
+  y feedback carga sólo la infraestructura neutral con `help_slug=feedback`.
+  La nueva guía explica categorías, evidencia, privacidad, tracking y fallos de
+  entrega. `help_ai` conoce la ruta y declara que no lee adjuntos; Ergobot
+  docente incorpora sólo la excepción acotada para orientar a profesionales y
+  trainees, sin compartir agentes ni historial. La suite alcanza 346 pruebas y
+  el smoke autenticado verificó feedback, módulo 886 y guía en HTTP 200 con
+  ETag/versión. Este commit modifica `static/ayuda/help_texts/`: producción
+  requiere ejecutar `collectstatic --noinput`.
 
 ### Integración del módulo de Ergonomía SRT 886/15
 
