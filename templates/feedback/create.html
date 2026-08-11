@@ -60,7 +60,8 @@
                   </div>
                 {% endif %}
                 {% if field.errors %}
-                  <div class="invalid-feedback d-block" role="alert">
+                  <div id="{{ field.id_for_label }}-errors"
+                       class="invalid-feedback d-block" role="alert">
                     {{ field.errors }}
                   </div>
                 {% endif %}

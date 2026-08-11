@@ -88,7 +88,11 @@ class FeedbackMailTests(TestCase):
         self.assertNotIn("\n", message.subject)
         self.assertIn(report.tracking_code, message.body)
         self.assertIn("Descripción para reproducir", message.body)
-        self.assertEqual(message.attachments[0][1], content)
+        attached_content = message.attachments[0][1]
+        if isinstance(attached_content, str):
+            attached_content = attached_content.encode("utf-8")
+        self.assertEqual(attached_content, content)
+        self.assertEqual(message.attachments[0][2], "text/plain")
         for secret in ("never-in-email", "sessionid", "csrftoken"):
             self.assertNotIn(secret, message.body)
 

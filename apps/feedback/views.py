@@ -44,4 +44,6 @@ def create_feedback(request):
     else:
         form = FeedbackForm()
 
+    if form.errors:
+        form.apply_error_accessibility()
     return render(request, "feedback/create.html", {"form": form})

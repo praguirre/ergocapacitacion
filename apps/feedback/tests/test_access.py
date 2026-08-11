@@ -62,6 +62,19 @@ class FeedbackAccessTests(TestCase):
         self.assertContains(response, "ayuda/js/help_widget.js")
         self.assertNotContains(response, "js/planilla_logic.js")
 
+    def test_invalid_form_links_errors_and_focus_to_the_first_field(self):
+        self.client.force_login(self.professional)
+        response = self.client.post(
+            self.url,
+            {"category": "bug", "privacy_confirmed": "on"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'aria-invalid="true"')
+        self.assertContains(response, 'aria-describedby="id_subject-errors"')
+        self.assertContains(response, 'id="id_subject-errors"')
+        self.assertContains(response, "autofocus")
+        self.assertContains(response, 'role="alert"')
+
     def test_post_uses_authenticated_identity_and_prg(self):
         other = CustomUser.objects.create_professional(
             email="forged@test.local",

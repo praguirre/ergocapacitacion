@@ -13,6 +13,7 @@ class FeedbackAttachmentInline(admin.TabularInline):
     can_delete = False
     fields = (
         "id",
+        "original_name",
         "content_type",
         "size_bytes",
         "sha256",

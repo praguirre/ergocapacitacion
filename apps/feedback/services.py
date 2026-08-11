@@ -7,13 +7,14 @@ import logging
 from datetime import timedelta
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, get_connection
 from django.db import transaction
 from django.utils import timezone
 
 from .models import FeedbackAttachment, FeedbackReport
-from .validators import sanitized_original_name, validate_feedback_attachment
+from .validators import safe_content_type, sanitized_original_name, validate_feedback_attachment
 
 
 logger = logging.getLogger("apps.feedback")
@@ -38,19 +39,22 @@ def enforce_rate_limit(professional) -> None:
 
 def create_feedback_report(*, professional, cleaned_data, user_agent="") -> FeedbackReport:
     """Guarda reporte y adjuntos atómicamente, limpiando archivos ante error."""
-    enforce_rate_limit(professional)
     attachments = cleaned_data.get("attachments", [])
     for upload in attachments:
         validate_feedback_attachment(upload)
     stored_files = []
     try:
         with transaction.atomic():
+            locked_professional = (
+                get_user_model().objects.select_for_update().get(pk=professional.pk)
+            )
+            enforce_rate_limit(locked_professional)
             report = FeedbackReport.objects.create(
-                professional=professional,
-                reporter_name=professional.display_name,
-                reporter_email=professional.email,
-                reporter_profession=professional.profession,
-                reporter_license_number=professional.license_number,
+                professional=locked_professional,
+                reporter_name=locked_professional.display_name,
+                reporter_email=locked_professional.email,
+                reporter_profession=locked_professional.profession,
+                reporter_license_number=locked_professional.license_number,
                 category=cleaned_data["category"],
                 subject=cleaned_data["subject"],
                 affected_screen=cleaned_data.get("affected_screen", ""),
@@ -71,7 +75,7 @@ def create_feedback_report(*, professional, cleaned_data, user_agent="") -> Feed
                 attachment = FeedbackAttachment(
                     report=report,
                     original_name=safe_name,
-                    content_type=(getattr(upload, "content_type", "") or "application/octet-stream")[:120],
+                    content_type=safe_content_type(upload._feedback_extension),
                     size_bytes=upload.size,
                     sha256=digest.hexdigest(),
                 )

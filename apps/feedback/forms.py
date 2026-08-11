@@ -90,3 +90,20 @@ class FeedbackForm(forms.Form):
         if total > MAX_TOTAL_ATTACHMENT_BYTES:
             raise ValidationError("Los adjuntos pueden pesar como máximo 12 MiB en total.")
         return attachments
+
+    def apply_error_accessibility(self):
+        """Marca campos inválidos y mueve el foco al primer error de campo."""
+        focused = False
+        for name in self.errors:
+            field = self.fields.get(name)
+            if field is None:
+                continue
+            field.widget.attrs["aria-invalid"] = "true"
+            error_id = f"{self[name].id_for_label}-errors"
+            described_by = field.widget.attrs.get("aria-describedby", "").split()
+            if error_id not in described_by:
+                described_by.append(error_id)
+            field.widget.attrs["aria-describedby"] = " ".join(described_by)
+            if not focused:
+                field.widget.attrs["autofocus"] = True
+                focused = True

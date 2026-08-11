@@ -127,6 +127,29 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   el smoke autenticado verificó feedback, módulo 886 y guía en HTTP 200 con
   ETag/versión. Este commit modifica `static/ayuda/help_texts/`: producción
   requiere ejecutar `collectstatic --noinput`.
+- **11/08/2026 — FB.5 / cierre integral:** pruebas punta a punta cubren POST,
+  storage, email, falla SMTP, retry y purga; el MIME del correo deriva del
+  formato validado y el rate limit serializa por profesional. La revisión real
+  de escritorio y móvil confirmó layout sin overflow, foco del primer error,
+  asociaciones ARIA y guía contextual sin errores de consola. La suite final
+  alcanza 350 pruebas. `makemigrations --check`, `check`, `git diff --check` y
+  `collectstatic --dry-run` terminan correctamente.
+
+#### Operación y rollback del canal de feedback
+
+- Despliegue: aplicar únicamente `feedback.0001_initial` mediante el flujo
+  normal de `migrate` y ejecutar `collectstatic --noinput` por los Markdown de
+  ayuda. No se requieren cambios de nginx, SMTP, dependencias ni CriaApp.
+- Reintento: `.venv/bin/python manage.py retry_feedback_emails --limit 20` o
+  `--report <uuid>`. El máximo por reporte es 5 y la salida no expone payloads.
+- Retención: primero `.venv/bin/python manage.py purge_feedback_attachments
+  --older-than-days 90 --dry-run`. La ejecución sin `--dry-run` es destructiva,
+  sólo alcanza reportes enviados y requiere autorización expresa.
+- Límites: 5 adjuntos, 5 MiB por archivo y 12 MiB acumulados; almacenamiento en
+  `private_media/feedback`, sin URL pública ni endpoint de descarga.
+- Rollback: volver al commit anterior, regenerar estáticos y reiniciar sólo
+  ErgoSolutions. La migración es aditiva: no ejecutar `migrate feedback zero`
+  ni borrar tablas o adjuntos, para preservar los reportes recibidos.
 
 ### Integración del módulo de Ergonomía SRT 886/15
 

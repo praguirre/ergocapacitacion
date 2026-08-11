@@ -22,6 +22,17 @@ MAX_OFFICE_UNCOMPRESSED_BYTES = 50 * 1024 * 1024
 ALLOWED_EXTENSIONS = frozenset(
     {".png", ".jpg", ".jpeg", ".webp", ".pdf", ".docx", ".xlsx", ".txt", ".csv"}
 )
+SAFE_CONTENT_TYPES = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".pdf": "application/pdf",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ".txt": "text/plain",
+    ".csv": "text/csv",
+}
 DANGEROUS_EXTENSIONS = frozenset(
     {
         ".exe", ".com", ".bat", ".cmd", ".sh", ".ps1", ".js", ".svg",
@@ -67,6 +78,14 @@ def validate_feedback_attachment(upload) -> None:
 
     upload._feedback_safe_name = safe_name
     upload._feedback_extension = extension
+
+
+def safe_content_type(extension: str) -> str:
+    """Devuelve un MIME derivado de la extensión ya validada, no del cliente."""
+    try:
+        return SAFE_CONTENT_TYPES[extension]
+    except KeyError as exc:
+        raise ValidationError("El formato del archivo no está permitido.") from exc
 
 
 def _read_upload(upload) -> bytes:
@@ -138,8 +157,6 @@ def _validate_office(data: bytes, extension: str) -> None:
                 name.startswith(required_prefix) for name in names
             ):
                 raise ValidationError("El documento Office no coincide con su extensión.")
-            if archive.testzip() is not None:
-                raise ValidationError("El documento Office contiene un miembro dañado.")
     except ValidationError:
         raise
     except (OSError, RuntimeError, zipfile.BadZipFile) as exc:

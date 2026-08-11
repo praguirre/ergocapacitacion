@@ -1238,7 +1238,7 @@ CriaApp:       sin cambios
 ### FB.0 — Contrato congelado
 
 ```yaml
-Estado:        VALIDADO, pendiente de commit
+Estado:        COMMIT a17e9dc5c36cd5d500669febe6a70fdbccfc2069
 Rama:          codex/beta-feedback
 Rama base:     codex/capacitaciones-firmas
 Commit base:   f9ea7a044233ce1e630f976500efe73221e912f3
@@ -1255,7 +1255,7 @@ Desvíos:       ninguno
 ### FB.1 — Modelo, storage privado y administración
 
 ```yaml
-Estado:              VALIDADO, pendiente de commit
+Estado:              COMMIT c14afee281a6c545a20bc26dab290e531a6c198e
 App:                 apps.feedback registrada en LOCAL_APPS
 Modelos:             FeedbackReport y FeedbackAttachment
 Migración:           feedback.0001_initial (CreateModel + 3 índices)
@@ -1272,7 +1272,7 @@ Desvíos:             purged_at se incluyó en 0001 porque DA-FB-8 y la única
 ### FB.2 — Validadores, email, reintento y purga
 
 ```yaml
-Estado:              VALIDADO, pendiente de commit
+Estado:              COMMIT 6703e735a3973fa41c03d0df63cfa6ad009af4b3
 Tests específicos:  Ran 24 tests in 0.226s — OK
 Suite completa:      Ran 334 tests in 5.690s — OK
 Migraciones check:   No changes detected
@@ -1291,7 +1291,7 @@ Desvíos:             ninguno
 ### FB.3 — Formulario, URL y tarjeta profesional
 
 ```yaml
-Estado:              VALIDADO, pendiente de commit
+Estado:              COMMIT d6b8d096075b0417cf7286ee59fa01d2c97b6202
 Tests específicos:  Ran 31 tests in 0.487s — OK
 Suite completa:      Ran 341 tests in 6.044s — OK
 Migraciones check:   No changes detected
@@ -1311,7 +1311,7 @@ Desvíos:             se modificó apps/dashboard/views.py, no previsto en el
 ### FB.4 — Slug, base contextual y conocimiento de los bots
 
 ```yaml
-Estado:              VALIDADO, pendiente de commit
+Estado:              COMMIT 490441033e3cd4a49c081ce176698a249c7d2c51
 Tests específicos:  Ran 87 tests in 0.847s — OK
 Suite completa:      Ran 346 tests in 6.357s — OK
 Migraciones check:   No changes detected
@@ -1328,6 +1328,47 @@ Static:              feedback.md y guia_para_el_usuario.md modificados;
 Desvíos:             _help_widget_body.html recibió sólo la corrección del
                      comentario que identifica su nueva base neutral
 ```
+
+### FB.5 — Verificación integral y cierre
+
+```yaml
+Estado:              VALIDADO, corresponde al propio commit FB.5
+Tests específicos:  Ran 36 tests in 0.518s — OK
+Suite completa:      Ran 350 tests in 6.649s — OK
+Migraciones check:   No changes detected
+System check:        System check identified no issues (0 silenced)
+Deploy check:        6 warnings preexistentes (W004, W008, W009, W012,
+                     W016 y W018); FB.0–FB.5 no agrega warnings de deploy
+Diff check:          OK
+Collectstatic:       --dry-run OK; producción requiere --noinput real
+Integración:         profesional → POST → storage privado → LocMem email OK
+Recuperación:        SMTP falla → reporte durable → retry → sent OK
+Retención:           dry-run preserva; purga temporal borra binario y conserva metadata
+Accesibilidad:       labels, privacidad, errores ARIA y foco inicial verificados
+QA visual:           1440x1000 y 390x844; sin overflow horizontal ni consola
+Procesos/temporales: servidor detenido; SQLite/cookies/capturas temporales eliminados
+Static modificado:   feedback.md y guia_para_el_usuario.md
+CriaApp:             fuera de alcance y sin cambios
+Desvíos:             MIME de adjuntos se normaliza desde la extensión validada
+                     y el rate limit bloquea la fila del profesional; ambas
+                     defensas conservan y refuerzan DA-FB-6 y RT-5/RT-7
+```
+
+### Cadena de commits de la iniciativa
+
+```text
+FB.0 a17e9dc5c36cd5d500669febe6a70fdbccfc2069
+FB.1 c14afee281a6c545a20bc26dab290e531a6c198e
+FB.2 6703e735a3973fa41c03d0df63cfa6ad009af4b3
+FB.3 d6b8d096075b0417cf7286ee59fa01d2c97b6202
+FB.4 490441033e3cd4a49c081ce176698a249c7d2c51
+FB.5 este mismo commit; su hash exacto se informa tras crearlo porque un commit
+     no puede contener criptográficamente su propio hash.
+```
+
+El push a `origin/codex/beta-feedback` se ejecuta inmediatamente después de
+crear FB.5. La confirmación remota y el hash completo final se consignan en la
+entrega del asistente, sin introducir un séptimo commit fuera del plan.
 
 ---
 
