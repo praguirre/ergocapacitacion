@@ -1288,6 +1288,26 @@ Static:              sin cambios; collectstatic no requerido por FB.2
 Desvíos:             ninguno
 ```
 
+### FB.3 — Formulario, URL y tarjeta profesional
+
+```yaml
+Estado:              VALIDADO, pendiente de commit
+Tests específicos:  Ran 31 tests in 0.487s — OK
+Suite completa:      Ran 341 tests in 6.044s — OK
+Migraciones check:   No changes detected
+System check:        System check identified no issues (0 silenced)
+Permisos:            anónimo 302; trainee/company/inactivo 403; profesional 200/302
+Identidad:           request.user prevalece sobre user_id/email/recipient del POST
+PRG:                 confirmado con redirect y mensaje con tracking code
+Smoke local:         /dashboard/comentarios/ 302 a /auth/login/;
+                     /dashboard/ 302; /auth/login/ 200; servidor detenido
+Static:              sin cambios; collectstatic no requerido por FB.3
+Desvíos:             se modificó apps/dashboard/views.py, no previsto en el
+                     inventario: una company sin CompanyProfile caía en
+                     home.html profesional. El fallback ahora usa
+                     home_company.html y preserva la regla de visibilidad.
+```
+
 ---
 
 ## 20. Conclusión

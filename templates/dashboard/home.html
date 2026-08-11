@@ -92,7 +92,7 @@
 
     <div class="row g-4 justify-content-center">
         <!-- Card EVALUACIONES (activo) -->
-        <div class="col-md-6 col-lg-5">
+        <div class="col-md-6 col-xl-4">
             <a href="{% url 'dashboard:evaluaciones_menu' %}" class="text-decoration-none">
                 <div class="card dashboard-card bg-dark border-primary h-100">
                     <div class="card-body text-center py-5 px-4">
@@ -113,7 +113,7 @@
         </div>
 
         <!-- Card CAPACITACIONES (activo) -->
-        <div class="col-md-6 col-lg-5">
+        <div class="col-md-6 col-xl-4">
             <a href="{% url 'dashboard:capacitaciones_menu' %}" class="text-decoration-none">
                 <div class="card dashboard-card bg-dark border-success h-100">
                     <div class="card-body text-center py-5 px-4">
@@ -127,6 +127,27 @@
                         </p>
                         <span class="badge bg-success fs-6 px-3 py-2">
                             <i class="bi bi-check-circle me-1"></i>Disponible
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card COMENTARIOS DE LA BETA (sólo dashboard profesional) -->
+        <div class="col-md-6 col-xl-4">
+            <a href="{% url 'dashboard:feedback:create' %}" class="text-decoration-none">
+                <div class="card dashboard-card bg-dark border-warning h-100">
+                    <div class="card-body text-center py-5 px-4">
+                        <div class="card-icon text-warning">
+                            <i class="bi bi-chat-square-text"></i>
+                        </div>
+                        <h3 class="card-title text-white">Comentarios de la beta</h3>
+                        <p class="card-text text-secondary mb-4">
+                            ¿Encontraste un error o tenés una propuesta? Enviá el
+                            detalle y adjuntá capturas o documentos para ayudarnos a mejorar.
+                        </p>
+                        <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                            <i class="bi bi-send me-1"></i>Enviar comentario
                         </span>
                     </div>
                 </div>

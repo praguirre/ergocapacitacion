@@ -108,6 +108,15 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   comandos `retry_feedback_emails` y `purge_feedback_attachments` operan por ID
   y estado; la purga exige invocación manual y ofrece `--dry-run`. La suite
   alcanza 334 pruebas. Este commit no modifica `static/`.
+- **11/08/2026 — FB.3 / canal profesional:** `/dashboard/comentarios/` ofrece
+  un formulario multipart accesible sólo a profesionales activos y aplica
+  POST/Redirect/GET con código `FB-XXXXXXXX`. El dashboard profesional muestra
+  la tercera tarjeta; empresas, trainees, inactivos y anónimos no pueden usar
+  el canal. Los snapshots siempre derivan de `request.user`, aunque el POST
+  intente falsificar identidad o destinatario. También se cerró el fallback de
+  una empresa sin perfil para que nunca renderice el dashboard profesional.
+  La suite alcanza 341 pruebas y el smoke local verificó formulario 302 a
+  login, dashboard 302 y login profesional 200. No hay cambios en `static/`.
 
 ### Integración del módulo de Ergonomía SRT 886/15
 

@@ -13,6 +13,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('capacitaciones/', views.capacitaciones_menu, name='capacitaciones_menu'),
     path('evaluaciones/', views.evaluaciones_menu, name='evaluaciones_menu'),
+    path('comentarios/', include('apps.feedback.urls')),
     path('capacitaciones/<slug:module_slug>/', views.modalidad_selector, name='modalidad_selector'),
     path('capacitaciones/<slug:module_slug>/links/', views.online_links, name='online_links'),
     path('capacitaciones/<slug:module_slug>/links/generar/', views.generate_link, name='generate_link'),

@@ -95,7 +95,13 @@ def _company_dashboard(request):
     try:
         cp = user.company_profile
     except CompanyProfile.DoesNotExist:
-        return render(request, "dashboard/home.html", {})
+        # Una cuenta empresa incompleta nunca debe caer en la plantilla del
+        # profesional, donde viven herramientas que no le corresponden.
+        return render(
+            request,
+            "dashboard/home_company.html",
+            {"company_profile": None, "stats": {}, "upcoming_events": ()},
+        )
 
     now = timezone.now()
 

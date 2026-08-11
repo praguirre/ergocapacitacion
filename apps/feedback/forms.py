@@ -63,6 +63,19 @@ class FeedbackForm(forms.Form):
         required=True,
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            css_class = "form-check-input" if name == "privacy_confirmed" else "form-control"
+            if isinstance(field.widget, forms.Select):
+                css_class = "form-select"
+            field.widget.attrs["class"] = css_class
+        self.fields["attachments"].widget.attrs.update(
+            {"accept": ".png,.jpg,.jpeg,.webp,.pdf,.docx,.xlsx,.csv,.txt", "aria-describedby": "attachments-help"}
+        )
+        for name in ("description", "reproduction_steps", "expected_result"):
+            self.fields[name].widget.attrs["rows"] = 4
+
     def clean_subject(self):
         subject = self.cleaned_data["subject"].strip()
         if "\r" in subject or "\n" in subject:
