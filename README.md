@@ -92,6 +92,14 @@ fuera de `MEDIA_ROOT`, destinatario fijo, límites de carga y separación CF-1
 entre la Ayuda Contextual y Ergobot docente. La implementación se ejecuta en la
 rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
 
+- **11/08/2026 — FB.1 / persistencia privada:** `apps.feedback` incorpora
+  `FeedbackReport` y `FeedbackAttachment`, snapshots del profesional, estado de
+  entrega, hashes y rutas físicas UUID. La migración aditiva
+  `feedback.0001_initial` crea sólo las dos tablas y sus índices; el storage
+  vive en `private_media/feedback`, no publica URLs y el admin expone
+  únicamente vistas de consulta sin acciones de envío o borrado. La suite sube
+  de 310 a 315 pruebas. Este commit no modifica archivos de `static/`.
+
 ### Integración del módulo de Ergonomía SRT 886/15
 
 - **02/08/2026 — Commit 0.0:** se abrió la rama

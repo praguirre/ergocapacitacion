@@ -56,6 +56,7 @@ LOCAL_APPS = [
     "apps.quiz",
     "apps.certificates",
     "apps.ergobot_ai",              # Chatbot docente. CF-1: NO se fusiona con help_ai
+    "apps.feedback",
 
     # ========================================================================
     # Módulo de Ergonomía SRT 886/15
@@ -208,6 +209,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Evidencia sensible del módulo SRT 886/15. Vive fuera de MEDIA_ROOT para que
 # ni Django en DEBUG ni el servidor web puedan entregarla por /media/.
 PRIVATE_ERGONOMIA_886_ROOT = BASE_DIR / "private_media" / "ergonomia_886"
+PRIVATE_FEEDBACK_ROOT = BASE_DIR / "private_media" / "feedback"
 
 # =====================================================
 # ✅ COMMIT 7: EMAIL CONFIGURATION
@@ -237,6 +239,21 @@ SERVER_EMAIL = env("SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 
 # Email del administrador que recibe copia de certificados
 ADMIN_EMAIL = env("ADMIN_EMAIL", default="")
+
+# Canal de feedback de la beta profesional. El destinatario funcional no es
+# secreto; las credenciales continúan exclusivamente en la configuración SMTP.
+FEEDBACK_RECIPIENT_EMAIL = env(
+    "FEEDBACK_RECIPIENT_EMAIL",
+    default="consultaergosolutions@gmail.com",
+)
+FEEDBACK_EMAIL_TIMEOUT_SECONDS = env.int("FEEDBACK_EMAIL_TIMEOUT_SECONDS", default=20)
+FEEDBACK_RATE_LIMIT = env.int("FEEDBACK_RATE_LIMIT", default=5)
+FEEDBACK_RATE_WINDOW_SECONDS = env.int("FEEDBACK_RATE_WINDOW_SECONDS", default=3600)
+FEEDBACK_ATTACHMENT_RETENTION_DAYS = env.int(
+    "FEEDBACK_ATTACHMENT_RETENTION_DAYS",
+    default=90,
+)
+FEEDBACK_MAX_EMAIL_ATTEMPTS = env.int("FEEDBACK_MAX_EMAIL_ATTEMPTS", default=5)
 
 # Validar credenciales SMTP en producción
 _is_smtp_backend = "smtp" in EMAIL_BACKEND.lower()
@@ -315,6 +332,11 @@ LOGGING = {
         "apps.quiz": {
             "handlers": ["console"],
             "level": "INFO",
+        },
+        "apps.feedback": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
         # --- Módulo de Ergonomía SRT 886/15 ---
         # Los logs registran identificadores y métricas, NUNCA payloads ni

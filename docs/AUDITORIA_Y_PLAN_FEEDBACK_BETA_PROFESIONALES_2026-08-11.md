@@ -1252,6 +1252,23 @@ Código nuevo:  ninguno; FB.0 es exclusivamente documental
 Desvíos:       ninguno
 ```
 
+### FB.1 — Modelo, storage privado y administración
+
+```yaml
+Estado:              VALIDADO, pendiente de commit
+App:                 apps.feedback registrada en LOCAL_APPS
+Modelos:             FeedbackReport y FeedbackAttachment
+Migración:           feedback.0001_initial (CreateModel + 3 índices)
+Tests específicos:  Ran 5 tests in 0.006s — OK
+Suite completa:      Ran 315 tests in 6.031s — OK
+Migraciones check:   No changes detected
+System check:        System check identified no issues (0 silenced)
+Pruebas negativas:  file.url falla cerrado; path privado fuera de MEDIA_ROOT
+Static:              sin cambios; collectstatic no requerido por FB.1
+Desvíos:             purged_at se incluyó en 0001 porque DA-FB-8 y la única
+                     migración prevista lo requieren para el comando de FB.2
+```
+
 ---
 
 ## 20. Conclusión
