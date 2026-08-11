@@ -1269,6 +1269,25 @@ Desvíos:             purged_at se incluyó en 0001 porque DA-FB-8 y la única
                      migración prevista lo requieren para el comando de FB.2
 ```
 
+### FB.2 — Validadores, email, reintento y purga
+
+```yaml
+Estado:              VALIDADO, pendiente de commit
+Tests específicos:  Ran 24 tests in 0.226s — OK
+Suite completa:      Ran 334 tests in 5.690s — OK
+Migraciones check:   No changes detected
+System check:        System check identified no issues (0 silenced)
+Formatos aceptados:  PNG, JPEG, WebP, PDF, DOCX, XLSX, CSV y TXT genuinos
+Pruebas negativas:  ejecutable renombrado, SVG, ZIP, Office falso, traversal,
+                     ZIP bomb, exceso de miembros/píxeles, 6 archivos,
+                     5 MiB individual, 12 MiB total, CR/LF, SMTP excepción,
+                     retorno 0 y sexto reporte por hora
+Correo:              To fijo; From settings; Reply-To del snapshot; LocMem/mocks
+Operación:           retry con máximo 5; purga sent-only y --dry-run
+Static:              sin cambios; collectstatic no requerido por FB.2
+Desvíos:             ninguno
+```
+
 ---
 
 ## 20. Conclusión

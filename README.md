@@ -99,6 +99,15 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   vive en `private_media/feedback`, no publica URLs y el admin expone
   únicamente vistas de consulta sin acciones de envío o borrado. La suite sube
   de 310 a 315 pruebas. Este commit no modifica archivos de `static/`.
+- **11/08/2026 — FB.2 / validación y entrega:** los adjuntos admitidos son PNG,
+  JPEG, WebP, PDF, DOCX, XLSX, CSV y TXT, validados por firma o estructura con
+  defensas contra ZIP bombs, traversal, macros y descompresión de imágenes. Se
+  aplican 5 archivos, 5 MiB individuales y 12 MiB acumulados. El reporte se
+  persiste antes del SMTP, se usa `DEFAULT_FROM_EMAIL`, destinatario fijo y
+  email profesional sólo en `Reply-To`; fallos quedan reintentables. Los
+  comandos `retry_feedback_emails` y `purge_feedback_attachments` operan por ID
+  y estado; la purga exige invocación manual y ofrece `--dry-run`. La suite
+  alcanza 334 pruebas. Este commit no modifica `static/`.
 
 ### Integración del módulo de Ergonomía SRT 886/15
 
