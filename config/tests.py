@@ -36,6 +36,16 @@ class ContentSecurityPolicyMiddlewareTests(SimpleTestCase):
         policy = response["Content-Security-Policy"]
         self.assertRegex(policy, re.compile(r"script-src 'self' 'nonce-[^']+'"))
         self.assertIn("script-src-attr 'none'", policy)
+        self.assertIn(
+            "frame-src https://www.youtube-nocookie.com",
+            policy,
+        )
+        directives = policy.split("; ")
+        self.assertNotIn("frame-src https:", directives)
+        self.assertNotIn(
+            "script-src https://www.youtube-nocookie.com",
+            policy,
+        )
         self.assertEqual(response["Referrer-Policy"], "same-origin")
         self.assertEqual(
             response["Permissions-Policy"],

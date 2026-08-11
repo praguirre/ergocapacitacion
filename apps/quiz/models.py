@@ -46,6 +46,15 @@ class QuizAttempt(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="quiz_attempts")
     module = models.ForeignKey(TrainingModule, on_delete=models.CASCADE, related_name="quiz_attempts")
+    capacitacion_link = models.ForeignKey(
+        "training.CapacitacionLink",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="quiz_attempts",
+        verbose_name="Link de origen",
+        help_text="Link validado al iniciar el intento online.",
+    )
 
     started_at = models.DateTimeField(default=timezone.now)
     submitted_at = models.DateTimeField(null=True, blank=True)

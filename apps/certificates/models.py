@@ -46,6 +46,19 @@ class Certificate(models.Model):
         on_delete=models.CASCADE,
         related_name="certificate"
     )
+    responsible_professional = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="issued_training_certificates",
+        verbose_name="Profesional responsable",
+    )
+    # Snapshot documental: un cambio posterior del perfil no reescribe lo
+    # declarado al momento de la emisión.
+    responsible_name = models.CharField(max_length=200, blank=True, default="")
+    responsible_profession = models.CharField(max_length=100, blank=True, default="")
+    responsible_license_number = models.CharField(max_length=50, blank=True, default="")
     
     # El PDF se guarda en MEDIA_ROOT/certificates/
     pdf_file = models.FileField(upload_to="certificates/", blank=True, null=True)

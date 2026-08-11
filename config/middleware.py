@@ -39,6 +39,7 @@ class ContentSecurityPolicyMiddleware:
             "font-src 'self'",
             "img-src 'self' data:",
             "connect-src 'self'",
+            "frame-src https://www.youtube-nocookie.com",
             "object-src 'none'",
             "base-uri 'self'",
             "frame-ancestors 'self'",

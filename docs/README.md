@@ -6,6 +6,10 @@ puntos de entrada del repositorio y de los asistentes de desarrollo.
 
 ## Estado y auditoría
 
+- [Auditoría de videos y firmantes documentales — 11/08/2026](AUDITORIA_CAPACITACIONES_VIDEOS_Y_FIRMANTES_2026-08-11.md):
+  rastrea la regresión del reproductor, elimina el responsable fijo del
+  certificado online y verifica las fuentes de identidad de documentos
+  presenciales y planillas SRT 886/15.
 - [**Estado técnico consolidado — 01/08/2026**](ESTADO_TECNICO_CONSOLIDADO_2026-08-01.md):
   **documento de referencia vigente y punto de partida para continuar el
   desarrollo.** Consolida la auditoría de producción con el estado real del

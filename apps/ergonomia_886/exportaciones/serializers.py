@@ -54,7 +54,7 @@ def build_cabecera(evaluacion: Evaluacion) -> Dict[str, Any]:
     profesion = getattr(profesional, "profession", "") or ""
     matricula = getattr(profesional, "license_number", "") or ""
     firma_higiene = (
-        f"{nombre_profesional}\n{profesion} - Matrícula {matricula}"
+        f"{nombre_profesional}\n{profesion}\nMatrícula {matricula}"
         if nombre_profesional and profesion and matricula
         else ""
     )

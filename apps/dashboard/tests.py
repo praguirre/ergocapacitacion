@@ -173,6 +173,16 @@ class PublicLinkTests(TestCase):
         self.link.refresh_from_db()
         self.assertEqual(self.link.access_count, 1)
 
+    def test_entrada_sin_ref_limpia_una_atribucion_anterior(self):
+        session = self.client.session
+        session["capacitacion_ref"] = str(self.link.id)
+        session.save()
+
+        response = self.client.get("/c/test-module/")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn("capacitacion_ref", self.client.session)
+
 
 @override_settings(STORAGES=TEST_STORAGES)
 class PersonalizedTrainingAccessTests(TestCase):

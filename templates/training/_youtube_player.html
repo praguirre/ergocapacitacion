@@ -1,0 +1,30 @@
+{% comment %}
+Reproductor compartido por las modalidades online y presencial.
+La CSP autoriza exclusivamente youtube-nocookie.com como origen de frames;
+el enlace externo queda disponible como contingencia.
+{% endcomment %}
+{% if module.youtube_id %}
+  <div class="ratio ratio-16x9">
+    <iframe
+      src="https://www.youtube-nocookie.com/embed/{{ module.youtube_id }}"
+      title="Video de capacitación: {{ module.title }}"
+      loading="lazy"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+    </iframe>
+  </div>
+  <div class="text-center p-2 border-top border-secondary">
+    <a class="btn btn-outline-light btn-sm"
+       target="_blank"
+       rel="noopener"
+       href="https://www.youtube.com/watch?v={{ module.youtube_id }}">
+      <i class="bi bi-youtube me-1" aria-hidden="true"></i>
+      Abrir en YouTube si el reproductor no carga
+    </a>
+  </div>
+{% else %}
+  <div class="text-center text-secondary p-5" role="status">
+    El video de esta capacitación todavía no está disponible.
+  </div>
+{% endif %}

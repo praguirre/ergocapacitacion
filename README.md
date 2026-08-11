@@ -396,6 +396,16 @@ se conserva íntegra como fotografía histórica del despliegue auditado.
   ahora declara `SECURE_PROXY_SSL_HEADER` y los orígenes HTTPS canónicos; dos
   tests de regresión elevan la suite de configuración de 7 a 9, mientras
   `apps` conserva sus 290 pruebas.
+- **11/08/2026 — Videos y firmantes documentales:** las capacitaciones online
+  y presenciales vuelven a reproducir el video dentro de ErgoSolutions mediante
+  `youtube-nocookie.com`, autorizado por un `frame-src` de host único. Los
+  intentos online conservan el link de origen y los certificados congelan el
+  nombre, profesión y matrícula del profesional que lo creó; se eliminó el
+  responsable escrito en el generador PDF. La planilla presencial y las
+  exportaciones SRT quedaron protegidas con pruebas adversariales de dos
+  profesionales, y la aclaración SRT separa profesión y matrícula para evitar
+  truncamiento. La auditoría completa y el plan de despliegue están en
+  `docs/AUDITORIA_CAPACITACIONES_VIDEOS_Y_FIRMANTES_2026-08-11.md`.
 
 ### Registro de cambios documentales
 

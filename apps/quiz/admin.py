@@ -20,7 +20,10 @@ class QuestionAdmin(admin.ModelAdmin):
 
 @admin.register(QuizAttempt)
 class QuizAttemptAdmin(admin.ModelAdmin):
-    list_display = ("user", "module", "score", "passed", "started_at", "submitted_at")
+    list_display = (
+        "user", "module", "capacitacion_link", "score", "passed",
+        "started_at", "submitted_at",
+    )
     list_filter = ("module", "passed", "started_at")
     search_fields = ("user__email", "user__cuil")
 

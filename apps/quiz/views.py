@@ -16,6 +16,10 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from apps.training.models import TrainingModule
+from apps.training.attribution import (
+    responsible_professional,
+    session_link_for_module,
+)
 from .models import QuizAttempt, QuizState, Question
 from .services import (
     TOTAL_QUESTIONS, PASS_SCORE,
@@ -24,6 +28,30 @@ from .services import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _online_link_or_error(request, module):
+    """Resuelve la atribución exigida para intentos de trabajadores."""
+    link = session_link_for_module(request, module)
+    if not getattr(request.user, "is_trainee", False):
+        return link, None
+    if link is None:
+        return None, JsonResponse(
+            {
+                "error": "missing_training_link",
+                "detail": "Accedé a la capacitación desde el link enviado por el profesional.",
+            },
+            status=403,
+        )
+    if responsible_professional(link) is None:
+        return None, JsonResponse(
+            {
+                "error": "invalid_training_responsible",
+                "detail": "El link no tiene un profesional responsable válido.",
+            },
+            status=409,
+        )
+    return link, None
 
 
 def _json_body(request):
@@ -42,6 +70,9 @@ def start(request, module_slug):
     Retorna la primera pregunta.
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+    capacitacion_link, error = _online_link_or_error(request, module)
+    if error is not None:
+        return error
 
     with transaction.atomic():
         # Usamos select_for_update para evitar condiciones de carrera si el usuario hace doble click
@@ -58,7 +89,11 @@ def start(request, module_slug):
                 "last_passed": state.last_passed,
             }, status=403)
 
-        attempt = QuizAttempt.objects.create(user=request.user, module=module)
+        attempt = QuizAttempt.objects.create(
+            user=request.user,
+            module=module,
+            capacitacion_link=capacitacion_link,
+        )
         return JsonResponse({
             "attempt_id": attempt.id,
             "next": next_question_payload(module, 1),
@@ -209,11 +244,22 @@ def _create_certificate(user, module, attempt) -> dict | None:
     from apps.certificates.emailer import send_certificate_emails
     
     try:
+        link = attempt.capacitacion_link
+        if link is None:
+            raise ValueError("El intento no conserva el link de capacitación")
+        responsible = responsible_professional(link)
+        if responsible is None:
+            raise ValueError("El link no tiene un profesional responsable completo")
+
         # 1. Crear registro del certificado
         cert = Certificate.objects.create(
             user=user,
             module=module,
             attempt=attempt,
+            responsible_professional=responsible,
+            responsible_name=responsible.display_name,
+            responsible_profession=responsible.profession,
+            responsible_license_number=responsible.license_number,
         )
         logger.info(f"Certificado creado: {cert.id} para {user.email}")
         
@@ -223,6 +269,9 @@ def _create_certificate(user, module, attempt) -> dict | None:
             module=module,
             issued_at=cert.issued_at,
             valid_until=cert.valid_until,
+            responsible_name=cert.responsible_name,
+            responsible_profession=cert.responsible_profession,
+            responsible_license_number=cert.responsible_license_number,
         )
         
         # 3. Guardar PDF en FileField (usa UUID para evitar colisiones)
@@ -333,6 +382,9 @@ def retake(request, module_slug):
     Delega el reset de contadores a reset_if_unlocked() via is_locked().
     """
     module = get_object_or_404(TrainingModule, slug=module_slug, is_active=True)
+    capacitacion_link, error = _online_link_or_error(request, module)
+    if error is not None:
+        return error
 
     with transaction.atomic():
         state = QuizState.objects.select_for_update().filter(user=request.user, module=module).first()
@@ -350,7 +402,11 @@ def retake(request, module_slug):
 
         # Si llegamos aquí, el usuario está desbloqueado y puede rendir
         # No hacemos reset manual - reset_if_unlocked() ya lo hizo si era necesario
-        attempt = QuizAttempt.objects.create(user=request.user, module=module)
+        attempt = QuizAttempt.objects.create(
+            user=request.user,
+            module=module,
+            capacitacion_link=capacitacion_link,
+        )
 
     return JsonResponse({
         "attempt_id": attempt.id,

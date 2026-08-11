@@ -336,3 +336,27 @@ class AclaracionesFirmaCF5Tests(TestCase):
         payload = serializers.build_planilla1_payload(self.evaluacion)
         self.assertEqual(payload["aclaraciones_firma"]["empleador"], "")
         self.assertNotIn("Ana Empleadora", self._textos_planilla1())
+
+    def test_la_firma_higiene_pertenece_al_autor_de_la_evaluacion(self):
+        intruso = get_user_model().objects.create_professional(
+            email="firma-intruso@test.local",
+            username="firma-intruso",
+            password="prueba",
+            full_name="Profesional Incorrecto",
+            profession="Otra profesión",
+            license_number="MP 000",
+        )
+
+        payload = serializers.build_planilla1_payload(self.evaluacion)
+        firma = payload["aclaraciones_firma"]["higiene_seguridad"]
+
+        self.assertEqual(
+            firma,
+            "Patricia Profesional\nLic. en Higiene y Seguridad\nMatrícula MN 12345",
+        )
+        self.assertNotIn(intruso.display_name, firma)
+
+        textos = self._textos_planilla1()
+        self.assertIn("Patricia Profesional", textos)
+        self.assertIn("Lic. en Higiene y Seguridad", textos)
+        self.assertIn("Matrícula MN 12345", textos)

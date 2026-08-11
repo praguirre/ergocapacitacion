@@ -579,7 +579,13 @@ class ChatSecurityTests(TestCase):
         self.assertIn("script-src-attr 'none'", policy)
         self.assertIn("object-src 'none'", policy)
         self.assertIn("connect-src 'self'", policy)
-        self.assertNotIn("https:", policy)
+        # El reproductor docente es la única excepción remota y sólo puede
+        # cargarse como frame. CF-1 conserva separadas ambas apps de IA.
+        self.assertIn("frame-src https://www.youtube-nocookie.com", policy)
+        directives = policy.split("; ")
+        self.assertNotIn("frame-src https:", directives)
+        self.assertNotIn("script-src https:", policy)
+        self.assertNotIn("connect-src https:", policy)
         self.assertEqual(response["Referrer-Policy"], "same-origin")
 
     def test_chat_accepts_only_post_json_without_query_state(self):

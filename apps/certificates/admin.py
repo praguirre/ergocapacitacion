@@ -14,6 +14,7 @@ class CertificateAdmin(admin.ModelAdmin):
         "id_short",
         "user_email",
         "module",
+        "responsible_professional",
         "issued_at",
         "valid_until",
         "is_valid_display",
@@ -21,13 +22,24 @@ class CertificateAdmin(admin.ModelAdmin):
         "pdf_link",
     )
     list_filter = ("module", "email_sent", "issued_at")
-    search_fields = ("user__email", "user__cuil", "user__first_name", "user__last_name")
-    readonly_fields = ("id", "issued_at", "attempt")
+    search_fields = (
+        "user__email", "user__cuil", "user__first_name", "user__last_name",
+        "responsible_name", "responsible_professional__email",
+    )
+    readonly_fields = (
+        "id", "issued_at", "attempt", "responsible_professional",
+        "responsible_name", "responsible_profession",
+        "responsible_license_number",
+    )
     date_hierarchy = "issued_at"
     
     fieldsets = (
         ("Información del Certificado", {
-            "fields": ("id", "user", "module", "attempt")
+            "fields": (
+                "id", "user", "module", "attempt",
+                "responsible_professional", "responsible_name",
+                "responsible_profession", "responsible_license_number",
+            )
         }),
         ("Validez", {
             "fields": ("issued_at", "valid_until")
