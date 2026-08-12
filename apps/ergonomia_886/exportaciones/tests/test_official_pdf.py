@@ -206,6 +206,43 @@ class BuildersTests(TestCase):
         self.assertIn("4 h", textos)
         self.assertIn("3", textos)
 
+    def test_planilla1_separa_datos_de_rotulos_y_numeros_de_tarea(self):
+        self.evaluacion.direccion_establecimiento = "Av. San Juan 3060"
+        self.evaluacion.save(update_fields=["direccion_establecimiento"])
+        Planilla1.objects.create(
+            evaluacion=self.evaluacion,
+            area_sector="Oficina San Juan",
+            puesto_trabajo="Administrativo",
+            nombres_trabajadores="Trabajador Uno Trabajador Dos",
+            tarea_1="Desarrollo de software con notebook",
+            tarea_2="Revisión de documentación",
+            tarea_3="Reuniones de coordinación",
+        )
+
+        pagina = build_planilla1_pages(
+            serializers.build_planilla1_payload(self.evaluacion)
+        )[0]
+        operaciones = {op.text: op for op in pagina.ops}
+
+        posiciones_cabecera = {
+            "Av. San Juan 3060": (184.0, 132.0),
+            "Oficina San Juan": (166.0, 150.0),
+            "Administrativo": (138.0, 178.0),
+            "Trabajador Uno Trabajador Dos": (174.0, 378.0),
+        }
+        for texto, (x, ancho) in posiciones_cabecera.items():
+            with self.subTest(texto=texto):
+                self.assertEqual(operaciones[texto].x, x)
+                self.assertEqual(operaciones[texto].max_width, ancho)
+
+        for tarea in (
+            "Desarrollo de software con notebook",
+            "Revisión de documentación",
+            "Reuniones de coordinación",
+        ):
+            with self.subTest(tarea=tarea):
+                self.assertEqual(operaciones[tarea].y, 496.0)
+
     def test_planilla2a_sin_instancia_no_marca_nada(self):
         payloads = serializers.build_planilla2_payloads(self.evaluacion, "planilla2a")
         paginas = build_planilla2_pages("planilla2a", payloads)

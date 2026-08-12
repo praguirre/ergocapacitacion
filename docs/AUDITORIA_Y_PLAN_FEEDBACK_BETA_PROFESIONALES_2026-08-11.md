@@ -1354,6 +1354,39 @@ Desvíos:             MIME de adjuntos se normaliza desde la extensión validada
                      defensas conservan y refuerzan DA-FB-6 y RT-5/RT-7
 ```
 
+### Correcciones predeploy — 12/08/2026
+
+Después de cerrar FB.5, la revisión manual previa al despliegue detectó tres
+detalles de presentación. Pablo autorizó expresamente corregirlos, validar,
+documentar, crear un commit adicional y actualizar el prompt de producción.
+Este cierre no rediseña el canal de feedback ni altera DA-FB-1 a DA-FB-10.
+
+```yaml
+Estado:              VALIDADO, corresponde al propio commit predeploy
+Base del ajuste:     aaed0c5aa0beaad995362f7ad6c022cce5d47657
+Landing:             Evaluaciones = Disponible; desarrollo = IAinsane
+Mapa Planilla 1:     schema 1.0.1; cuatro campos con margen horizontal
+Tareas 1/2/3:        línea base y=505 → y=496
+Tests específicos:  Ran 31 tests in 0.248s — OK (28 → 31)
+Suite completa:      Ran 353 tests in 5.091s — OK (350 → 353)
+Migraciones check:   No changes detected
+System check:        System check identified no issues (0 silenced)
+Deploy check:        6 warnings preexistentes (W004, W008, W009, W012,
+                     W016 y W018); el ajuste no agrega warnings
+Diff check:          OK
+QA PDF:              Planilla 1 generada y renderizada a 180 dpi; Dirección,
+                     Área/Sector, Puesto, trabajadores y tareas 1/2/3 sin solapes
+Smoke local:         landing HTTP 200 en 1440x1000 y 390x844; badge y footer
+                     verificados; sin overflow horizontal ni errores de consola
+Procesos/temporales: servidor detenido; SQLite, PDF y PNG temporales eliminados
+Static del ajuste:   sin cambios; collectstatic continúa requerido por FB.4
+Migraciones nuevas:  ninguna; producción aplica sólo feedback.0001_initial
+CriaApp:             fuera de alcance y sin cambios
+Desvíos:             el primer smoke con SQLite :memory: no conservó las tablas
+                     entre procesos; se repitió correctamente con una base
+                     temporal aislada dentro de /private/tmp
+```
+
 ### Cadena de commits de la iniciativa
 
 ```text
@@ -1362,13 +1395,15 @@ FB.1 c14afee281a6c545a20bc26dab290e531a6c198e
 FB.2 6703e735a3973fa41c03d0df63cfa6ad009af4b3
 FB.3 d6b8d096075b0417cf7286ee59fa01d2c97b6202
 FB.4 490441033e3cd4a49c081ce176698a249c7d2c51
-FB.5 este mismo commit; su hash exacto se informa tras crearlo porque un commit
-     no puede contener criptográficamente su propio hash.
+FB.5 aaed0c5aa0beaad995362f7ad6c022cce5d47657
+PREDEPLOY este mismo commit; su hash exacto se informa tras crearlo porque un
+          commit no puede contener criptográficamente su propio hash.
 ```
 
-El push a `origin/codex/beta-feedback` se ejecuta inmediatamente después de
-crear FB.5. La confirmación remota y el hash completo final se consignan en la
-entrega del asistente, sin introducir un séptimo commit fuera del plan.
+FB.0–FB.5 permanecen intactos y en el orden aprobado. El commit PREDEPLOY fue
+solicitado después de esa cadena para corregir la landing y la geometría de la
+Planilla 1 antes de desplegar. La confirmación remota y el hash completo final
+se consignan en la entrega del asistente.
 
 ---
 

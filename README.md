@@ -134,6 +134,16 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   asociaciones ARIA y guía contextual sin errores de consola. La suite final
   alcanza 350 pruebas. `makemigrations --check`, `check`, `git diff --check` y
   `collectstatic --dry-run` terminan correctamente.
+- **12/08/2026 — correcciones predeploy:** la landing pública identifica
+  Evaluaciones como `Disponible` y atribuye el desarrollo a **IAinsane**. El
+  mapa oficial de Planilla 1 sube a `1.0.1`: Dirección, Área/Sector, Puesto y
+  Nombre del trabajador/es ganan margen respecto de sus rótulos sin invadir
+  otras celdas, y las tareas 1, 2 y 3 bajan de `y=505` a `y=496` para separarse
+  de su número impreso. Tres regresores nuevos elevan la suite a 353 pruebas.
+  El PDF se generó y renderizó para QA visual; la landing respondió HTTP 200
+  en escritorio y móvil, sin overflow ni errores de consola. Este cierre no
+  agrega migraciones ni modifica `static/`; `collectstatic --noinput` sigue
+  siendo obligatorio por los recursos de ayuda incorporados en FB.4.
 
 #### Operación y rollback del canal de feedback
 
