@@ -646,3 +646,105 @@ Ninguno. Los tres anexos se copiaron íntegros de §8.4.3, §8.4.4 y §8.4.5 de 
 **Regla permanente:** cada vez que se edite una de las cuatro partes hay que regenerar
 `guia_capacitaciones_general.md` con el mismo `cat`, en el mismo orden. Editar una parte sin
 regenerar el maestro rompe la prueba de partición del commit 7.1.
+
+---
+
+## Commit 2.3 — Documentos específicos de las ocho pantallas
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se escribieron los ocho documentos de pantalla: el que se muestra en la pestaña **Guía** y el
+que el prompt declara como «referencia principal». Antes de darlos por buenos se contrastaron
+sus afirmaciones contra las plantillas reales del proyecto (R-7: gana la pantalla).
+
+### Archivos creados o modificados
+
+En `static/ayuda/capacitaciones/help_texts/`: `home.md`, `capacitaciones_menu.md`,
+`modalidad_selector.md`, `online_links.md`, `share_link.md`, `presencial_capacitacion.md`,
+`presencial_quiz.md` y `presencial_historial.md`.
+
+### Verificaciones ejecutadas
+
+Contraste de las etiquetas documentadas contra las plantillas reales:
+
+```
+Generar Link                                  templates/dashboard/online_links.html
+Iniciar Presencial                            templates/dashboard/modalidad_selector.html
+Gestionar Links                               templates/dashboard/modalidad_selector.html
+Volver al menú de capacitaciones              templates/dashboard/modalidad_selector.html
+No hay capacitaciones generales cargadas aún  templates/dashboard/capacitaciones_menu.html
+No hay links generados                        templates/dashboard/online_links.html
+Próximamente / Personalizada                  templates/dashboard/capacitaciones_menu.html
+Finalizar Quiz                                templates/presencial/quiz.html
+Repetir Quiz                                  templates/presencial/quiz.html
+Generar Planilla de Asistencia                templates/presencial/quiz.html
+Volver a la Capacitación                      templates/presencial/quiz.html
+Todavía no realizaste capacitaciones presenciales  templates/presencial/historial.html
+Anterior / Siguiente                          templates/presencial/quiz.html
+```
+
+Cobertura del catálogo y descubrimiento por `staticfiles`:
+
+```
+faltan: ninguno
+vacíos: ninguno
+archivos en el directorio: 14
+
+OK  ayuda/capacitaciones/help_texts/home.md
+OK  ayuda/capacitaciones/help_texts/capacitaciones_menu.md
+OK  ayuda/capacitaciones/help_texts/modalidad_selector.md
+OK  ayuda/capacitaciones/help_texts/online_links.md
+OK  ayuda/capacitaciones/help_texts/share_link.md
+OK  ayuda/capacitaciones/help_texts/presencial_capacitacion.md
+OK  ayuda/capacitaciones/help_texts/presencial_quiz.md
+OK  ayuda/capacitaciones/help_texts/presencial_historial.md
+
+$ grep -nE '<patrones de CV-5>' *.md
+✅ CV-5 OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.763s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.380s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+Los 14 archivos son los 6 globales más los 8 de pantalla; el decimoquinto,
+`modulo_ergonomia.md`, llega en el commit 2.4.
+
+### Desvíos respecto del roadmap
+
+**Una diferencia menor entre el corpus y la pantalla, resuelta a favor de la ortografía.**
+`templates/presencial/capacitacion.html:91` rotula el botón como «Iniciar Quiz de
+**Evaluacion**», sin tilde. El corpus lo escribe con tilde, en `presencial_capacitacion.md` y
+en `anexo_presencial.md`.
+
+Se decidió **no** replicar el error ortográfico: la diferencia es de una tilde, no de
+contenido, y ningún usuario deja de reconocer el botón por eso. La regla «gana la pantalla»
+existe para que el corpus no describa elementos que no existen o que se llaman de otra
+manera, y ése no es el caso. Queda anotado como defecto menor de interfaz, ajeno al alcance
+de este roadmap: corregir la plantilla del área presencial no es parte de este trabajo.
+
+Sin otros desvíos. Los ocho documentos se copiaron íntegros de §8.4.7 a §8.4.14 de la
+PROPUESTA y todas sus demás afirmaciones se verificaron contra las plantillas reales.
+
+### Notas para el commit siguiente
+
+El commit 2.4 exige **verificación previa de CV-6**: confirmar que el módulo `ergonomia` no
+es personalizado antes de escribirle una ficha pública.

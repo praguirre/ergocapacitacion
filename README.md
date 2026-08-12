@@ -563,6 +563,12 @@ Registro de avance:
   `cat guia_capacitaciones_nucleo.md anexo_modalidades.md anexo_online.md anexo_presencial.md > guia_capacitaciones_general.md`.
   Una prueba compara ambos lados para impedir que el maestro y sus partes diverjan en
   silencio: el maestro es el respaldo que reciben los slugs sin perfil declarado.
+- **12/08/2026 — Commit 2.3:** se redactaron los ocho documentos de pantalla del corpus, uno
+  por slug del catálogo. Cada uno describe los botones, etiquetas y estados que
+  efectivamente existen en su plantilla: las afirmaciones se contrastaron una por una contra
+  `templates/dashboard/` y `templates/presencial/` antes de darlas por buenas. Es el
+  contenido que alimenta la pestaña «Guía» y que el prompt declara como referencia principal
+  de la pantalla. Con esto el corpus llega a 14 documentos.
 
 ### Registro de cambios documentales
 
