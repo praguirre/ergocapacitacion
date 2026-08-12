@@ -495,6 +495,27 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   truncamiento. La auditoría completa y el plan de despliegue están en
   `docs/AUDITORIA_CAPACITACIONES_VIDEOS_Y_FIRMANTES_2026-08-11.md`.
 
+### Ayuda contextual del área de Capacitaciones
+
+Trabajo en curso sobre la rama `feat/ayuda-contextual-capacitaciones`. Replica en el área de
+Capacitaciones el sistema de ayuda contextual (estática y dinámica) que ya existe en el
+módulo de Evaluación Ergonómica SRT 886/15, como **app independiente**
+(`apps.training.help_ai`), con catálogo de pantallas, corpus y prefijo de URL propios.
+
+Documentos de referencia:
+
+- Diseño auditado: `docs/AUDITORIA_Y_PROPUESTA_AYUDA_CONTEXTUAL_CAPACITACIONES_2026-08-12.md`
+- Plan de ejecución commit por commit: `docs/ROADMAP_AYUDA_CONTEXTUAL_CAPACITACIONES.md`
+- Bitácora de trazabilidad: `docs/BITACORA_AYUDA_CONTEXTUAL_CAPACITACIONES.md`
+
+Registro de avance:
+
+- **12/08/2026 — Commit 0.0:** se abrió la rama `feat/ayuda-contextual-capacitaciones` y se
+  creó la bitácora de trazabilidad con el estado de partida verificado sobre `4187b10`:
+  `manage.py check` sin issues, 354 pruebas en verde, 52 pruebas de
+  `apps.ergonomia_886.help_ai` en verde y ninguna migración pendiente. Esa es la línea base
+  que ningún commit posterior puede empeorar.
+
 ### Registro de cambios documentales
 
 - **30/07/2026:** se creó `docs/`, se incorporó el informe técnico de auditoría
