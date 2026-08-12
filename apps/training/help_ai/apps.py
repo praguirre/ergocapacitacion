@@ -11,7 +11,7 @@ class CapacitacionesHelpAiConfig(AppConfig):
 
     ⚠️ CF-1 bis: esta app NO se fusiona con la ayuda del módulo 886 ni con el
     asistente docente. Son tres productos distintos que comparten proveedor de
-    modelo. El chequeo que lo verifica se registra en el commit 4.4.
+    modelo. Ver `checks.py` de este mismo paquete.
 
     ⚠️ Nomenclatura obligatoria en este paquete: ningún archivo `.py` de
     `apps/training/` —fuera de los de prueba— puede contener la ruta punteada
@@ -25,3 +25,7 @@ class CapacitacionesHelpAiConfig(AppConfig):
     name = "apps.training.help_ai"
     label = "capacitaciones_help_ai"
     verbose_name = "Capacitaciones · Ayuda contextual"
+
+    def ready(self):
+        # Registra el chequeo de aislamiento (CF-1 bis).
+        from . import checks  # noqa: F401

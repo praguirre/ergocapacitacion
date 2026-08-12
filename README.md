@@ -628,6 +628,16 @@ Registro de avance:
   «ayuda» y ese patrón capturaría la ruta. Es una dependencia implícita del orden de
   declaración, del tipo que se rompe en una refactorización futura, así que quedó fijada con
   un comentario en el archivo y con una prueba de resolución.
+- **12/08/2026 — Commit 4.4:** se agregó `checks.py`, que convierte **CF-1 bis** en un error
+  de arranque de Django. **DA-1 / DA-2:** los tres asistentes de IA del proyecto —la ayuda
+  del módulo 886, el Ergobot docente y esta ayuda de Capacitaciones— son productos distintos
+  que comparten proveedor de modelo y nada más; ninguno importa código de los otros. El
+  chequeo analiza el **AST** de cada archivo del paquete, de modo que un comentario que
+  mencione otra app no produce un falso positivo. Se verificó introduciendo a propósito un
+  import prohibido: el arranque falló con `capacitaciones_help_ai.E002` y se revirtió de
+  inmediato. La contrapartida honesta de esta separación es la duplicación de la maquinaria
+  SSE, declarada como deuda técnica en la auditoría. Fase 4 cerrada: los endpoints ya
+  responden.
 
 ### Registro de cambios documentales
 

@@ -1408,3 +1408,132 @@ proyecto: hay que confirmar con `git status --short` antes de continuar.
 
 Además, `checks.py` debe construir su tupla `PROHIBIDOS` en tiempo de ejecución, por la
 restricción registrada en el commit 1.1.
+
+---
+
+## Commit 4.4 — Chequeo de aislamiento CF-1 bis
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 4 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+
+Se convirtió CV-4 en un error de arranque de Django, con la misma técnica de análisis por AST
+que usa el módulo 886 para su propia condición CF-1. Se completó además el `AppConfig` con el
+`ready()` que se había diferido en el commit 1.1, ahora que `checks.py` existe.
+
+**Por qué hace falta un chequeo propio.** El chequeo del módulo 886 sólo analiza dos
+directorios: su propio `help_ai` y el del asistente docente. La app nueva no dispararía ese
+chequeo aunque importara del 886. Confiar en ese hueco sería aprovechar una omisión, no
+cumplir una condición.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/checks.py` — creado, con `check_cf1_bis_ayuda_capacitaciones`.
+- `apps/training/help_ai/apps.py` — se agregó el método `ready()`.
+
+### Verificaciones ejecutadas
+
+Con el código limpio:
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+```
+
+**Prueba destructiva controlada**, para comprobar que el chequeo detecta de verdad una
+violación. Se introdujo a propósito un import prohibido en `pages.py`:
+
+```
+$ printf '\nfrom apps.ergonomia_886.help_ai import catalog  # PRUEBA TEMPORAL\n' \
+    >> apps/training/help_ai/pages.py
+
+$ .venv/bin/python manage.py check
+SystemCheckError: System check identified some issues:
+
+ERRORS:
+?: (capacitaciones_help_ai.E002) CF-1 bis violada: la ayuda de Capacitaciones importa
+   'apps.ergonomia_886' en apps/training/help_ai/pages.py.
+	HINT: Los tres asistentes de IA del proyecto son productos distintos. Duplicá lo que
+	necesites o promové el código común a un paquete neutral, pero no importes entre apps.
+
+System check identified 1 issue (0 silenced).
+```
+
+**Reversión inmediata y confirmación de árbol limpio:**
+
+```
+$ git checkout -- apps/training/help_ai/pages.py
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ git status --short apps/training/help_ai/pages.py
+(vacío)
+```
+
+**CV-4 sobre toda la app:**
+
+```
+$ grep -rn "ergonomia_886\|ergobot_ai" apps/training/help_ai/*.py
+apps/training/help_ai/checks.py:34:    for paquete in ("ergonomia_886", "ergobot_ai")
+```
+
+Única coincidencia: la construcción de la tupla `PROHIBIDOS` en `checks.py`, que es
+exactamente una de las dos excepciones que el roadmap admite. Ningún `import` real, en ningún
+archivo.
+
+```
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.739s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.383s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+**Uno, ya anticipado en el commit 1.1.** La PROPUESTA escribe en §8.6.3:
+
+```python
+PROHIBIDOS = (
+    "apps.ergonomia_886",
+    "apps.ergobot_ai",
+)
+```
+
+Esa forma haría fallar la prueba `test_apps_training_no_importa_el_modulo_886`, que barre
+como texto plano todos los `.py` de `apps/training/`. Se escribió, con semántica idéntica:
+
+```python
+_RAIZ_DE_APPS = "apps"
+
+PROHIBIDOS = tuple(
+    f"{_RAIZ_DE_APPS}.{paquete}"
+    for paquete in ("ergonomia_886", "ergobot_ai")
+)
+```
+
+Los valores en tiempo de ejecución son exactamente los mismos —`apps.ergonomia_886` y
+`apps.ergobot_ai`—, como demuestra el mensaje de error de la prueba destructiva, que los
+imprime resueltos. El motivo del rodeo quedó documentado en el docstring del propio archivo.
+
+El docstring se redactó además en prosa, sin rutas punteadas, por la misma restricción.
+
+### Notas para el commit siguiente
+
+Fase 4 cerrada: los endpoints responden, aunque ninguna pantalla los consume todavía. La
+Fase 5 es **la única que toca el módulo 886**, y lo hace en un solo punto autorizado por
+R-11: una aserción de `apps/ergonomia_886/help_ai/tests.py`. El commit 5.1 debe ejecutar la
+suite del 886 **antes** de tocar la aserción, para dejar registrada la evidencia de que la
+red de pruebas detectó el cambio del widget.
