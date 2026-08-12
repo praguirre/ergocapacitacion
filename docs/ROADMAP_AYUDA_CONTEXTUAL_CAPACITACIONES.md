@@ -288,7 +288,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 | Commit | Título | Estado |
 |---|---|:---:|
 | 0.0 | Crear rama de trabajo y bitácora | ✅ |
-| 0.1 | Crear la estructura de directorios | ⬜ |
+| 0.1 | Crear la estructura de directorios | ⚠️ |
 
 ### Fase 1 — Fundaciones: la app y el contrato del slug
 

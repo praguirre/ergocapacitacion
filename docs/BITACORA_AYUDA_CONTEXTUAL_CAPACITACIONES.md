@@ -69,7 +69,7 @@ commit 0.0. Todas las demás mediciones coinciden exactamente con la línea base
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `c59fa8e` |
 | Fase | 0 |
 | Estado | ✅ Completado |
 
@@ -121,3 +121,103 @@ incorporan a la rama. Ningún otro desvío.
 El commit 1.1 debe escribir `apps.py` **sin** el método `ready()`; se agrega recién en el
 commit 4.4, junto con `checks.py`. Incluirlo antes produce `ModuleNotFoundError` en el
 arranque.
+
+---
+
+## Commit 0.1 — Crear la estructura de directorios
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 0 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+
+Se crearon los tres directorios donde vivirán la app, las plantillas y el corpus, y se
+confirmó que ninguno colisiona con estructuras existentes. Git no versiona directorios
+vacíos, de modo que este commit lleva únicamente documentación: deja constancia del punto de
+partida estructural.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/` — directorio creado (vacío por ahora; se puebla en el commit 1.1).
+- `templates/capacitaciones/` — directorio creado (se puebla en el commit 5.2).
+- `static/ayuda/capacitaciones/help_texts/` — directorio creado (se puebla en la Fase 2).
+- `docs/BITACORA_AYUDA_CONTEXTUAL_CAPACITACIONES.md` — entrada del commit 0.1.
+- `docs/ROADMAP_AYUDA_CONTEXTUAL_CAPACITACIONES.md` — commit 0.1 marcado ✅.
+- `README.md` — registro del cambio.
+
+### Verificaciones ejecutadas
+
+```
+$ ls -1 apps/training/
+__init__.py
+__pycache__
+admin.py
+apps.py
+attribution.py
+content
+fixtures
+help_ai          ← nuevo
+management
+migrations
+models.py
+tests.py
+urls.py
+urls_public.py
+views.py
+views_public.py
+
+$ ls -1 templates/
+accounts
+base.html
+base_contextual_help.html
+base_dashboard.html
+base_landing.html
+capacitaciones   ← nuevo
+company
+dashboard
+ergonomia_886
+feedback
+includes
+landing
+presencial
+quiz
+training
+
+$ ls -1 static/ayuda/
+capacitaciones   ← nuevo
+css
+help_texts
+js
+
+$ ls -1 static/ayuda/help_texts/ | wc -l
+50
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 5.093s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+**Cantidad de documentos del corpus del 886.** §0.6 y la verificación del commit 0.1 dan por
+sentado que `static/ayuda/help_texts/` contiene **51** documentos. El conteo real es **50**
+archivos, todos `.md`. Es una diferencia en el dato declarado del estado de partida, no un
+cambio producido por este trabajo: el directorio del 886 no fue tocado (CV-3). Conforme a
+R-7 se registra y se adopta **50** como el número real a preservar en las verificaciones
+posteriores.
+
+### Notas para el commit siguiente
+
+Sin novedad. El commit 1.1 crea `__init__.py` y `apps.py` (sin `ready()`) y da de alta la app
+en `LOCAL_APPS`, inmediatamente después de `"apps.training"`.

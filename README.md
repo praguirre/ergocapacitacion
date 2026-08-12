@@ -515,6 +515,12 @@ Registro de avance:
   `manage.py check` sin issues, 354 pruebas en verde, 52 pruebas de
   `apps.ergonomia_886.help_ai` en verde y ninguna migración pendiente. Esa es la línea base
   que ningún commit posterior puede empeorar.
+- **12/08/2026 — Commit 0.1:** se creó la estructura de directorios del sistema:
+  `apps/training/help_ai/` (la app), `templates/capacitaciones/` (el cuerpo del panel) y
+  `static/ayuda/capacitaciones/help_texts/` (el corpus). El corpus del módulo 886 vive en
+  `static/ayuda/help_texts/` y **no se toca**: son directorios distintos, por colisión de
+  nombres de documento (`home.md`, `dashboard.md`, `crear.md`, `factor.md`). Se registró que
+  ese corpus contiene 50 documentos, no 51 como declaraba el estado de partida del roadmap.
 
 ### Registro de cambios documentales
 
