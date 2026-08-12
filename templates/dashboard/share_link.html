@@ -1,9 +1,11 @@
-{% extends "base_dashboard.html" %}
+{% extends "base_capacitacion_help.html" %}
 {% load django_bootstrap5 %}
+
+{% block capacitacion_help_slug %}share_link{% endblock %}
 
 {% block title %}Compartir Link - ErgoSolutions{% endblock %}
 
-{% block content %}
+{% block content_with_help %}
 <div class="container-fluid py-4 px-4">
 
     <nav aria-label="breadcrumb" class="mb-3">

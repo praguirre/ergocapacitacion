@@ -1,9 +1,11 @@
-{% extends "base_dashboard.html" %}
+{% extends "base_capacitacion_help.html" %}
 {% load static %}
+
+{% block capacitacion_help_slug %}online_links{% endblock %}
 
 {% block title %}Links Online - {{ module.title }} - ErgoSolutions{% endblock %}
 
-{% block content %}
+{% block content_with_help %}
 <div class="container-fluid py-4 px-4">
 
     <!-- Breadcrumb -->
@@ -117,6 +119,6 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_js_with_help %}
 <script src="{% static 'js/online_links.js' %}"></script>
 {% endblock %}

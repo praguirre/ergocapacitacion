@@ -655,6 +655,14 @@ Registro de avance:
   rompería tres de sus pruebas. Los dos contratos quedan así aislados y ambos siguen siendo
   verificables. La base **consume** `extra_css` y `extra_js` para inyectar el widget y
   reexpone `extra_css_with_help` / `extra_js_with_help` para las pantallas hijas.
+- **12/08/2026 — Commit 6.1:** se activó la ayuda contextual en las cuatro pantallas de
+  `templates/dashboard/` (`capacitaciones_menu`, `modalidad_selector`, `online_links`,
+  `share_link`): cambio de base, declaración del slug propio y renombre de los bloques que la
+  base ahora consume. **Cuidado a tener presente:** una plantilla hija que conserve
+  `{% block extra_js %}` sobrescribe el de la base y el panel abre vacío, sin `marked`, sin
+  `DOMPurify` y sin el widget, **sin ningún error visible en consola ni en el servidor**. Por
+  eso la verificación de esta fase comprueba en el HTML servido que estén el `<script>` del
+  widget, su CSS, el botón `#helpToggle` y el `data-page-slug` correcto de cada pantalla.
 
 ### Registro de cambios documentales
 

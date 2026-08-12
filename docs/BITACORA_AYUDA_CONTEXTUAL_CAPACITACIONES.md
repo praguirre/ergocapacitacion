@@ -1731,3 +1731,112 @@ en prosa.
 `DOMPurify` y sin `help_widget.js`. No hay error en consola ni en el servidor: simplemente no
 funciona. Por eso cada commit de la fase verifica que la respuesta HTML **contiene** la
 etiqueta `<script>` del widget.
+
+---
+
+## Commit 6.1 — Cablear las cuatro pantallas del dashboard
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 6 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se cambió la base, se declaró el slug y se renombraron los bloques en las cuatro plantillas
+de `templates/dashboard/`. La estructura previa de cada archivo coincidía exactamente con la
+que describía §4.3 de la PROPUESTA, incluido el `extra_js` de `online_links.html`, que es el
+único de las cuatro que había que renombrar.
+
+### Archivos creados o modificados
+
+| Plantilla | Slug | Bloques renombrados |
+|---|---|---|
+| `dashboard/capacitaciones_menu.html` | `capacitaciones_menu` | `content` |
+| `dashboard/modalidad_selector.html` | `modalidad_selector` | `content` |
+| `dashboard/online_links.html` | `online_links` | `content`, `extra_js` |
+| `dashboard/share_link.html` | `share_link` | `content` |
+
+### Verificaciones ejecutadas
+
+Sin bloques huérfanos: ninguna conserva `{% block content %}` ni `{% block extra_js %}`.
+
+```
+── templates/dashboard/capacitaciones_menu.html
+1:{% extends "base_capacitacion_help.html" %}
+3:{% block capacitacion_help_slug %}capacitaciones_menu{% endblock %}
+7:{% block content_with_help %}
+── templates/dashboard/modalidad_selector.html
+1:{% extends "base_capacitacion_help.html" %}
+3:{% block capacitacion_help_slug %}modalidad_selector{% endblock %}
+7:{% block content_with_help %}
+── templates/dashboard/online_links.html
+1:{% extends "base_capacitacion_help.html" %}
+4:{% block capacitacion_help_slug %}online_links{% endblock %}
+8:{% block content_with_help %}
+122:{% block extra_js_with_help %}
+── templates/dashboard/share_link.html
+1:{% extends "base_capacitacion_help.html" %}
+4:{% block capacitacion_help_slug %}share_link{% endblock %}
+8:{% block content_with_help %}
+```
+
+Render real, con base de pruebas efímera y sesión de un profesional creado en ella (no aplica
+P-2):
+
+```
+OK  capacitaciones_menu    status=200
+OK  modalidad_selector     status=200
+OK  online_links           status=200
+OK  share_link             status=200
+online_links conserva su JS propio: True
+modalidad_selector incrusta el modulo: True
+capacitaciones_menu usa la url simple: True
+```
+
+Cada `OK` verifica seis condiciones a la vez: HTTP 200, `data-page-slug` con el slug propio,
+presencia del `<script>` de `help_widget.js`, presencia del CSS, presencia de `#helpToggle` y
+**ausencia** de `data-page-slug="home"`, que sería la señal de que la pantalla no declaró su
+bloque y cayó en el respaldo.
+
+Las tres últimas líneas cubren H-9 y el mecanismo de módulo: el JS propio de `online_links`
+sobrevivió al renombre del bloque, `modalidad_selector` emite su template de URL con el
+módulo ya incrustado y `capacitaciones_menu`, que no aporta `module`, usa la URL simple.
+
+```
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.382s
+OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.708s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+**CV-2 verificada por la vía dura:** las cuatro plantillas declaran ahora un bloque de slug y
+la suite del módulo 886 sigue en 52. Si se hubiera usado `help_slug`, tres de sus pruebas
+habrían fallado en este mismo commit.
+
+### Desvíos respecto del roadmap
+
+Ninguno. Se aplicaron los diffs de §8.8.1 a §8.8.4 de la PROPUESTA.
+
+**Verificación agregada por decisión propia:** el roadmap dejaba `share_link` fuera del render
+automatizado, porque su URL exige un `CapacitacionLink` existente. Se incluyó igual, creando
+el link en la base efímera: cubrir la cuarta pantalla costaba tres líneas y evita que su
+único respaldo sea la prueba manual del commit 6.3.
+
+### Notas para el commit siguiente
+
+Las tres plantillas presenciales tienen más bloques que renombrar —`capacitacion.html` y
+`quiz.html` llevan tres cada una— y en `capacitacion.html` conviven los dos asistentes. Hay
+que verificar explícitamente que no colisionan sus identificadores de DOM.
