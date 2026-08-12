@@ -1387,6 +1387,32 @@ Desvíos:             el primer smoke con SQLite :memory: no conservó las tabla
                      temporal aislada dentro de /private/tmp
 ```
 
+### Corrección predeploy 2 — crédito global — 12/08/2026
+
+Después del despliegue de `2100a3c`, la inspección funcional verificó que la
+landing ya mostraba IAinsane pero las páginas internas conservaban el crédito
+anterior. La causa fue de alcance: el primer ajuste modificó
+`base_landing.html`, mientras que todo el backoffice hereda
+`base_dashboard.html`, directamente o mediante `base_contextual_help.html`.
+
+```yaml
+Estado:              VALIDADO, corresponde al propio commit predeploy 2
+Base en producción:  2100a3cd05f9bbb87608416aa2dcd6753ca00edf
+Fuente pública:      base_landing.html — ya correcta y preservada
+Fuente interna:      base_dashboard.html — unificada a IAinsane
+Texto canónico:      © 2026 ErgoSolutions. Desarrollado por IAinsane
+Cobertura:           profesional, empresa, feedback, capacitaciones,
+                     evaluaciones y pantallas 886 por herencia de templates
+Búsqueda global:     sólo dos leyendas de desarrollador en templates;
+                     ambas contienen el texto canónico y ninguna el anterior
+Tests específicos:  Ran 24 tests in 0.500s — OK
+Suite completa:      Ran 354 tests in 4.881s — OK (353 → 354)
+Migraciones nuevas:  ninguna
+Static:              sin cambios; collectstatic no requerido por este fix
+CriaApp:             fuera de alcance y sin cambios
+Desvíos:             ninguno
+```
+
 ### Cadena de commits de la iniciativa
 
 ```text
@@ -1396,14 +1422,16 @@ FB.2 6703e735a3973fa41c03d0df63cfa6ad009af4b3
 FB.3 d6b8d096075b0417cf7286ee59fa01d2c97b6202
 FB.4 490441033e3cd4a49c081ce176698a249c7d2c51
 FB.5 aaed0c5aa0beaad995362f7ad6c022cce5d47657
-PREDEPLOY este mismo commit; su hash exacto se informa tras crearlo porque un
-          commit no puede contener criptográficamente su propio hash.
+PREDEPLOY 2100a3cd05f9bbb87608416aa2dcd6753ca00edf
+PREDEPLOY-2 este mismo commit; su hash exacto se informa tras crearlo porque un
+            commit no puede contener criptográficamente su propio hash.
 ```
 
 FB.0–FB.5 permanecen intactos y en el orden aprobado. El commit PREDEPLOY fue
 solicitado después de esa cadena para corregir la landing y la geometría de la
-Planilla 1 antes de desplegar. La confirmación remota y el hash completo final
-se consignan en la entrega del asistente.
+Planilla 1 antes de desplegar. PREDEPLOY-2 unifica el mismo crédito en todas las
+páginas internas después de la revisión funcional. La confirmación remota y el
+hash completo final se consignan en la entrega del asistente.
 
 ---
 

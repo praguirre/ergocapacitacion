@@ -144,6 +144,15 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   en escritorio y móvil, sin overflow ni errores de consola. Este cierre no
   agrega migraciones ni modifica `static/`; `collectstatic --noinput` sigue
   siendo obligatorio por los recursos de ayuda incorporados en FB.4.
+- **12/08/2026 — unificación global del crédito:** la segunda revisión en
+  producción detectó que las páginas internas todavía heredaban el crédito
+  anterior desde `base_dashboard.html`. Las dos únicas bases renderizables,
+  `base_landing.html` y `base_dashboard.html`, ahora muestran exactamente
+  `© 2026 ErgoSolutions. Desarrollado por IAinsane`. La búsqueda completa de
+  templates confirma que no queda otra leyenda de desarrollador, y una nueva
+  regresión autenticada eleva la suite a 354 pruebas. El fix no agrega
+  migraciones ni modifica archivos de `static/`; sólo requiere actualizar el
+  código y reiniciar ErgoSolutions.
 
 #### Operación y rollback del canal de feedback
 

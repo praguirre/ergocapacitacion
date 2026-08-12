@@ -51,6 +51,21 @@ class DashboardTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Dashboard')
 
+    def test_footer_interno_atribuye_el_desarrollo_a_iainsane(self):
+        """Todas las páginas internas heredan el crédito institucional único."""
+        self.client.force_login(self.professional)
+
+        response = self.client.get(reverse('dashboard:home'))
+
+        self.assertContains(response, '© 2026 ErgoSolutions. Desarrollado por')
+        self.assertContains(
+            response,
+            '<strong class="text-white">IAinsane</strong>',
+            html=True,
+        )
+        self.assertNotContains(response, 'Lic. Pablo Aguirre')
+        self.assertNotContains(response, 'MN 10.027')
+
     def test_tarjeta_evaluaciones_esta_disponible_y_navega_al_modulo(self):
         self.client.force_login(self.professional)
         response = self.client.get(reverse('dashboard:home'))
