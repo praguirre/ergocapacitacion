@@ -1840,3 +1840,105 @@ el link en la base efímera: cubrir la cuarta pantalla costaba tres líneas y ev
 Las tres plantillas presenciales tienen más bloques que renombrar —`capacitacion.html` y
 `quiz.html` llevan tres cada una— y en `capacitacion.html` conviven los dos asistentes. Hay
 que verificar explícitamente que no colisionan sus identificadores de DOM.
+
+---
+
+## Commit 6.2 — Cablear las tres pantallas presenciales
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 6 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Lo mismo que el commit 6.1 para `templates/presencial/`. `capacitacion.html` y `quiz.html`
+llevaban tres bloques cada una —`extra_css`, `content` y `extra_js`— e `historial.html` uno
+solo. Los seis renombres se aplicaron sobre coincidencia única, verificada antes de escribir.
+
+`presencial/capacitacion.html` es la pantalla donde conviven los dos asistentes: Ergobot
+docente en su tarjeta dentro del contenido, y la ayuda contextual en el panel lateral.
+
+### Archivos creados o modificados
+
+| Plantilla | Slug | Bloques renombrados |
+|---|---|---|
+| `presencial/capacitacion.html` | `presencial_capacitacion` | `extra_css`, `content`, `extra_js` |
+| `presencial/quiz.html` | `presencial_quiz` | `extra_css`, `content`, `extra_js` |
+| `presencial/historial.html` | `presencial_historial` | `content` |
+
+### Verificaciones ejecutadas
+
+```
+── templates/presencial/capacitacion.html
+1:{% extends "base_capacitacion_help.html" %}
+4:{% block capacitacion_help_slug %}presencial_capacitacion{% endblock %}
+8:{% block extra_css_with_help %}
+51:{% block content_with_help %}
+126:{% block extra_js_with_help %}
+── templates/presencial/quiz.html
+1:{% extends "base_capacitacion_help.html" %}
+4:{% block capacitacion_help_slug %}presencial_quiz{% endblock %}
+8:{% block extra_css_with_help %}
+30:{% block content_with_help %}
+116:{% block extra_js_with_help %}
+── templates/presencial/historial.html
+1:{% extends "base_capacitacion_help.html" %}
+3:{% block capacitacion_help_slug %}presencial_historial{% endblock %}
+7:{% block content_with_help %}
+
+=== scripts propios ===
+127:<script src="{% static 'js/ergobot_chat.js' %}"></script>
+128:<script src="{% static 'js/presencial_capacitacion.js' %}"></script>
+117:<script src="{% static 'js/presencial_quiz.js' %}"></script>
+```
+
+Render real:
+
+```
+OK  presencial_capacitacion    status=200
+OK  presencial_quiz            status=200
+OK  presencial_historial       status=200
+
+Ergobot docente presente : True
+Ayuda contextual presente: True
+Sin colision de ids      : True
+JS propio conservado     : True
+quiz conserva su JS      : True
+```
+
+**Convivencia de los dos asistentes, verificada sobre el HTML servido.** En
+`/dashboard/presencial/ergonomia/` están simultáneamente `#chatLog` con `ergobot_chat.js` y
+`#helpWidget` con `help_widget.js`, y cada identificador aparece **una sola vez**: no hay
+colisión entre `#chat-messages` (panel de ayuda) y `#chatLog` (Ergobot docente). Coincide con
+el análisis de §8.7.4 de la PROPUESTA, que ya había verificado que tampoco se pisan por CSS:
+las reglas del widget están todas anidadas bajo `#helpWidget`.
+
+```
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.436s
+OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.458s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. Se aplicaron los diffs de §8.8.5 a §8.8.7 de la PROPUESTA.
+
+### Notas para el commit siguiente
+
+**El objetivo funcional del pedido queda cumplido con el commit 6.3.** Las siete pantallas ya
+tienen su panel. Falta la verificación con navegador y sesión real, que es una detención
+prevista por P-5.

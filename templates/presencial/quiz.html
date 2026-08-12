@@ -1,9 +1,11 @@
-{% extends "base_dashboard.html" %}
+{% extends "base_capacitacion_help.html" %}
 {% load static %}
+
+{% block capacitacion_help_slug %}presencial_quiz{% endblock %}
 
 {% block title %}Quiz - {{ module.title }} (Presencial) - ErgoSolutions{% endblock %}
 
-{% block extra_css %}
+{% block extra_css_with_help %}
 <style>
     .question-card { border-radius: 12px; }
     .choice-btn {
@@ -25,7 +27,7 @@
 </style>
 {% endblock %}
 
-{% block content %}
+{% block content_with_help %}
 <div class="container-fluid py-4 px-4" id="presencial-quiz"
      data-questions="{{ questions_json|escape }}"
      data-submit-url="{% url 'dashboard:presencial:quiz_submit' module.slug %}">
@@ -111,6 +113,6 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_js_with_help %}
 <script src="{% static 'js/presencial_quiz.js' %}"></script>
 {% endblock %}

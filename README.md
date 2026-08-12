@@ -663,6 +663,14 @@ Registro de avance:
   `DOMPurify` y sin el widget, **sin ningún error visible en consola ni en el servidor**. Por
   eso la verificación de esta fase comprueba en el HTML servido que estén el `<script>` del
   widget, su CSS, el botón `#helpToggle` y el `data-page-slug` correcto de cada pantalla.
+- **12/08/2026 — Commit 6.2:** se activó la ayuda contextual en las tres pantallas de
+  `templates/presencial/` (`capacitacion`, `quiz`, `historial`). En la pantalla de dictado
+  presencial **conviven ahora dos asistentes**: Ergobot docente en su tarjeta dentro del
+  contenido, que responde sobre el contenido de la capacitación, y ErgoBot Capacitaciones en
+  el panel lateral, que explica cómo usar la aplicación. Se verificó sobre el HTML servido que
+  no comparten un solo identificador de DOM: `#chatLog` y `#chat-messages` aparecen una vez
+  cada uno, y las reglas CSS del widget están todas anidadas bajo `#helpWidget`. Los scripts
+  propios de las tres pantallas siguen cargándose junto con el del widget.
 
 ### Registro de cambios documentales
 

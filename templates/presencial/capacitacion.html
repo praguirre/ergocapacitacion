@@ -1,9 +1,11 @@
-{% extends "base_dashboard.html" %}
+{% extends "base_capacitacion_help.html" %}
 {% load static %}
+
+{% block capacitacion_help_slug %}presencial_capacitacion{% endblock %}
 
 {% block title %}{{ module.title }} (Presencial) - ErgoSolutions{% endblock %}
 
-{% block extra_css %}
+{% block extra_css_with_help %}
 <style>
     /* Estilos optimizados para proyeccion */
     .video-container {
@@ -46,7 +48,7 @@
 </style>
 {% endblock %}
 
-{% block content %}
+{% block content_with_help %}
 <div class="container-fluid py-3 px-4" id="presencial-capacitacion"
      data-module-slug="{{ module.slug }}">
 
@@ -121,7 +123,7 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_js_with_help %}
 <script src="{% static 'js/ergobot_chat.js' %}"></script>
 <script src="{% static 'js/presencial_capacitacion.js' %}"></script>
 {% endblock %}
