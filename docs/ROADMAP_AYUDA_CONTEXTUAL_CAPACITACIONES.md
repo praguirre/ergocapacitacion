@@ -351,7 +351,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 8.1 | Cierre documental y decisiones de arquitectura | ⬜ |
+| 8.1 | Cierre documental y decisiones de arquitectura | ✅ |
 | 8.2 | Despliegue y verificación en producción | ⬜ |
 
 ### Fase 9 — Opcional

@@ -410,7 +410,7 @@ un problema: nada lo lee hasta la Fase 3.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `30b704e` |
 | Fase | 1 |
 | Estado | ✅ Completado |
 
@@ -486,7 +486,7 @@ ningún archivo; es esperable, porque la lógica de composición no lee el disco
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `ba58fba` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -561,7 +561,7 @@ online, presencial.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `1dddc31` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -655,7 +655,7 @@ regenerar el maestro rompe la prueba de partición del commit 7.1.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `98bd3eb` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -757,7 +757,7 @@ es personalizado antes de escribirle una ficha pública.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `6a27c3c` |
 | Fase | 2 |
 | Estado | ✅ Completado |
 
@@ -840,7 +840,7 @@ anclarse a `settings.BASE_DIR` y **no** a la posición del archivo: la app está
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `0f05fee` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -923,7 +923,7 @@ privacidad hasta negar que sabe en qué pantalla está el usuario.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `a727382` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -1060,7 +1060,7 @@ firma.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `c2a07d0` |
 | Fase | 3 |
 | Estado | ✅ Completado |
 
@@ -1157,7 +1157,7 @@ ayuda bloqueara la otra.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `224cafa` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -1236,7 +1236,7 @@ cabecera `X-Accel-Buffering: no`.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `9130022` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -1335,7 +1335,7 @@ CV-7: el `include` de la ayuda debe declararse **antes** de
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `a6363e0` |
 | Fase | 4 |
 | Estado | ✅ Completado |
 
@@ -1417,7 +1417,7 @@ restricción registrada en el commit 1.1.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `2ad324d` |
 | Fase | 4 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -1546,7 +1546,7 @@ red de pruebas detectó el cambio del widget.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `df89077` |
 | Fase | 5 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -1651,7 +1651,7 @@ que ese segundo bloque pertenezca a SU catálogo.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `f812ccd` |
 | Fase | 5 |
 | Estado | ✅ Completado |
 
@@ -1740,7 +1740,7 @@ etiqueta `<script>` del widget.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `fc35f0b` |
 | Fase | 6 |
 | Estado | ✅ Completado |
 
@@ -1849,7 +1849,7 @@ que verificar explícitamente que no colisionan sus identificadores de DOM.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `9a55e23` |
 | Fase | 6 |
 | Estado | ✅ Completado |
 
@@ -1951,7 +1951,7 @@ prevista por P-5.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `d3dddf8` |
 | Fase | 6 |
 | Estado | ✅ Completado |
 
@@ -2101,7 +2101,7 @@ revierte con `git checkout --`.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `25d6c62` |
 | Fase | 7 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -2253,7 +2253,7 @@ PROPUESTA la declara como `SimpleTestCase`; hay que corregirlo al copiar.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `7d334d2` |
 | Fase | 7 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -2375,7 +2375,7 @@ de la fixture `training_modules.json`.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `0fa3e3e` |
 | Fase | 7 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -2498,3 +2498,165 @@ consultas.
 
 Fase 7 cerrada: el sistema queda blindado por su propia red de pruebas. El commit 8.1 es
 cierre documental; el 8.2 es la segunda detención prevista (P-4, despliegue en el VPS).
+
+---
+
+## Commit 8.1 — Cierre documental y decisiones de arquitectura
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 8 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se escribió en el `README.md` la entrada consolidada del trabajo, con las ocho decisiones de
+arquitectura DA-1 a DA-8, y se cerró esta bitácora con las métricas finales, el estado de las
+ocho condiciones vinculantes, los desvíos acumulados y la deuda técnica declarada. Se
+verificaron además los quince criterios de aceptación.
+
+### Verificaciones ejecutadas
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 387 tests in 5.283s
+OK
+
+$ .venv/bin/python manage.py collectstatic --noinput
+18 static files copied, 194 unmodified, 554 post-processed.
+
+$ ls staticfiles/ayuda/capacitaciones/help_texts/ | grep -E '^[a-z0-9_-]+\.md$' | wc -l
+      15
+
+$ cat guia_capacitaciones_nucleo.md anexo_modalidades.md anexo_online.md anexo_presencial.md \
+    | diff - guia_capacitaciones_general.md
+✅ PARTICIÓN OK
+
+$ git status --short
+(vacío)
+```
+
+**Sobre `staticfiles/`:** está declarado en `.gitignore`, de modo que lo recolectado **no**
+entra en este commit y se regenera en el servidor. Es lo que hace obligatorio el
+`collectstatic` del despliegue.
+
+Las 60 entradas del directorio recolectado son los 15 documentos por sus cuatro variantes:
+nombre simple, nombre con hash, y los `.gz` de cada uno.
+
+### Desvíos respecto del roadmap
+
+Ninguno en este commit. Se ajustó el conteo de apps locales en la tabla de cierre: ver la
+nota de la sección «Cierre del roadmap».
+
+### Notas para el commit siguiente
+
+El commit 8.2 es la segunda detención prevista (P-4). El error más probable del despliegue es
+**olvidar `collectstatic`**: el proyecto usa `CompressedManifestStaticFilesStorage`, que
+resuelve `{% static %}` contra `staticfiles.json`; sin recolectar, la plantilla falla al
+resolver `ayuda/css/help_widget.css` y **rompe el render de las siete pantallas**, no sólo el
+panel.
+
+---
+---
+
+# Cierre del roadmap
+
+| Métrica | Al empezar | Al terminar |
+|---|---|---|
+| Pruebas totales | 354 | **387** |
+| Pruebas de `apps.ergonomia_886.help_ai` | 52 | **52** |
+| Pruebas de `apps.ergonomia_886` (completo) | 250 | **250** |
+| Pruebas propias (`apps.training.help_ai`) | 0 | **33** |
+| Migraciones | 0 | **0** |
+| Apps locales | 14 | **15** |
+| Documentos de ayuda (886) | 50 | **50** |
+| Documentos de ayuda (Capacitaciones) | 0 | **15** |
+| Pantallas con ayuda contextual | 23 (886) + 1 (feedback) | **+ 7 (Capacitaciones)** |
+
+> **Nota sobre dos cifras del estado de partida.** §0.6 del roadmap declaraba 15 apps locales
+> y 51 documentos de ayuda del módulo 886. Los conteos reales sobre el commit base `4187b10`
+> son **14** apps locales y **50** documentos. Ninguna de las dos diferencias es producto de
+> este trabajo: el corpus del 886 no se tocó (CV-3) y la única app agregada es
+> `apps.training.help_ai`. Se registran los valores reales (R-7).
+
+### Condiciones vinculantes — estado final
+
+| Código | Condición | Estado | Evidencia |
+|---|---|:---:|---|
+| CV-1 | `label = "capacitaciones_help_ai"` explícito | ✅ | Commit 1.1 — `get_app_config('capacitaciones_help_ai')` resuelve y el 886 conserva el suyo |
+| CV-2 | Bloque `capacitacion_help_slug`, nunca `help_slug` | ✅ | Commits 5.2, 6.1, 6.2, 7.1 — verificado por la prueba destructiva del 7.1 |
+| CV-3 | Corpus en directorio propio | ✅ | Commits 2.1–2.4 — `HELP_TEXTS_PATH` anclado a `BASE_DIR`; el corpus del 886 intacto |
+| CV-4 | Sin imports cruzados | ✅ | Commit 4.4 — chequeo por AST, verificado con violación inyectada y revertida |
+| CV-5 | Corpus sin datos sensibles | ✅ | Commits 2.1–2.4 y 7.2 — verificado con un correo inyectado y revertido |
+| CV-6 | Sin fichas de módulos personalizados | ✅ | Commits 2.4 y 7.2 — `personal-smoke` existe en la base y queda excluido |
+| CV-7 | Orden de rutas | ✅ | Commits 4.3 y 7.2 — las rutas del módulo siguen resolviendo |
+| CV-8 | El módulo 886 sigue verde | ✅ | Commits 5.1, 5.2, 6.1, 6.2, 7.3 — 250 en verde, 52 en `help_ai` |
+
+### Criterios de aceptación (§8.15 de la PROPUESTA)
+
+| ID | Criterio | Estado | Evidencia |
+|---|---|:---:|---|
+| CA-1 | Las 7 pantallas muestran el botón flotante | ✅ | Commits 6.1, 6.2 (render) y 6.3 (manual, 7/7 en «a») |
+| CA-2 | Cada pantalla sirve su propio slug, ninguna cae en `home` | ✅ | Commits 6.1, 6.2 y prueba `test_cada_pantalla_sirve_el_widget_y_su_slug` |
+| CA-3 | La Guía muestra el documento correcto | ✅ | Commit 6.3, 7/7 en «b» |
+| CA-4 | El Chat responde «¿en qué pantalla estoy?» | ✅ | Commit 6.3, 7/7 en «c» |
+| CA-5 | El Chat explica un elemento propio de la pantalla | ✅ | Commit 6.3, respuesta de control 1 (la etiqueta del link) |
+| CA-6 | Deriva a Ergobot una pregunta de contenido | ✅ | Commit 6.3, respuesta de control 2 |
+| CA-7 | Se niega a inventar datos que no ve | ✅ | Commit 6.3, respuesta de control 3 |
+| CA-8 | No expone capacitaciones personalizadas | ✅ | Commit 6.3, respuesta de control 4; más CV-6 |
+| CA-9 | Guía y Chat comparten versión | ✅ | Commit 3.1 y `test_guia_y_chat_comparten_version` |
+| CA-10 | Los dos chats conviven en la pantalla presencial | ✅ | Commit 6.2 — sin colisión de identificadores; confirmado en 6.3 |
+| CA-11 | La suite del módulo 886 sigue verde | ✅ | 250 en verde, 52 en `help_ai` |
+| CA-12 | La suite completa en verde | ✅ | 387 en verde |
+| CA-13 | `manage.py check` sin CF-1 bis | ✅ | Commit 4.4 |
+| CA-14 | Un usuario no autenticado recibe 401 | ✅ | `test_anonimo_es_rechazado` |
+| CA-15 | El área de Evaluaciones no cambió | ✅ | Diff sobre `apps/ergonomia_886/`: 1 archivo, 8 líneas, la aserción autorizada |
+
+*(CA-12 se cumple con 387 y no con las 375 que preveía la PROPUESTA: el archivo de pruebas
+declara 33 métodos y no 21. Es más cobertura, no menos.)*
+
+### Desvíos acumulados
+
+| Commit | Desvío | Resolución |
+|---|---|---|
+| 0.0 | El árbol de trabajo no estaba limpio: los dos documentos del encargo estaban sin trackear | Se incorporaron a la rama, como prevé el propio Paso 1 |
+| 0.1 | El corpus del 886 tiene 50 documentos, no 51 | Se adoptó el número real |
+| 1.1 | **Restricción no documentada:** una prueba preexistente del 886 barre como texto plano todos los `.py` de `apps/training/` y prohíbe la ruta punteada del módulo 886 incluso en comentarios | El código propio nombra al módulo en prosa y compone la ruta en tiempo de ejecución. Es más estricta que CV-4, no contradictoria |
+| 2.3 | La plantilla real rotula «Iniciar Quiz de Evaluacion», sin tilde | No se replicó el error ortográfico; queda anotado como defecto menor de interfaz, fuera de alcance |
+| 3.2 | El docstring de `preamble.py` enumera 4 bloques y el texto emite 5 | Imprecisión del comentario heredada de la PROPUESTA; el orden efectivo es el correcto, verificado por índice |
+| 3.3 | `CHAT_AI_MODEL` vale `gpt-5.6-luna`, no el `gpt-4.1-mini` auditado | Sin acción: el agente lee el modelo de la configuración |
+| 4.4 | La tupla `PROHIBIDOS` no puede escribirse con literales | Se compone en tiempo de ejecución; valores resueltos idénticos |
+| 5.1 | El fallo apareció en `test_thinking_state_is_accessible_and_csp_compatible`, no en la prueba que nombraba el roadmap | La aserción estaba en la línea 95 indicada y era la única: se modificó exactamente una |
+| 7.1 | El barrido encuentra 8 slugs, no 7 | La regex también captura el valor por defecto de la plantilla base; ninguna prueba se ve afectada |
+| 7.2 | `ReglasDeContenidoTests` debe heredar de `TestCase` | Corregido; el propio roadmap lo anticipaba |
+| 7.3 | **§8.6.3 y §8.9.2 de la PROPUESTA se contradicen:** el chequeo CF-1 bis rechaza la prueba de leases, que importa el 886 por diseño | Se excluyeron los módulos de prueba del barrido AST, con el mismo criterio que ya aplica el proyecto |
+| 7.3 | La prueba de cuota de la PROPUESTA está desfasada en uno y fallaba dentro del bucle | Se agregó `cache.clear()` entre la parte de concurrencia y la de cuota |
+| 8.1 | El estado de partida declaraba 15 apps locales; son 14 | Se registró el valor real |
+
+**Ninguno de los desvíos alteró el diseño.** Todos fueron correcciones de datos del documento
+o adaptaciones a restricciones reales del proyecto que ni el roadmap ni la PROPUESTA habían
+detectado.
+
+### Deuda técnica declarada
+
+- **Duplicación de la maquinaria SSE** entre el paquete de ayuda del módulo 886 y
+  `apps.training.help_ai` (≈440 líneas entre `views.py` y `limits.py`). Es la contrapartida
+  consciente de CF-1 bis. La consolidación en un núcleo común (`apps/common/help_sse/`) está
+  propuesta en §8.11 de la PROPUESTA y queda **fuera del alcance de este roadmap**: es una
+  refactorización de código probado y en producción, con riesgo inmediato sobre el módulo 886.
+- **Cuota duplicada.** Un usuario que use los dos asistentes en simultáneo puede alcanzar
+  `2 × CHAT_AI_RATE_LIMIT` consultas por ventana (40/min con el valor por defecto). Aceptado
+  para la beta. La variante de cuota unificada —lease propio, bucket compartido— está en
+  §8.12.2 de la PROPUESTA y se implementa tocando sólo `limits.py`, más el ajuste de
+  `test_los_leases_no_colisionan_con_los_del_886`.
+- **Defecto menor de interfaz, ajeno a este trabajo:** `templates/presencial/capacitacion.html`
+  rotula el botón «Iniciar Quiz de Evaluacion», sin tilde.

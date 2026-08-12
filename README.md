@@ -712,6 +712,46 @@ Registro de avance:
   aplicaba en su propio barrido sobre `apps/training/`. **Suite: 387 pruebas en verde**
   (354 + 33), módulo 886 completo en 250, sin migraciones.
 
+#### Entrada consolidada
+
+- **12/08/2026 — Ayuda contextual del área de Capacitaciones:** se incorporó el panel de
+  ayuda estática y dinámica a las siete pantallas del área (`capacitaciones_menu`,
+  `modalidad_selector`, `online_links`, `share_link`, `presencial_capacitacion`,
+  `presencial_quiz`, `presencial_historial`), replicando el sistema del módulo SRT 886/15.
+  Se creó la app `apps.training.help_ai` con `label="capacitaciones_help_ai"`, catálogo de
+  8 slugs de pantalla, corpus propio de 15 documentos en
+  `static/ayuda/capacitaciones/help_texts/` y rutas bajo `/dashboard/capacitaciones/ayuda/`.
+
+  **Decisiones de Arquitectura registradas:**
+  - **DA-1/DA-2 (CF-1 bis):** el asistente de Capacitaciones es un tercer producto de IA,
+    sin imports cruzados con la ayuda del módulo 886 ni con el Ergobot docente. Se agregó un
+    chequeo por AST que lo verifica en el arranque. La contrapartida es la duplicación de la
+    maquinaria SSE, declarada como deuda técnica.
+  - **DA-3:** el bloque de plantilla se llama `capacitacion_help_slug`. Reusar `help_slug`
+    rompería tres pruebas del módulo 886, cuyo barrido alcanza a todo el proyecto.
+  - **DA-4:** corpus en directorio propio, por colisión de `home.md`, `dashboard.md`,
+    `crear.md` y `factor.md` con los del módulo 886.
+  - **DA-5:** `static/ayuda/js/help_widget.js` y su CSS pasan a ser componentes
+    compartidos, parametrizados por `data-assistant-name` y `data-log-tag`, con respaldo en
+    el comportamiento histórico del 886. Evita 452 líneas duplicadas y el riesgo de que una
+    corrección de seguridad se aplique en una sola de las dos copias.
+  - **DA-6:** el asistente se presenta como «ErgoBot Capacitaciones» y deriva las consultas
+    de contenido didáctico al Ergobot docente, con el que convive en la pantalla de dictado
+    presencial.
+  - **DA-7:** el slug identifica la pantalla, no el módulo. La identidad del módulo viaja
+    como segundo segmento de ruta, validada contra un registro estático; los módulos
+    personalizados **nunca** reciben ficha, porque el corpus se sirve públicamente.
+  - **DA-8:** las rutas de ayuda se declaran antes del patrón `<slug:module_slug>`, que de
+    otro modo capturaría la palabra «ayuda».
+
+  Estado final: **387 pruebas en verde** (354 de línea base + 33 nuevas), módulo 886 intacto
+  con sus 250 pruebas —tocado en un único punto autorizado: una aserción—, **sin
+  migraciones, sin modelos, sin dependencias ni variables de entorno nuevas**. Documentos de
+  referencia:
+  `docs/AUDITORIA_Y_PROPUESTA_AYUDA_CONTEXTUAL_CAPACITACIONES_2026-08-12.md`,
+  `docs/ROADMAP_AYUDA_CONTEXTUAL_CAPACITACIONES.md` y
+  `docs/BITACORA_AYUDA_CONTEXTUAL_CAPACITACIONES.md`.
+
 ### Registro de cambios documentales
 
 - **30/07/2026:** se creó `docs/`, se incorporó el informe técnico de auditoría
