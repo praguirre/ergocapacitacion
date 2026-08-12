@@ -2366,3 +2366,135 @@ convención del resto del proyecto.
 El commit 7.3 aplica las decisiones 11 y 12 de §0.8: `User.objects.create_professional(...)`
 en lugar de `create_user(username=…, user_type=…)`, y `call_command("seed_modules")` en lugar
 de la fixture `training_modules.json`.
+
+---
+
+## Commit 7.3 — Seguridad del endpoint y render de pantallas
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 7 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+
+Se cerró la red de pruebas con las dos clases que necesitan base de datos:
+`SeguridadDelEndpointTests` (8 métodos) y `RenderDeLasPantallasTests` (3 métodos). Se
+aplicaron las correcciones de §0.8, decisiones 11 y 12.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/tests.py` — dos clases nuevas y sus imports.
+- `apps/training/help_ai/checks.py` — se excluyeron los módulos de prueba del barrido AST
+  (ver desvíos).
+
+### Correcciones de §0.8 aplicadas (decisiones 11 y 12)
+
+Tal como ordena el roadmap, y contra lo que escribe §8.9.2 de la PROPUESTA:
+
+| En la PROPUESTA | Escrito en el código |
+|---|---|
+| `User.objects.create_user(username=…, user_type="professional", …)` | `User.objects.create_professional(email=…, password=…, username=…)` |
+| `fixtures = ["training_modules.json"]` | `call_command("seed_modules", verbosity=0)` en `setUpTestData` |
+
+Ambas funcionaron sin ajustes: `USERNAME_FIELD` es `email` y el manager expone el atajo
+`create_professional()`; y `seed_modules` deja `ergonomia` activo, que es lo que las pruebas
+de render necesitan.
+
+### Verificaciones ejecutadas
+
+```
+$ .venv/bin/python manage.py test apps.training.help_ai --settings=config.test_settings
+Ran 33 tests in 0.201s
+OK
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 387 tests in 4.618s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886 --settings=config.test_settings
+Ran 250 tests in 3.038s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.365s
+OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+$ git diff --stat codex/beta-feedback...HEAD -- apps/ergonomia_886/
+ apps/ergonomia_886/help_ai/tests.py | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+```
+
+**N = 33.** La suite total pasa de 354 a **387**. La PROPUESTA numeraba 21 riesgos cubiertos;
+el archivo real declara 33 métodos, que era exactamente lo que el roadmap anticipaba al pedir
+que se registrara el número real en vez de forzar el código para que diera 21.
+
+**CV-8 verificada con el módulo 886 completo:** 250 pruebas en verde, con sus 52 de `help_ai`
+intactas. El diff acumulado sobre `apps/ergonomia_886/` sigue siendo un solo archivo y 8
+líneas: la aserción autorizada del commit 5.1.
+
+### Desvíos respecto del roadmap
+
+**Desvío 1 — contradicción interna de la PROPUESTA entre §8.6.3 y §8.9.2.**
+
+La prueba `test_los_leases_no_colisionan_con_los_del_886` importa, por diseño, los leases del
+módulo 886: es la única forma de verificar que los dos sistemas no se bloquean entre sí
+(H-15). Pero el chequeo CF-1 bis de §8.6.3 barre `directorio.rglob("*.py")`, que incluye
+`tests.py`. Al agregar la clase, el arranque falló:
+
+```
+ERRORS:
+?: (capacitaciones_help_ai.E002) CF-1 bis violada: la ayuda de Capacitaciones importa
+   'apps.ergonomia_886' en apps/training/help_ai/tests.py.
+```
+
+Las dos secciones de la PROPUESTA son incompatibles entre sí tal como están escritas.
+
+**Resolución (R-7).** Se excluyeron del barrido los archivos cuyo nombre empieza con `test`.
+Fundamento:
+
+1. CF-1 bis protege el acoplamiento del **código de producción**: que este paquete no dependa
+   de otro asistente para funcionar. Una prueba que verifica justamente lo contrario —que los
+   leases de los dos sistemas **no** colisionan— necesita nombrar a los dos por diseño.
+2. Prohibírselo eliminaría la única garantía automatizada de esa independencia, que es lo que
+   el chequeo pretende defender. Sería contraproducente.
+3. Es la convención que el proyecto **ya aplica**: el barrido textual de
+   `evaluaciones/tests_sugerencias.py` sobre `apps/training/` excluye exactamente con el
+   mismo criterio (`not path.name.startswith("test")`).
+
+El chequeo sigue detectando cualquier import prohibido en los once archivos de producción del
+paquete; la prueba destructiva del commit 4.4, que inyectaba el import en `pages.py`, sigue
+siendo válida. El motivo quedó escrito en el propio `checks.py`.
+
+**Desvío 2 — la prueba de cuota de la PROPUESTA está desfasada en uno.**
+
+`test_limite_de_concurrencia_y_cuota` falla tal como está escrita en §8.9.2:
+
+```
+ChatLimitExceeded: Se alcanzó el límite temporal de consultas al asistente.
+  en release_chat_lease(acquire_chat_lease(self.profesional.pk))  ← dentro del bucle
+```
+
+El lease que toma la parte de concurrencia, al principio de la prueba, **ya consume una
+unidad de cuota**. El bucle posterior pide `CHAT_AI_RATE_LIMIT` turnos más, con lo que el
+total llega a 21 sobre un límite de 20 y la excepción salta **dentro del bucle**, antes de
+llegar al `assertRaises` que verifica el corte. La prueba fallaba por una razón distinta de
+la que pretendía comprobar.
+
+Se agregó un `cache.clear()` entre las dos partes, con el motivo comentado. Con eso la prueba
+verifica lo que declara: que la cuota corta exactamente al superar `CHAT_AI_RATE_LIMIT`
+consultas.
+
+### Notas para el commit siguiente
+
+Fase 7 cerrada: el sistema queda blindado por su propia red de pruebas. El commit 8.1 es
+cierre documental; el 8.2 es la segunda detención prevista (P-4, despliegue en el VPS).

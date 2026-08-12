@@ -700,6 +700,17 @@ Registro de avance:
   internos, y verifican que ningún módulo personalizado tenga ficha pública. La regla de
   contenido se validó introduciendo a propósito un correo en un documento: la prueba falló
   nombrando el archivo y el tipo de dato, y se revirtió. Suite: 376 (354 + 22).
+- **12/08/2026 — Commit 7.3:** se cerró la red de pruebas con la **seguridad del endpoint**
+  (un anónimo recibe 401, un slug ajeno 404, el chat sólo acepta POST con cuerpo JSON
+  acotado, una versión desactivada responde 409 con la versión correcta, el hilo rechaza
+  roles privilegiados, y los límites de concurrencia y cuota funcionan sin colisionar con los
+  del módulo 886) y el **render de las pantallas**. **Decisión de arquitectura registrada:**
+  el chequeo CF-1 bis excluye del barrido los módulos de prueba. CF-1 bis protege el
+  acoplamiento del código de producción, y la prueba que verifica que los leases de los dos
+  asistentes *no* colisionan necesita nombrar a ambos por diseño; prohibírselo eliminaría la
+  única garantía automatizada de esa independencia. Es además el criterio que el proyecto ya
+  aplicaba en su propio barrido sobre `apps/training/`. **Suite: 387 pruebas en verde**
+  (354 + 33), módulo 886 completo en 250, sin migraciones.
 
 ### Registro de cambios documentales
 

@@ -65,6 +65,18 @@ def check_cf1_bis_ayuda_capacitaciones(app_configs, **kwargs):
 
     problemas = []
     for archivo in directorio.rglob("*.py"):
+        # Los módulos de prueba quedan fuera del barrido. CF-1 bis protege el
+        # acoplamiento del código de PRODUCCIÓN: que este paquete no dependa de
+        # otro asistente para funcionar. Una prueba que verifica justamente lo
+        # contrario —que los leases de los dos sistemas NO colisionan— necesita
+        # nombrar a los dos por diseño, y prohibírselo eliminaría la única
+        # garantía automatizada de esa independencia.
+        #
+        # Es además la convención que el proyecto ya aplica: el barrido textual
+        # de `evaluaciones/tests_sugerencias.py` sobre `apps/training/` excluye
+        # los archivos cuyo nombre empieza con "test".
+        if archivo.name.startswith("test"):
+            continue
         try:
             imports = _imported_modules(archivo)
         except (OSError, SyntaxError) as exc:
