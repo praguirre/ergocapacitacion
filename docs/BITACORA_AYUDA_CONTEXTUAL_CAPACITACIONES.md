@@ -552,3 +552,97 @@ Ninguno. Los dos documentos se copiaron íntegros de §8.4.1 y §8.4.2 de la PRO
 El commit 2.2 **genera** `guia_capacitaciones_general.md` por concatenación; no se escribe a
 mano. El orden es exactamente el de `PARTES_DEL_GLOBAL` en `catalog.py`: núcleo, modalidades,
 online, presencial.
+
+---
+
+## Commit 2.2 — Anexos temáticos y documento maestro
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se escribieron los tres anexos temáticos que se suman al núcleo según la pantalla, y se
+**generó** el documento maestro por concatenación literal de las cuatro partes, en el orden
+declarado por `PARTES_DEL_GLOBAL`. El maestro no se escribe a mano: si maestro y partes
+divergieran, el respaldo de degradación entregaría un texto distinto del que reciben las
+pantallas con perfil, y la prueba de partición del commit 7.1 lo detectaría sin explicar por
+qué.
+
+### Archivos creados o modificados
+
+- `static/ayuda/capacitaciones/help_texts/anexo_modalidades.md` — 1.428 bytes.
+- `static/ayuda/capacitaciones/help_texts/anexo_online.md` — 1.687 bytes.
+- `static/ayuda/capacitaciones/help_texts/anexo_presencial.md` — 1.644 bytes.
+- `static/ayuda/capacitaciones/help_texts/guia_capacitaciones_general.md` — 7.206 bytes,
+  **generado** por `cat`, no escrito a mano.
+
+### Verificaciones ejecutadas
+
+```
+$ for f in anexo_modalidades anexo_online anexo_presencial; do tail -c 1 $f.md | xxd -p; done
+anexo_modalidades: 0a
+anexo_online: 0a
+anexo_presencial: 0a
+
+$ cat guia_capacitaciones_nucleo.md anexo_modalidades.md anexo_online.md anexo_presencial.md \
+    > guia_capacitaciones_general.md
+
+$ cat guia_capacitaciones_nucleo.md anexo_modalidades.md anexo_online.md anexo_presencial.md \
+    | diff - guia_capacitaciones_general.md && echo "✅ PARTICIÓN OK"
+✅ PARTICIÓN OK
+
+$ grep -nE '<patrones de CV-5>' *.md
+✅ CV-5 OK
+
+$ wc -c *.md
+    1428 anexo_modalidades.md
+    1687 anexo_online.md
+    1644 anexo_presencial.md
+    7206 guia_capacitaciones_general.md
+    2447 guia_capacitaciones_nucleo.md
+    3290 guia_capacitaciones_usuario.md
+   17702 total
+```
+
+Tamaño del contexto global efectivo por pantalla, ya resolviendo archivos reales:
+
+```
+home                     2 documentos,   5737 bytes
+online_links             4 documentos,   8852 bytes
+presencial_quiz          4 documentos,   8809 bytes
+```
+
+Entre 5,7 KB y 8,9 KB: dentro del rango razonable que declara el roadmap (5–12 KB) y
+sensiblemente por debajo de los 27.241 caracteres del global completo del módulo 886.
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.744s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.381s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. Los tres anexos se copiaron íntegros de §8.4.3, §8.4.4 y §8.4.5 de la PROPUESTA.
+
+### Notas para el commit siguiente
+
+**Regla permanente:** cada vez que se edite una de las cuatro partes hay que regenerar
+`guia_capacitaciones_general.md` con el mismo `cat`, en el mismo orden. Editar una parte sin
+regenerar el maestro rompe la prueba de partición del commit 7.1.

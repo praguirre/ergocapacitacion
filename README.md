@@ -555,6 +555,14 @@ Registro de avance:
   `/static/` sin autenticación, de modo que está prohibido incluir en ellos nombres de
   empresas cliente, correos, CUIT o referencias a campos internos. Se verifica con un
   barrido por expresiones regulares en cada commit de la fase.
+- **12/08/2026 — Commit 2.2:** se agregaron los tres anexos temáticos del corpus
+  (`anexo_modalidades.md`, `anexo_online.md`, `anexo_presencial.md`) y se **generó** el
+  documento maestro `guia_capacitaciones_general.md` como concatenación literal de las cuatro
+  partes. **Regla de mantenimiento:** el maestro nunca se edita a mano; cada vez que cambia
+  una parte hay que regenerarlo con
+  `cat guia_capacitaciones_nucleo.md anexo_modalidades.md anexo_online.md anexo_presencial.md > guia_capacitaciones_general.md`.
+  Una prueba compara ambos lados para impedir que el maestro y sus partes diverjan en
+  silencio: el maestro es el respaldo que reciben los slugs sin perfil declarado.
 
 ### Registro de cambios documentales
 
