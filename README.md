@@ -620,6 +620,14 @@ Registro de avance:
   un contrato estricto —sólo `role` y `content`, sólo roles `user` y `assistant`— que rechaza
   la inyección de mensajes de sistema por el historial, y `to_wire_thread()` garantiza que lo
   que se devuelve al navegador vuelva a superar esa validación en la consulta siguiente.
+- **12/08/2026 — Commit 4.3:** se publicaron las cuatro rutas de ayuda bajo
+  `/dashboard/capacitaciones/ayuda/`, con el namespace `dashboard:capacitaciones_help`
+  (**DA-8**): guía y chat, cada uno en variante simple y con módulo incrustado en la ruta.
+  **Requisito de orden (CV-7):** el `include` está declarado **antes** de
+  `capacitaciones/<slug:module_slug>/`, porque el convertidor `slug` acepta la palabra
+  «ayuda» y ese patrón capturaría la ruta. Es una dependencia implícita del orden de
+  declaración, del tipo que se rompe en una refactorización futura, así que quedó fijada con
+  un comentario en el archivo y con una prueba de resolución.
 
 ### Registro de cambios documentales
 

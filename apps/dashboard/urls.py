@@ -14,6 +14,14 @@ urlpatterns = [
     path('capacitaciones/', views.capacitaciones_menu, name='capacitaciones_menu'),
     path('evaluaciones/', views.evaluaciones_menu, name='evaluaciones_menu'),
     path('comentarios/', include('apps.feedback.urls')),
+
+    # ------------------------------------------------------------------
+    # Ayuda contextual del área de Capacitaciones.
+    # ⚠️ DEBE declararse ANTES del patrón `<slug:module_slug>`: el
+    #    convertidor `slug` acepta la palabra "ayuda" y capturaría la ruta.
+    # ------------------------------------------------------------------
+    path('capacitaciones/ayuda/', include('apps.training.help_ai.urls')),
+
     path('capacitaciones/<slug:module_slug>/', views.modalidad_selector, name='modalidad_selector'),
     path('capacitaciones/<slug:module_slug>/links/', views.online_links, name='online_links'),
     path('capacitaciones/<slug:module_slug>/links/generar/', views.generate_link, name='generate_link'),

@@ -1326,3 +1326,85 @@ en ninguna forma, de modo que la restricción del commit 1.1 no obligó a ningun
 CV-7: el `include` de la ayuda debe declararse **antes** de
 `path('capacitaciones/<slug:module_slug>/', …)`. El convertidor `slug` acepta la palabra
 `ayuda` y capturaría la ruta.
+
+---
+
+## Commit 4.3 — Rutas y montaje bajo el dashboard
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se publicaron los cuatro endpoints —guía y chat, cada uno con y sin módulo— y se montaron en
+el `URLconf` del dashboard bajo `capacitaciones/ayuda/`, respetando el orden que exige CV-7.
+
+### CV-7 — el orden de declaración es funcional, no estético
+
+`apps/dashboard/urls.py` declara `path('capacitaciones/<slug:module_slug>/', modalidad_selector)`.
+El convertidor `slug` acepta la palabra `ayuda`, de modo que si el `include` fuera después,
+ese patrón capturaría la ruta. El `include` se insertó **después** de
+`path('comentarios/', …)` y **antes** del patrón `<slug:module_slug>`, con un comentario en
+el propio archivo que explica por qué la posición importa.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/urls.py` — creado, con `app_name = "capacitaciones_help"` y las
+  cuatro rutas.
+- `apps/dashboard/urls.py` — `include` de la ayuda, en la posición que exige CV-7.
+
+### Verificaciones ejecutadas
+
+```
+OK reverse para los 8 slugs
+/dashboard/capacitaciones/ayuda/guide/modalidad_selector/ergonomia/
+/dashboard/capacitaciones/ayuda/chat/modalidad_selector/ergonomia/
+
+OK  /dashboard/capacitaciones/ayuda/guide/home/                          -> dashboard:capacitaciones_help:help_guide
+OK  /dashboard/capacitaciones/ayuda/chat/home/                           -> dashboard:capacitaciones_help:chat_ai
+OK  /dashboard/capacitaciones/ayuda/guide/modalidad_selector/ergonomia/  -> dashboard:capacitaciones_help:help_guide_modulo
+OK  /dashboard/capacitaciones/ergonomia/                                 -> dashboard:modalidad_selector
+OK  /dashboard/capacitaciones/ergonomia/links/                           -> dashboard:online_links
+```
+
+Las dos últimas filas son la contracara de CV-7: montar la ayuda antes no rompió ninguna ruta
+existente del área.
+
+```
+$ .venv/bin/python manage.py test apps.dashboard apps.presencial apps.training --settings=config.test_settings
+Ran 27 tests in 0.626s
+OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.574s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.415s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. `urls.py` se copió íntegro de §8.6.4 y el montaje sigue exactamente §8.6.5.
+
+### Notas para el commit siguiente
+
+El commit 4.4 incluye una **prueba destructiva controlada**: se introduce a propósito un
+import prohibido en `pages.py`, se comprueba que el chequeo lo detecta y se revierte
+inmediatamente con `git checkout --`. Dejar el import sin revertir rompe el arranque del
+proyecto: hay que confirmar con `git status --short` antes de continuar.
+
+Además, `checks.py` debe construir su tupla `PROHIBIDOS` en tiempo de ejecución, por la
+restricción registrada en el commit 1.1.
