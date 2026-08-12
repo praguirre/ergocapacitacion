@@ -531,6 +531,15 @@ Registro de avance:
   `apps/training/` y prohíbe la ruta punteada del módulo 886 incluso dentro de comentarios.
   El código de esta app nombra al módulo 886 en prosa y construye en tiempo de ejecución
   cualquier referencia a su ruta.
+- **12/08/2026 — Commit 1.2:** se declaró el contrato del slug: `catalog.py` con el conjunto
+  cerrado de **8 pantallas** con ayuda (`home` como respaldo, `capacitaciones_menu`,
+  `modalidad_selector`, `online_links`, `share_link`, `presencial_capacitacion`,
+  `presencial_quiz`, `presencial_historial`) y `pages.py` con la ficha de cada una —título,
+  ruta y propósito—. **DA-7:** el slug identifica una *pantalla* y vive en el código; no es
+  el `module_slug` de `TrainingModule`, que vive en la base de datos y puede crearse desde el
+  admin. Confundirlos abriría el catálogo a filas editables y expondría los módulos
+  personalizados. Las rutas declaran sus tramos variables como `<modulo>` y `<id>`, nunca con
+  un identificador concreto.
 
 ### Registro de cambios documentales
 

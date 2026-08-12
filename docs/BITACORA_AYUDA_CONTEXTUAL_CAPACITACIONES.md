@@ -331,3 +331,73 @@ Tras la corrección: suite completa **354 en verde**, 886 **52 en verde**.
 `apps/training/` que no sea de prueba puede contener la ruta punteada completa del módulo
 886. Afecta en particular a `agents.py` (3.3), `limits.py` (4.1) y `checks.py` (4.4), cuyos
 bloques en la PROPUESTA la incluyen en sus comentarios.
+
+---
+
+## Commit 1.2 — Catálogo de pantallas y fichas de pantalla
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 1 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se declaró el conjunto cerrado de slugs habilitados (`catalog.py`) y la ficha humana de cada
+pantalla (`pages.py`): título, ruta y propósito. Son las dos primeras patas del contrato del
+slug. El slug identifica una **pantalla**, no un módulo de capacitación (DA-7 / CV-6): por
+eso el catálogo vive en el código y no en la base de datos.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/catalog.py` — 2 slugs globales, 4 partes del maestro, 8 slugs de
+  pantalla y el registro `MODULOS_CON_FICHA`, que sólo contiene `ergonomia`.
+- `apps/training/help_ai/pages.py` — 8 fichas `PageInfo` y la función `page_info()`, que
+  falla cerrado con `KeyError`.
+
+### Verificaciones ejecutadas
+
+```
+$ .venv/bin/python manage.py shell -c "…"
+slugs del catálogo : 8
+fichas declaradas  : 8
+sin ficha          : []
+ficha sin slug     : []
+OK: todas las fichas son válidas
+OK: page_info falla cerrado
+MODULOS_CON_FICHA  : ['ergonomia']
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.789s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.382s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+Las rutas de las 8 fichas se verificaron contra la expresión `/\d+/`: ninguna contiene un
+identificador numérico concreto. Los tramos variables se declaran como `<modulo>` y `<id>`,
+para que el prompt no afirme un identificador que el modelo no conoce.
+
+### Desvíos respecto del roadmap
+
+Ninguno. Los dos bloques se copiaron íntegros de §8.3.3 y §8.3.4 de la PROPUESTA; ninguno
+contiene la ruta punteada del módulo 886, de modo que la restricción registrada en el commit
+1.1 no los afecta.
+
+### Notas para el commit siguiente
+
+`MODULOS_CON_FICHA` ya declara `ergonomia` desde este commit. El documento
+`modulo_ergonomia.md` que respalda esa entrada llega recién en el commit 2.4; hasta entonces
+`documentos_modulo("ergonomia")` devuelve un nombre de archivo que todavía no existe. No es
+un problema: nada lo lee hasta la Fase 3.
