@@ -682,6 +682,16 @@ Registro de avance:
   la pantalla mirar— y explica el mecanismo de las capacitaciones personalizadas **sin
   afirmar que exista ninguna**. Las fases siguientes blindan y despliegan algo que ya
   funciona.
+- **12/08/2026 — Commit 7.1:** se creó `apps/training/help_ai/tests.py` con las dos primeras
+  clases (14 pruebas): el **contrato del slug** —catálogo, ficha, perfil y documento
+  sincronizados, invariante de partición del documento maestro, carga fail-closed— y el
+  **aislamiento respecto del módulo 886**. Esta segunda clase es la más importante del
+  trabajo: se verificó introduciendo a propósito un `{% block help_slug %}` en una plantilla
+  de Capacitaciones, y el efecto fue romper **dos pruebas del módulo 886** con mensajes que ni
+  siquiera mencionan a Capacitaciones. La clase convierte ese fallo remoto y desconcertante
+  en uno local que nombra el archivo culpable. Incluye además una «guarda del guardián»: si
+  el barrido de plantillas no encontrara nada, las demás pruebas pasarían sin probar nada.
+  Suite: 368 (354 + 14).
 
 ### Registro de cambios documentales
 

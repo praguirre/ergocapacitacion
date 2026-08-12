@@ -2092,3 +2092,155 @@ La Fase 7 construye `tests.py` en tres commits. El 7.1 incluye una **prueba dest
 controlada**: se agrega un `{% block help_slug %}` a una plantilla de Capacitaciones, se
 comprueba que falla tanto la prueba de aislamiento propia como la suite del 886, y se
 revierte con `git checkout --`.
+
+---
+
+## Commit 7.1 — Contrato del slug y aislamiento del 886
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 7 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+
+Se creó `tests.py` con las dos primeras clases: la que protege el contrato del slug (9
+métodos) y la que impide que este trabajo rompa la suite del módulo 886 (5 métodos).
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/tests.py` — creado, con el encabezado, las constantes
+  `SLUGS_DE_RESPALDO` y `PANTALLAS`, la función `_plantillas_del_proyecto()`, y las clases
+  `ContratoDelSlugTests` y `AislamientoDelModulo886Tests`.
+
+### Verificaciones ejecutadas
+
+```
+$ .venv/bin/python manage.py test \
+    apps.training.help_ai.tests.ContratoDelSlugTests \
+    apps.training.help_ai.tests.AislamientoDelModulo886Tests \
+    --settings=config.test_settings --verbosity=2
+
+test_guia_y_chat_comparten_version ... ok
+test_la_ficha_de_modulo_cambia_la_version ... ok
+test_la_ficha_de_modulo_solo_se_agrega_si_esta_declarada ... ok
+test_las_partes_reconstruyen_el_documento_maestro ... ok
+test_markdown_loader_falla_cerrado ... ok
+test_page_info_falla_cerrado_ante_un_slug_desconocido ... ok
+test_toda_pantalla_tiene_ficha_y_ruta_absoluta ... ok
+test_todo_slug_tiene_documento_no_vacio ... ok
+test_todo_slug_tiene_perfil_declarado ... ok
+test_el_barrido_de_plantillas_encuentra_las_de_capacitaciones ... ok
+test_ninguna_plantilla_de_capacitaciones_declara_help_slug ... ok
+test_ninguna_plantilla_usa_manejadores_inline_ni_cdn ... ok
+test_todo_bloque_declarado_pertenece_al_catalogo ... ok
+test_todo_slug_del_catalogo_lo_declara_alguna_pantalla ... ok
+
+Ran 14 tests in 0.025s
+OK
+```
+
+**Prueba destructiva controlada.** Es la justificación entera de
+`AislamientoDelModulo886Tests`. Se agregó a propósito un bloque del 886 a una plantilla de
+Capacitaciones:
+
+```
+$ printf '\n{% block help_slug %}capacitaciones_menu{% endblock %}\n' \
+    >> templates/dashboard/capacitaciones_menu.html
+
+$ .venv/bin/python manage.py test apps.training.help_ai.tests.AislamientoDelModulo886Tests …
+FAIL: test_ninguna_plantilla_de_capacitaciones_declara_help_slug
+AssertionError: Lists differ: ['templates/dashboard/capacitaciones_menu.html'] != []
+Ran 5 tests in 0.013s
+FAILED (failures=1)
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+FAIL: test_static_template_slugs_are_registered_for_coverage
+      (apps.ergonomia_886.help_ai.tests.HelpContentCoverageTests)
+FAIL: test_todo_bloque_help_slug_resuelve_a_un_slug_valido
+      (apps.ergonomia_886.help_ai.tests.HelpSlugContractTests)
+Ran 52 tests in 0.387s
+FAILED (failures=2)
+```
+
+Es exactamente el efecto que la clase existe para prevenir: la violación rompe **dos pruebas
+del módulo 886**, en dos clases distintas, con mensajes que no mencionan al área de
+Capacitaciones. La prueba propia convierte ese fallo remoto y desconcertante en uno local que
+nombra el archivo culpable y dice qué hacer.
+
+**Reversión y confirmación:**
+
+```
+$ git checkout -- templates/dashboard/capacitaciones_menu.html
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.379s
+OK
+
+$ git status --short templates/dashboard/capacitaciones_menu.html
+(vacío)
+```
+
+**Guarda del guardián** (Paso 4):
+
+```
+slugs declarados por plantillas: ['capacitaciones_menu', 'home', 'modalidad_selector',
+  'online_links', 'presencial_capacitacion', 'presencial_historial', 'presencial_quiz',
+  'share_link']
+cantidad: 8
+```
+
+No regresión:
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 368 tests in 4.919s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.387s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+
+$ git status --short
+?? apps/training/help_ai/tests.py
+```
+
+368 = 354 de la línea base + 14 nuevas. El árbol de trabajo no conserva ningún residuo de la
+prueba destructiva.
+
+### Desvíos respecto del roadmap
+
+**El barrido encuentra 8 slugs, no 7.** El Paso 4 del roadmap anticipa «los 7 slugs de
+pantalla (todos menos `home`, que es el respaldo)». El barrido devuelve 8, porque la
+expresión regular también captura el **valor por defecto del bloque en la plantilla base**:
+
+```django
+data-page-slug="{% block capacitacion_help_slug %}home{% endblock %}"
+```
+
+No hay nada que corregir y ninguna prueba se ve afectada:
+
+- `test_todo_bloque_declarado_pertenece_al_catalogo` pasa, porque `home` **sí** está en
+  `PAGE_HELP_SLUGS`; no es un huérfano.
+- `test_todo_slug_del_catalogo_lo_declara_alguna_pantalla` resta `SLUGS_DE_RESPALDO`, de modo
+  que el resultado es el mismo con `home` presente o ausente en el barrido.
+- `test_el_barrido_de_plantillas_encuentra_las_de_capacitaciones` exige `>= 6`, y 8 lo
+  cumple.
+
+Es una imprecisión de la expectativa escrita en el roadmap, no un defecto del código ni de
+las pruebas. Se registra y se continúa.
+
+### Notas para el commit siguiente
+
+En `ReglasDeContenidoTests`, la prueba `test_ningun_modulo_personalizado_tiene_ficha` accede
+a la base de datos: esa clase debe heredar de `TestCase`, no de `SimpleTestCase`. La
+PROPUESTA la declara como `SimpleTestCase`; hay que corregirlo al copiar.
