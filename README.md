@@ -594,6 +594,14 @@ Registro de avance:
   es sobre los datos y nunca sobre la ubicación. Es la corrección de un fallo real observado
   en el módulo 886, donde el modelo generalizaba el descargo de privacidad hasta negar que
   sabía en qué pantalla estaba el usuario.
+- **12/08/2026 — Commit 3.3:** se implementó el ensamblado del agente (`agents.py`), que une
+  preámbulo, versión, contexto general, ficha de módulo y guía específica en las
+  instrucciones del `Agent` del SDK. El agente se cachea con `lru_cache` por la clave
+  `(slug, versión de contenido, módulo)`: **editar un documento del corpus invalida el agente
+  automáticamente**, sin reiniciar el proceso. Falla cerrado ante una versión desactualizada
+  y rechaza con `ValueError` cualquier slug ajeno al catálogo. Sin herramientas (`tools=[]`):
+  el asistente no lee la base de datos ni la web. Fase 3 cerrada: el motor de contexto está
+  completo.
 
 ### Registro de cambios documentales
 

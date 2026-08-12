@@ -1051,3 +1051,100 @@ PODÉS VER». Verificado por índice de posición en la cadena.
 La clave del `lru_cache` de `agents.py` incluye `content_version`: es lo que hace que editar
 un `.md` invalide el agente automáticamente, sin reiniciar el proceso. No simplificar la
 firma.
+
+---
+
+## Commit 3.3 — Ensamblado del agente (`agents.py`)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se unieron preámbulo, versión, contexto general, ficha de módulo y guía específica en las
+instrucciones del `Agent` del SDK. El agente se cachea por la clave
+`(slug, content_version, modulo)`, de modo que editar un `.md` lo invalida solo, sin
+reiniciar el proceso.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/agents.py` — `page_agent()` con `lru_cache`.
+
+### Verificaciones ejecutadas
+
+Ensamblado de los 8 slugs, con `Agent` parcheado: **no se hizo ninguna llamada real a
+OpenAI**.
+
+```
+OK  home                        10695 caracteres
+OK  capacitaciones_menu         10832 caracteres
+OK  modalidad_selector          12165 caracteres
+OK  online_links                14515 caracteres
+OK  share_link                  13950 caracteres
+OK  presencial_capacitacion     13877 caracteres
+OK  presencial_quiz             13756 caracteres
+OK  presencial_historial        12344 caracteres
+con ficha de módulo : True
+sin ficha de módulo : True
+modelo              : gpt-5.6-luna == gpt-5.6-luna
+tools vacio         : True
+OK fail-closed ante versión desactualizada
+OK rechaza un slug ajeno al catálogo
+```
+
+El `OK` de cada slug verifica cuatro cosas a la vez: que las instrucciones contienen
+`### CONTEXTO GENERAL`, que contienen `### GUÍA ESPECÍFICA (<slug>)`, que declaran la versión
+vigente y que incluyen el documento específico completo.
+
+Dos comprobaciones de fallo cerrado:
+
+- una versión desactualizada produce `HelpContentError`, no un agente con contenido viejo;
+- un slug del catálogo del módulo 886 (`planilla1`) produce `ValueError`: el catálogo es
+  cerrado y no se cruza con el del otro sistema.
+
+**CV-4 verificada** sobre toda la app:
+
+```
+$ grep -rn "ergonomia_886\|ergobot_ai" apps/training/help_ai/*.py
+sin coincidencias
+```
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.786s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.381s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno de fondo. El bloque se copió íntegro de §8.5.3 de la PROPUESTA, con una única
+adaptación de redacción: el docstring nombra al paquete de ayuda del módulo 886 y al
+asistente docente en prosa, en lugar de con sus rutas punteadas, por la restricción
+registrada en el commit 1.1.
+
+**Observación sobre el modelo.** `settings.CHAT_AI_MODEL` vale `gpt-5.6-luna` en este
+entorno, mientras que §2.3 de la PROPUESTA documentaba `gpt-4.1-mini-2025-04-14` como valor
+auditado. No es un desvío de este trabajo: el agente lee el modelo de la configuración y no
+lo fija, de modo que hereda lo que el proyecto tenga definido. Se registra por trazabilidad.
+
+### Notas para el commit siguiente
+
+Fase 3 cerrada: el sistema ya puede construir el agente, aunque todavía no hay ninguna URL
+que lo exponga. La Fase 4 empieza por `limits.py`, cuyo punto crítico es
+`KEY_PREFIX = "help-capa"`: reutilizar el prefijo del módulo 886 haría que consultar una
+ayuda bloqueara la otra.
