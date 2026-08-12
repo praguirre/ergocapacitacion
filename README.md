@@ -611,6 +611,15 @@ Registro de avance:
   prefijos separados, un usuario que use los dos asistentes a la vez puede alcanzar el doble
   de la cuota por ventana (40/min con el valor por defecto). La variante de cuota unificada
   queda documentada en la auditoría por si se decide lo contrario.
+- **12/08/2026 — Commit 4.2:** se escribieron las dos vistas del sistema (`views.py`):
+  `guide_view`, que sirve el Markdown con su `ETag` y su `X-Help-Content-Version`, y
+  `chat_view`, una vista ASGI que devuelve Server-Sent Events. **Decisión deliberada:**
+  ninguna de las dos usa `@login_required`, porque ese decorador responde con una redirección
+  302 que desde un `fetch()` se resuelve de forma opaca; acá el rechazo es **401 / 403 en
+  JSON**, que el cliente puede reportar con precisión. El hilo de conversación se valida con
+  un contrato estricto —sólo `role` y `content`, sólo roles `user` y `assistant`— que rechaza
+  la inyección de mensajes de sistema por el historial, y `to_wire_thread()` garantiza que lo
+  que se devuelve al navegador vuelva a superar esa validación en la consulta siguiente.
 
 ### Registro de cambios documentales
 

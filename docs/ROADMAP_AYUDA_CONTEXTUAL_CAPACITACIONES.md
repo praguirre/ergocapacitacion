@@ -320,7 +320,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 | Commit | Título | Estado |
 |---|---|:---:|
 | 4.1 | Límites de uso con prefijo propio | ✅ |
-| 4.2 | Vistas de Guía y Chat en streaming | ⬜ |
+| 4.2 | Vistas de Guía y Chat en streaming | ✅ |
 | 4.3 | Rutas y montaje bajo el dashboard | ⬜ |
 | 4.4 | Chequeo de aislamiento CF-1 bis | ⬜ |
 
