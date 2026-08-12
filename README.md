@@ -521,6 +521,16 @@ Registro de avance:
   `static/ayuda/help_texts/` y **no se toca**: son directorios distintos, por colisión de
   nombres de documento (`home.md`, `dashboard.md`, `crear.md`, `factor.md`). Se registró que
   ese corpus contiene 50 documentos, no 51 como declaraba el estado de partida del roadmap.
+- **12/08/2026 — Commit 1.1:** se creó la app `apps.training.help_ai` y se la dio de alta en
+  `LOCAL_APPS`. **Decisión de arquitectura (DA-1 / CV-1):** el `AppConfig` declara
+  `label = "capacitaciones_help_ai"` de forma explícita. Django deriva el label del último
+  componente de la ruta punteada, de modo que sin esa línea la app colisionaría con la ayuda
+  del módulo 886 y el proyecto no arrancaría (`Application labels aren't unique`).
+  **Restricción documentada en el camino:** una prueba preexistente del módulo 886
+  (`evaluaciones/tests_sugerencias.py`) barre como texto plano todos los `.py` de
+  `apps/training/` y prohíbe la ruta punteada del módulo 886 incluso dentro de comentarios.
+  El código de esta app nombra al módulo 886 en prosa y construye en tiempo de ejecución
+  cualquier referencia a su ruta.
 
 ### Registro de cambios documentales
 

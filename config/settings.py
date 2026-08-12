@@ -53,6 +53,9 @@ LOCAL_APPS = [
     "apps.presencial",   # NUEVO - Commit 18
     "apps.company",      # NUEVO - Etapa 3, Commit 30
     "apps.training",
+    "apps.training.help_ai",  # Ayuda del área de capacitaciones.
+                              # CF-1 bis: NO se fusiona con ergobot_ai ni con
+                              # ergonomia_886.help_ai. label="capacitaciones_help_ai".
     "apps.quiz",
     "apps.certificates",
     "apps.ergobot_ai",              # Chatbot docente. CF-1: NO se fusiona con help_ai
