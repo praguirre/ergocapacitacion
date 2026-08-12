@@ -1537,3 +1537,108 @@ Fase 5 es **la única que toca el módulo 886**, y lo hace en un solo punto auto
 R-11: una aserción de `apps/ergonomia_886/help_ai/tests.py`. El commit 5.1 debe ejecutar la
 suite del 886 **antes** de tocar la aserción, para dejar registrada la evidencia de que la
 red de pruebas detectó el cambio del widget.
+
+---
+
+## Commit 5.1 — Parametrizar el widget y ajustar la aserción del 886
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 5 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+
+Se promovió `static/ayuda/js/help_widget.js` a componente compartido, parametrizando dos
+literales por atributos de datos, y se ajustó **una sola** aserción del módulo 886. Es la
+única excepción autorizada a R-11 en todo el roadmap.
+
+Los dos cambios conservan el comportamiento histórico del 886 como respaldo: si la plantilla
+no declara nada, el panel sigue diciendo «ErgoBot está pensando» y sigue registrando bajo la
+etiqueta `[ayuda-886]`.
+
+### Archivos creados o modificados
+
+- `static/ayuda/js/help_widget.js` — dos cambios: `dataset.assistantName || "ErgoBot"` en
+  `showThinking()`, y `dataset.logTag || "ayuda-886"` en `reportarSlugAusente()`.
+- `apps/ergonomia_886/help_ai/tests.py` — una aserción, en la línea 95.
+
+### Verificaciones ejecutadas
+
+**Paso 3 — impacto sobre las pruebas del 886, ANTES de tocarlas.** Es la evidencia de que la
+red de pruebas detectó el cambio:
+
+```
+FAIL: test_thinking_state_is_accessible_and_csp_compatible
+      (apps.ergonomia_886.help_ai.tests.HelpContentCoverageTests)
+AssertionError: 'label.textContent = "ErgoBot está pensando"' not found in '…'
+
+Ran 52 tests in 0.383s
+FAILED (failures=1)
+```
+
+**Paso 5 — tras ajustar la aserción:**
+
+```
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.410s
+OK
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.556s
+OK
+```
+
+**Paso 6 — el respaldo funciona y nada más se movió:**
+
+```
+respaldo del nombre : True
+respaldo del log    : True
+sin literal viejo   : True
+DOMPurify intacto   : True
+sin EventSource     : True
+```
+
+**Alcance real del cambio sobre el módulo 886:**
+
+```
+$ git diff --stat codex/beta-feedback...HEAD -- apps/ergonomia_886/
+ apps/ergonomia_886/help_ai/tests.py | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+```
+
+Un solo archivo, 8 líneas, todas dentro de la aserción autorizada y su comentario
+explicativo. Ninguna otra aserción, ningún `patch`, ningún caso de prueba.
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+**Uno, de identificación, no de fondo.** El roadmap anticipaba que el fallo se produciría en
+`test_markdown_runtime_is_local_and_sanitized`. El fallo real ocurrió en
+`test_thinking_state_is_accessible_and_csp_compatible`, de la clase
+`HelpContentCoverageTests`.
+
+La aserción, en cambio, estaba **exactamente donde el roadmap decía: la línea 95**, y es la
+única del archivo que menciona cualquiera de los dos literales parametrizados —verificado con
+`grep -n 'ErgoBot está pensando\|ayuda-886'`, que devuelve una sola coincidencia—. De modo
+que la condición dura del commit se cumplió sin excepción: **se modificó exactamente una
+aserción**, y no hizo falta tocar una segunda, que era la señal de alarma que el roadmap
+pedía vigilar.
+
+El nombre de la prueba en el roadmap es simplemente un dato desactualizado del documento.
+
+### Notas para el commit siguiente
+
+CV-2: las plantillas nuevas usan `{% block capacitacion_help_slug %}`, nunca
+`{% block help_slug %}`. La suite del 886 barre las plantillas de todo el proyecto y exige
+que ese segundo bloque pertenezca a SU catálogo.

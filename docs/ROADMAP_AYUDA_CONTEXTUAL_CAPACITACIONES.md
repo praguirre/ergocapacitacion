@@ -328,7 +328,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 5.1 | Parametrizar el widget y ajustar la aserción del 886 | ⬜ |
+| 5.1 | Parametrizar el widget y ajustar la aserción del 886 | ⚠️ |
 | 5.2 | Plantilla base y cuerpo del panel | ⬜ |
 
 ### Fase 6 — Cableado de las siete pantallas 🎯

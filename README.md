@@ -638,6 +638,15 @@ Registro de avance:
   inmediato. La contrapartida honesta de esta separación es la duplicación de la maquinaria
   SSE, declarada como deuda técnica en la auditoría. Fase 4 cerrada: los endpoints ya
   responden.
+- **12/08/2026 — Commit 5.1:** **DA-5:** `static/ayuda/js/help_widget.js` y su CSS pasan a
+  ser **componentes compartidos** del proyecto, parametrizados por `data-assistant-name` y
+  `data-log-tag`, en lugar de copiarse. La alternativa —duplicar el widget— habría dejado 452
+  líneas de JS y CSS repetidas, con riesgo alto de divergencia silenciosa: una corrección de
+  seguridad en la sanitización habría que aplicarla dos veces. Ambos parámetros conservan el
+  comportamiento histórico del módulo 886 como respaldo, de modo que su panel sigue diciendo
+  «ErgoBot está pensando» sin cambios. Es el **único punto de todo el trabajo que toca el
+  módulo 886**: una aserción de sus pruebas, reescrita para proteger el respaldo en lugar del
+  literal. El módulo 886 sigue con sus 52 pruebas en verde.
 
 ### Registro de cambios documentales
 

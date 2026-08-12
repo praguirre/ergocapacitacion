@@ -107,7 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // D-P-4: sin endpoint de telemetría — el mensaje visible ya garantiza el
   // reporte del usuario, y un endpoint nuevo agrega superficie por poco.
   function reportarSlugAusente(origen) {
-    console.error("[ayuda-886] El panel de ayuda no recibió data-page-slug.", {
+    const logTag = helpWidgetElement.dataset.logTag || "ayuda-886";
+    console.error(`[${logTag}] El panel de ayuda no recibió data-page-slug.`, {
       origen,
       url: window.location.pathname,
     });
@@ -161,7 +162,10 @@ document.addEventListener("DOMContentLoaded", () => {
     wrap.setAttribute("aria-live", "polite");
 
     const label = document.createElement("span");
-    label.textContent = "ErgoBot está pensando";
+    // El nombre lo declara la plantilla en data-assistant-name. El respaldo
+    // conserva el comportamiento histórico del módulo 886.
+    const assistantName = helpWidgetElement.dataset.assistantName || "ErgoBot";
+    label.textContent = `${assistantName} está pensando`;
 
     const dots = document.createElement("span");
     dots.className = "ai-thinking__dots";

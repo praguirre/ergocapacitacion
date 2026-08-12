@@ -92,7 +92,13 @@ class HelpContentCoverageTests(SimpleTestCase):
             / "_help_widget_body.html"
         ).read_text(encoding="utf-8")
 
-        self.assertIn('label.textContent = "ErgoBot está pensando"', widget)
+        # El nombre del asistente se parametrizó para que el mismo widget sirva
+        # al módulo 886 y al área de Capacitaciones (DA-5 del documento
+        # docs/AUDITORIA_Y_PROPUESTA_AYUDA_CONTEXTUAL_CAPACITACIONES_2026-08-12.md).
+        # Lo que hay que proteger es el RESPALDO: si la plantilla no declara
+        # nada, el panel del 886 debe seguir diciendo "ErgoBot está pensando".
+        self.assertIn('dataset.assistantName || "ErgoBot"', widget)
+        self.assertIn("está pensando", widget)
         self.assertIn('wrap.setAttribute("role", "status")', widget)
         self.assertIn('wrap.setAttribute("aria-live", "polite")', widget)
         send_to_ai = widget[widget.index("async function sendToAI"):]
