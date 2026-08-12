@@ -671,6 +671,17 @@ Registro de avance:
   no comparten un solo identificador de DOM: `#chatLog` y `#chat-messages` aparecen una vez
   cada uno, y las reglas CSS del widget están todas anidadas bajo `#helpWidget`. Los scripts
   propios de las tres pantallas siguen cargándose junto con el del widget.
+- **12/08/2026 — Commit 6.3 🎯 OBJETIVO FUNCIONAL CUMPLIDO:** prueba de humo de punta a punta
+  con navegador y sesión profesional real. **Las siete pantallas del área de Capacitaciones
+  tienen su panel de ayuda funcionando:** en las siete aparece el botón «?», la pestaña
+  «Guía» muestra el documento de esa pantalla, el Chat IA responde correctamente en qué
+  pantalla está el usuario sin pedir confirmación, y la consola del navegador queda limpia.
+  Las cuatro preguntas de control confirmaron el comportamiento diseñado: el asistente
+  explica los elementos propios de cada pantalla, **deriva a Ergobot** las consultas sobre el
+  contenido didáctico, **se niega a inventar** datos que no puede ver —e indica qué parte de
+  la pantalla mirar— y explica el mecanismo de las capacitaciones personalizadas **sin
+  afirmar que exista ninguna**. Las fases siguientes blindan y despliegan algo que ya
+  funciona.
 
 ### Registro de cambios documentales
 

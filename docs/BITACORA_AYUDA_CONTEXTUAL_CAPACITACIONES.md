@@ -1942,3 +1942,153 @@ Ninguno. Se aplicaron los diffs de §8.8.5 a §8.8.7 de la PROPUESTA.
 **El objetivo funcional del pedido queda cumplido con el commit 6.3.** Las siete pantallas ya
 tienen su panel. Falta la verificación con navegador y sesión real, que es una detención
 prevista por P-5.
+
+---
+
+## Commit 6.3 — Prueba de humo de las siete pantallas 🎯
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 6 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se confirmó, con navegador y sesión real, que el sistema completo funciona de punta a punta.
+**Es el commit que cierra el objetivo funcional del pedido.**
+
+La verificación tuvo dos partes: la automatizada, que ejecutó el asistente, y la manual con
+sesión profesional real y consumo de la clave de OpenAI, que ejecutó Pablo tras la detención
+prevista por P-5.
+
+### Verificación automatizada previa
+
+Las siete pantallas y las ocho guías, sobre base de pruebas efímera:
+
+```
+pantalla                   HTTP  slug   widget css    boton
+capacitaciones_menu         200  OK     OK     OK     OK
+modalidad_selector          200  OK     OK     OK     OK
+online_links                200  OK     OK     OK     OK
+share_link                  200  OK     OK     OK     OK
+presencial_capacitacion     200  OK     OK     OK     OK
+presencial_quiz             200  OK     OK     OK     OK
+presencial_historial        200  OK     OK     OK     OK
+
+guide/home                       200  version=40a7550fd8af (len=64)
+guide/capacitaciones_menu        200  version=5e5b3dc56edb (len=64)
+guide/modalidad_selector         200  version=6f2c34a82b2c (len=64)
+guide/online_links               200  version=2d6c1270d1ef (len=64)
+guide/share_link                 200  version=8ec30a5afb2d (len=64)
+guide/presencial_capacitacion    200  version=8b762273144d (len=64)
+guide/presencial_quiz            200  version=7453cc2ac3cb (len=64)
+guide/presencial_historial       200  version=d03abcb69e2c (len=64)
+```
+
+### Verificación manual — resultado informado por Pablo
+
+Criterios: **a.** aparece el botón «?» · **b.** la Guía muestra el texto de esa pantalla ·
+**c.** el Chat responde correctamente «¿en qué pantalla estoy?» sin pedir confirmación ·
+**d.** consola limpia de mensajes `[ayuda-capacitaciones]`.
+
+| # | Pantalla | a | b | c | d |
+|---|---|:---:|:---:|:---:|:---:|
+| 1 | `/dashboard/capacitaciones/` | OK | OK | OK | OK |
+| 2 | `/dashboard/capacitaciones/ergonomia/` | OK | OK | OK | OK |
+| 3 | `/dashboard/capacitaciones/ergonomia/links/` | OK | OK | OK | OK |
+| 4 | `…/links/<uuid>/compartir/` | OK | OK | OK | OK |
+| 5 | `/dashboard/presencial/ergonomia/` | OK | OK | OK | OK |
+| 6 | `/dashboard/presencial/ergonomia/quiz/` | OK | OK | OK | OK |
+| 7 | `/dashboard/presencial/historial/` | OK | OK | OK | OK |
+
+**Siete de siete, sin fallas.** No hubo nada que corregir.
+
+### Las cuatro respuestas de control, literales
+
+**1. En `…/links/` → «¿para qué sirve la etiqueta?»**
+
+> La etiqueta sirve para reconocer internamente cada link que generás. No la ve el
+> trabajador.
+> Podés usarla para identificar el grupo, sede o turno, por ejemplo:
+> * `Planta Norte - Turno mañana`
+> * `Empresa XYZ - Marzo 2026`
+> Es opcional: si la dejás vacía, el link se identifica con un código abreviado.
+
+*Correcta.* Reproduce fielmente `online_links.md`, incluida la aclaración de que la etiqueta
+es de uso interno. **CA-5 cumplido.**
+
+**2. En `/dashboard/presencial/ergonomia/` → «¿qué es una postura forzada?»**
+
+> Una postura forzada es aquella en la que una parte del cuerpo se mantiene fuera de una
+> posición cómoda o natural, por ejemplo con la espalda muy inclinada, los brazos elevados o
+> el cuello girado durante un tiempo prolongado. Puede generar sobrecarga y daño acumulativo.
+> Para ampliar la explicación dentro de esta capacitación, consultá a Ergobot, el asistente
+> docente que aparece en la pantalla.
+
+*Correcta, y es la respuesta más delicada de las cuatro.* Hace exactamente lo que ordena el
+bloque «QUÉ SOS Y QUÉ NO SOS» del preámbulo: responde en dos frases y **deriva explícitamente
+a Ergobot**, sin arrogarse el rol docente. **CA-6 cumplido.**
+
+**3. «¿cuántos links generé?»**
+
+> No puedo ver el contador ni los datos cargados en tu pantalla. En Links de la capacitación
+> online /dashboard/capacitaciones/ergonomia/links/, mirá el título de la lista: ahí figura
+> cuántos links llevás generados.
+> Si aparece «No hay links generados para esta capacitación», todavía no generaste ninguno.
+
+*Correcta.* Niega el acceso al dato **sin inventar una cifra** y hace lo que pide el bloque
+«QUÉ NO PODÉS VER»: indicarle al usuario qué parte de la pantalla mirar. **CA-7 cumplido.**
+
+**4. «¿qué capacitaciones personalizadas existen?»**
+
+> No puedo ver qué capacitaciones personalizadas existen en tu cuenta. Las capacitaciones
+> personalizadas sólo aparecen para los profesionales que fueron asignados al cliente
+> correspondiente.
+> Podés revisarlas desde Capacitaciones en el panel. Si no aparece una capacitación, puede
+> que no tengas asignación para verla.
+
+*Correcta.* Explica el mecanismo **sin afirmar que existe ninguna** y sin nombrar empresa
+alguna. Es la respuesta que protege la regla de contenido de CV-5 y CV-6 en tiempo de
+ejecución. **CA-8 cumplido.**
+
+### Verificaciones de no regresión
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.458s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.436s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. La detención P-5 se emitió con el formato de §0.3 y se retomó tras la confirmación.
+No hubo correcciones que aplicar, de modo que no hizo falta repetir la detención.
+
+### 🎯 Estado del pedido
+
+**El objetivo funcional está cumplido.** Las siete pantallas del área de Capacitaciones
+tienen su panel de ayuda funcionando: botón flotante, pestaña Guía con el documento de esa
+pantalla y Chat IA que sabe dónde está el usuario, explica los elementos de la pantalla,
+deriva lo didáctico a Ergobot y se niega a inventar datos que no ve.
+
+Las Fases 7 y 8 blindan y despliegan algo que ya funciona.
+
+### Notas para el commit siguiente
+
+La Fase 7 construye `tests.py` en tres commits. El 7.1 incluye una **prueba destructiva
+controlada**: se agrega un `{% block help_slug %}` a una plantilla de Capacitaciones, se
+comprueba que falla tanto la prueba de aislamiento propia como la suite del 886, y se
+revierte con `git checkout --`.

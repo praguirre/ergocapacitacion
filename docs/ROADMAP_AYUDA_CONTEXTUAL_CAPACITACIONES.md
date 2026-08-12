@@ -337,7 +337,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 |---|---|:---:|
 | 6.1 | Cablear las cuatro pantallas del dashboard | ✅ |
 | 6.2 | Cablear las tres pantallas presenciales | ✅ |
-| 6.3 | Prueba de humo de las siete pantallas | ⬜ |
+| 6.3 | Prueba de humo de las siete pantallas | ✅ |
 
 ### Fase 7 — Red de pruebas
 
