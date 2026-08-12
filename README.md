@@ -692,6 +692,14 @@ Registro de avance:
   en uno local que nombra el archivo culpable. Incluye además una «guarda del guardián»: si
   el barrido de plantillas no encontrara nada, las demás pruebas pasarían sin probar nada.
   Suite: 368 (354 + 14).
+- **12/08/2026 — Commit 7.2:** se agregaron 8 pruebas más: el **orden de las rutas** (que
+  `modalidad_selector` no capture las rutas de ayuda, y que las del módulo sigan
+  resolviendo), las **seis cláusulas invariantes del preámbulo** más el ensamblado del prompt
+  —con el `Agent` parcheado, sin llamadas reales a OpenAI— y las **reglas de publicación del
+  corpus**, que barren los 15 documentos buscando CUIT, correos y referencias a campos
+  internos, y verifican que ningún módulo personalizado tenga ficha pública. La regla de
+  contenido se validó introduciendo a propósito un correo en un documento: la prueba falló
+  nombrando el archivo y el tipo de dato, y se revirtió. Suite: 376 (354 + 22).
 
 ### Registro de cambios documentales
 

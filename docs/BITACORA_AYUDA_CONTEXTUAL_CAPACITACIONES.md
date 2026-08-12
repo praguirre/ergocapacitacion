@@ -2244,3 +2244,125 @@ las pruebas. Se registra y se continúa.
 En `ReglasDeContenidoTests`, la prueba `test_ningun_modulo_personalizado_tiene_ficha` accede
 a la base de datos: esa clase debe heredar de `TestCase`, no de `SimpleTestCase`. La
 PROPUESTA la declara como `SimpleTestCase`; hay que corregirlo al copiar.
+
+---
+
+## Commit 7.2 — Rutas, preámbulo y reglas de contenido
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 7 |
+| Estado | ⚠️ Completado con desvíos |
+
+### Qué se hizo
+
+Se agregaron las tres clases que protegen el orden de las rutas (CV-7), las cláusulas
+invariantes del preámbulo y el ensamblado del prompt, y las reglas de publicación del corpus
+(CV-5 y CV-6).
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/tests.py` — se agregaron `RutasTests` (3 métodos), `PreambuloTests`
+  (3 métodos) y `ReglasDeContenidoTests` (2 métodos), más los imports que requieren.
+
+### Verificaciones ejecutadas
+
+```
+$ .venv/bin/python manage.py test \
+    apps.training.help_ai.tests.RutasTests \
+    apps.training.help_ai.tests.PreambuloTests \
+    apps.training.help_ai.tests.ReglasDeContenidoTests \
+    --settings=config.test_settings --verbosity=2
+
+test_el_corpus_no_expone_datos_sensibles ... ok
+test_ningun_modulo_personalizado_tiene_ficha ... ok
+test_la_ruta_del_modulo_sigue_resolviendo ... ok
+test_las_rutas_de_ayuda_no_las_captura_modalidad_selector ... ok
+test_se_puede_construir_la_ruta_de_cada_slug ... ok
+test_el_agente_recibe_contexto_general_y_especifico ... ok
+test_el_preambulo_declara_pantalla_y_limites ... ok
+test_la_ficha_de_modulo_se_inyecta_cuando_corresponde ... ok
+
+Ran 8 tests in 0.019s
+OK
+```
+
+**Los `@patch` apuntan al módulo correcto** (Paso 3). Si apuntaran al `Agent` del SDK en
+lugar de al nombre importado en `agents.py`, las pruebas construirían un agente real:
+
+```
+$ grep -n "@patch" apps/training/help_ai/tests.py
+292:    @patch("apps.training.help_ai.agents.Agent")
+310:    @patch("apps.training.help_ai.agents.Agent")
+```
+
+**Prueba destructiva controlada** (Paso 4). Se introdujo un correo en un documento del
+corpus:
+
+```
+$ printf '\nContacto: prueba@ejemplo.com\n' >> static/ayuda/capacitaciones/help_texts/home.md
+
+$ .venv/bin/python manage.py test apps.training.help_ai.tests.ReglasDeContenidoTests …
+FAIL: test_el_corpus_no_expone_datos_sensibles
+      (documento='home.md', patron='una dirección de correo')
+AssertionError: <re.Match object; span=(1368, 1386), match='prueba@ejemplo.com'> is not None :
+home.md contiene una dirección de correo. El corpus se sirve públicamente por /static/ y no
+debe incluir datos de clientes ni referencias a campos internos.
+Ran 2 tests in 0.003s
+FAILED (failures=1)
+```
+
+El mensaje nombra el documento, el tipo de dato y el motivo. **Reversión y confirmación:**
+
+```
+$ git checkout -- static/ayuda/capacitaciones/help_texts/home.md
+
+$ git status --short static/ayuda/capacitaciones/help_texts/home.md
+(vacío)
+
+$ .venv/bin/python manage.py test apps.training.help_ai.tests.ReglasDeContenidoTests …
+Ran 2 tests in 0.003s
+OK
+```
+
+No regresión:
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 376 tests in 5.537s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.406s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+376 = 354 + 22, exactamente el total que anticipaba el roadmap para este punto.
+
+### Desvíos respecto del roadmap
+
+**Uno, y el propio roadmap lo anticipaba.** `ReglasDeContenidoTests` se declaró heredando de
+`TestCase`, no de `SimpleTestCase` como escribe §8.9.2 de la PROPUESTA, porque
+`test_ningun_modulo_personalizado_tiene_ficha` consulta `TrainingModule`. Con
+`SimpleTestCase`, Django rechaza el acceso a la base de datos y la prueba fallaría con un
+error de configuración, no con un hallazgo real. El motivo quedó escrito en el docstring de
+la clase.
+
+Se corrigió además una errata de la PROPUESTA: la variable `intersección`, con tilde, se
+escribió `interseccion`. Un identificador acentuado es válido en Python 3, pero rompe la
+convención del resto del proyecto.
+
+### Notas para el commit siguiente
+
+El commit 7.3 aplica las decisiones 11 y 12 de §0.8: `User.objects.create_professional(...)`
+en lugar de `create_user(username=…, user_type=…)`, y `call_command("seed_modules")` en lugar
+de la fixture `training_modules.json`.

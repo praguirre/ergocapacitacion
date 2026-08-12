@@ -344,7 +344,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 | Commit | Título | Estado |
 |---|---|:---:|
 | 7.1 | Contrato del slug y aislamiento del 886 | ⚠️ |
-| 7.2 | Rutas, preámbulo y reglas de contenido | ⬜ |
+| 7.2 | Rutas, preámbulo y reglas de contenido | ⚠️ |
 | 7.3 | Seguridad del endpoint y render de pantallas | ⬜ |
 
 ### Fase 8 — Cierre documental y despliegue

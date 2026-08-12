@@ -11,9 +11,11 @@ Estas pruebas protegen tres cosas distintas y hay que mantener las tres:
 
 import re
 from pathlib import Path
+from unittest.mock import patch
 
 from django.conf import settings
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, TestCase
+from django.urls import resolve, reverse
 
 from .catalog import (
     GLOBAL_HELP_SLUGS,
@@ -213,3 +215,156 @@ class AislamientoDelModulo886Tests(SimpleTestCase):
                 self.assertNotRegex(
                     contenido, r"\son(?:click|change|submit|load|error)\s*="
                 )
+
+
+# ===========================================================================
+# 3. Rutas
+# ===========================================================================
+
+class RutasTests(SimpleTestCase):
+
+    def test_se_puede_construir_la_ruta_de_cada_slug(self):
+        for slug in PAGE_HELP_SLUGS:
+            with self.subTest(slug=slug):
+                self.assertEqual(
+                    reverse("dashboard:capacitaciones_help:help_guide", kwargs={"slug": slug}),
+                    f"/dashboard/capacitaciones/ayuda/guide/{slug}/",
+                )
+                self.assertEqual(
+                    reverse("dashboard:capacitaciones_help:chat_ai", kwargs={"slug": slug}),
+                    f"/dashboard/capacitaciones/ayuda/chat/{slug}/",
+                )
+
+    def test_las_rutas_de_ayuda_no_las_captura_modalidad_selector(self):
+        """El convertidor `slug` acepta la palabra "ayuda": el orden importa."""
+        for ruta, esperado in (
+            (
+                "/dashboard/capacitaciones/ayuda/guide/home/",
+                "dashboard:capacitaciones_help:help_guide",
+            ),
+            (
+                "/dashboard/capacitaciones/ayuda/chat/home/",
+                "dashboard:capacitaciones_help:chat_ai",
+            ),
+            (
+                "/dashboard/capacitaciones/ayuda/guide/modalidad_selector/ergonomia/",
+                "dashboard:capacitaciones_help:help_guide_modulo",
+            ),
+        ):
+            with self.subTest(ruta=ruta):
+                self.assertEqual(resolve(ruta).view_name, esperado)
+
+    def test_la_ruta_del_modulo_sigue_resolviendo(self):
+        self.assertEqual(
+            resolve("/dashboard/capacitaciones/ergonomia/").view_name,
+            "dashboard:modalidad_selector",
+        )
+
+
+# ===========================================================================
+# 4. Preámbulo y ensamblado del prompt
+# ===========================================================================
+
+CLAUSULAS_INVARIANTES = (
+    "no ves lo que hay cargado",
+    "Nunca afirmes haber leído",
+    "está ahora mismo en",
+    "nunca sobre la UBICACIÓN",
+    "No pidas nombres de trabajadores",
+    "derivá explícitamente a Ergobot",
+)
+
+
+class PreambuloTests(SimpleTestCase):
+
+    def test_el_preambulo_declara_pantalla_y_limites(self):
+        from .preamble import build_preamble
+
+        info = page_info("online_links")
+        texto = build_preamble(slug="online_links", info=info)
+        for clausula in CLAUSULAS_INVARIANTES:
+            with self.subTest(clausula=clausula):
+                self.assertIn(clausula, texto)
+        self.assertIn(info.titulo, texto)
+        self.assertIn(info.ruta, texto)
+        self.assertIn(info.proposito, texto)
+
+    @patch("apps.training.help_ai.agents.Agent")
+    def test_el_agente_recibe_contexto_general_y_especifico(self, agent_cls):
+        from .agents import page_agent
+
+        for slug in PAGE_HELP_SLUGS:
+            with self.subTest(slug=slug):
+                page_agent.cache_clear()
+                context = page_help_context(slug)
+                page_agent(slug, context.version)
+                instructions = agent_cls.call_args.kwargs["instructions"]
+                self.assertIn("### CONTEXTO GENERAL", instructions)
+                self.assertIn(f"### GUÍA ESPECÍFICA ({slug})", instructions)
+                self.assertIn(context.version, instructions)
+                self.assertIn(context.specific_markdown, instructions)
+                self.assertEqual(
+                    agent_cls.call_args.kwargs["model"], settings.CHAT_AI_MODEL
+                )
+
+    @patch("apps.training.help_ai.agents.Agent")
+    def test_la_ficha_de_modulo_se_inyecta_cuando_corresponde(self, agent_cls):
+        from .agents import page_agent
+
+        page_agent.cache_clear()
+        context = page_help_context("modalidad_selector", "ergonomia")
+        page_agent("modalidad_selector", context.version, "ergonomia")
+        instructions = agent_cls.call_args.kwargs["instructions"]
+        self.assertIn("### FICHA DEL MÓDULO (ergonomia)", instructions)
+
+        page_agent.cache_clear()
+        sin_ficha = page_help_context("modalidad_selector")
+        page_agent("modalidad_selector", sin_ficha.version)
+        self.assertNotIn("### FICHA DEL MÓDULO", agent_cls.call_args.kwargs["instructions"])
+
+
+# ===========================================================================
+# 5. Contenido: reglas de publicación
+# ===========================================================================
+
+class ReglasDeContenidoTests(TestCase):
+    """El corpus se sirve públicamente por /static/ (ver H-11 de la auditoría).
+
+    Hereda de TestCase y no de SimpleTestCase porque
+    `test_ningun_modulo_personalizado_tiene_ficha` consulta la base de datos.
+    """
+
+    PATRONES_PROHIBIDOS = (
+        (r"\b\d{2}-\d{8}-\d\b", "un CUIT"),
+        (r"[\w.+-]+@[\w-]+\.[\w.]+", "una dirección de correo"),
+        (r"custom_notes", "una referencia a notas internas"),
+        (r"company_name_custom", "una referencia al nombre de empresa cliente"),
+    )
+
+    def test_el_corpus_no_expone_datos_sensibles(self):
+        for ruta in sorted(HELP_TEXTS_PATH.glob("*.md")):
+            contenido = ruta.read_text(encoding="utf-8")
+            for patron, descripcion in self.PATRONES_PROHIBIDOS:
+                with self.subTest(documento=ruta.name, patron=descripcion):
+                    self.assertIsNone(
+                        re.search(patron, contenido),
+                        f"{ruta.name} contiene {descripcion}. El corpus se sirve "
+                        "públicamente por /static/ y no debe incluir datos de "
+                        "clientes ni referencias a campos internos.",
+                    )
+
+    def test_ningun_modulo_personalizado_tiene_ficha(self):
+        """Las fichas son públicas: una personalizada delataría a su cliente."""
+        from apps.training.models import TrainingModule
+
+        personalizados = set(
+            TrainingModule.objects.filter(is_personalized=True).values_list(
+                "slug", flat=True
+            )
+        )
+        interseccion = personalizados & set(MODULOS_CON_FICHA)
+        self.assertEqual(
+            interseccion, set(),
+            f"Hay fichas públicas de módulos personalizados: {sorted(interseccion)}. "
+            "Quitalas de catalog.MODULOS_CON_FICHA y borrá su .md.",
+        )
