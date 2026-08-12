@@ -130,7 +130,7 @@ arranque.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `177099b` |
 | Fase | 0 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -230,7 +230,7 @@ en `LOCAL_APPS`, inmediatamente después de `"apps.training"`.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `4f34746` |
 | Fase | 1 |
 | Estado | ⚠️ Completado con desvíos |
 
@@ -340,7 +340,7 @@ bloques en la PROPUESTA la incluyen en sus comentarios.
 |---|---|
 | Fecha | 2026-08-12 |
 | Rama | feat/ayuda-contextual-capacitaciones |
-| Hash | (se completa después del commit) |
+| Hash | `04a2430` |
 | Fase | 1 |
 | Estado | ✅ Completado |
 
@@ -401,3 +401,79 @@ contiene la ruta punteada del módulo 886, de modo que la restricción registrad
 `modulo_ergonomia.md` que respalda esa entrada llega recién en el commit 2.4; hasta entonces
 `documentos_modulo("ergonomia")` devuelve un nombre de archivo que todavía no existe. No es
 un problema: nada lo lee hasta la Fase 3.
+
+---
+
+## Commit 1.3 — Perfiles de composición del contexto
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 1 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se declaró qué documentos globales recibe cada pantalla (`profiles.py`), con la regla de
+degradación que garantiza que un olvido cueste tokens y no calidad: un slug sin perfil recibe
+el documento global **completo**, nunca menos contexto del que le corresponde.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/profiles.py` — `NUCLEO`, `ANEXOS` (8 perfiles), `GLOBAL_COMPLETO`,
+  `documentos_globales()` y `documentos_modulo()`.
+
+### Verificaciones ejecutadas
+
+Composición efectiva, verificada pantalla por pantalla:
+
+```
+slugs sin perfil declarado: []
+
+home                       -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo')
+capacitaciones_menu        -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo')
+modalidad_selector         -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo', 'anexo_modalidades')
+online_links               -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo', 'anexo_modalidades', 'anexo_online')
+share_link                 -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo', 'anexo_modalidades', 'anexo_online')
+presencial_capacitacion    -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo', 'anexo_modalidades', 'anexo_presencial')
+presencial_quiz            -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo', 'anexo_modalidades', 'anexo_presencial')
+presencial_historial       -> ('guia_capacitaciones_usuario', 'guia_capacitaciones_nucleo', 'anexo_presencial')
+
+degradación  : ('guia_capacitaciones_usuario', 'guia_capacitaciones_general')
+modulo None  : ()
+modulo vacio : ()
+modulo raro  : ()
+modulo real  : ('modulo_ergonomia',)
+```
+
+La tabla coincide exactamente con la estructura de control del Paso 1 del commit 1.3 del
+roadmap.
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.829s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.386s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. El bloque se copió íntegro de §8.3.5 de la PROPUESTA.
+
+### Notas para el commit siguiente
+
+Con la Fase 1 cerrada, el contrato del slug tiene sus tres patas de código —catálogo, ficha y
+perfil—. Falta la cuarta: el archivo `.md` de cada slug, que es toda la Fase 2. Hasta que
+esos archivos existan, `documentos_globales()` devuelve nombres que aún no resuelven a
+ningún archivo; es esperable, porque la lógica de composición no lee el disco.

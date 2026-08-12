@@ -540,6 +540,13 @@ Registro de avance:
   admin. Confundirlos abriría el catálogo a filas editables y expondría los módulos
   personalizados. Las rutas declaran sus tramos variables como `<modulo>` y `<id>`, nunca con
   un identificador concreto.
+- **12/08/2026 — Commit 1.3:** se declararon los perfiles de composición del contexto
+  (`profiles.py`): qué documentos globales recibe cada pantalla. El núcleo —guía del área y
+  glosario— llega a todas; los anexos de modalidades, online y presencial se suman según la
+  pantalla. **Regla de degradación:** un slug sin perfil declarado recibe el documento global
+  completo, de modo que un olvido cuesta tokens y nunca calidad de respuesta. Réplica del
+  criterio ya adoptado en el módulo 886, donde enviar el global completo en todas las
+  pantallas ahogaba la señal de la página.
 
 ### Registro de cambios documentales
 

@@ -296,7 +296,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 |---|---|:---:|
 | 1.1 | Crear la app y registrarla con `label` propio | ⚠️ |
 | 1.2 | Catálogo de pantallas y fichas de pantalla | ✅ |
-| 1.3 | Perfiles de composición del contexto | ⬜ |
+| 1.3 | Perfiles de composición del contexto | ✅ |
 
 ### Fase 2 — Corpus de contenido
 
