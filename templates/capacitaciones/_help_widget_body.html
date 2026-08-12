@@ -1,0 +1,59 @@
+{# templates/capacitaciones/_help_widget_body.html #}
+{#                                                                          #}
+{# Cuerpo del panel de ayuda contextual del área de Capacitaciones.         #}
+{# Se incluye desde base_capacitacion_help.html, dentro de div#helpWidget,  #}
+{# que aporta data-page-slug, data-assistant-name y los templates de URL.   #}
+{#                                                                          #}
+{# ⚠️ CF-1 bis: pertenece a apps.training.help_ai. No tiene relación con    #}
+{#    el chat docente ni con la ayuda del módulo 886.                       #}
+{#                                                                          #}
+{# ⚠️ Los identificadores (#helpTabs, #tabGuide, #chat-form, #chat-input,   #}
+{#    #chat-messages, #chat-submit-btn) son el contrato con help_widget.js. #}
+{#    Renombrar cualquiera deja el panel mudo sin ningún error visible.     #}
+
+<div class="offcanvas-header border-bottom">
+  <h5 class="offcanvas-title">
+    <i class="bi bi-life-preserver me-2"></i>Ayuda de Capacitaciones
+  </h5>
+  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+</div>
+
+<div class="offcanvas-body d-flex flex-column p-0">
+  <ul class="nav nav-tabs px-3" id="helpTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="guide-tab" data-bs-toggle="tab"
+              data-bs-target="#tabGuide" type="button" role="tab"
+              aria-controls="tabGuide" aria-selected="true">Guía</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="chat-ia-tab" data-bs-toggle="tab"
+              data-bs-target="#chat-ia-tab-pane" type="button" role="tab"
+              aria-controls="chat-ia-tab-pane" aria-selected="false">Chat IA</button>
+    </li>
+  </ul>
+
+  <div class="tab-content flex-grow-1 d-flex flex-column">
+    {# ---------- Pestaña Guía ---------- #}
+    <div class="tab-pane fade show active p-3 h-100" id="tabGuide" role="tabpanel"
+         aria-labelledby="guide-tab" style="overflow-y:auto;">
+      {# El contenido lo carga help_widget.js desde data-guide-url-template #}
+    </div>
+
+    {# ---------- Pestaña Chat IA ---------- #}
+    <div class="tab-pane fade p-3 h-100" id="chat-ia-tab-pane" role="tabpanel"
+         aria-labelledby="chat-ia-tab">
+      <div id="chat-messages" class="flex-grow-1 mb-3"></div>
+
+      <form id="chat-form" class="mt-auto">
+        {% csrf_token %}
+        <div class="input-group">
+          <input type="text" id="chat-input" class="form-control"
+                 placeholder="Escribí tu consulta acá..." required autocomplete="off" />
+          <button class="btn btn-primary" type="submit" id="chat-submit-btn">
+            <i class="bi bi-send"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

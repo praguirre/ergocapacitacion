@@ -1,0 +1,52 @@
+{% extends "base_dashboard.html" %}
+{% load static %}
+
+{#                                                                            #}
+{#  Base de las pantallas del área de Capacitaciones CON ayuda contextual.    #}
+{#                                                                            #}
+{#  ⚠️ 1. El bloque se llama `capacitacion_help_slug`, NO `help_slug`.        #}
+{#        La suite del módulo 886 barre TODAS las plantillas del proyecto     #}
+{#        buscando el bloque `help_slug` y exige que el valor pertenezca a    #}
+{#        su catálogo. Reusar ese nombre rompe tres pruebas del 886.          #}
+{#                                                                            #}
+{#  ⚠️ 2. Esta base CONSUME `extra_css` y `extra_js` para inyectar el widget. #}
+{#        Las pantallas hijas deben usar `extra_css_with_help` y              #}
+{#        `extra_js_with_help`. Si una hija declara `extra_js`, el panel      #}
+{#        abre vacío y sin error visible.                                     #}
+{#                                                                            #}
+{#  ⚠️ 3. Cuando la vista aporta `module`, los templates de URL se emiten ya  #}
+{#        con el módulo incrustado. help_widget.js sólo sustituye `__slug__`, #}
+{#        así que el contexto de módulo viaja sin tocar una línea de JS.      #}
+{#                                                                            #}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'ayuda/css/help_widget.css' %}">
+  {% block extra_css_with_help %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+  {% block content_with_help %}{% endblock %}
+
+  <button id="helpToggle"
+          class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4 shadow-lg"
+          style="width:60px;height:60px;z-index:1050;" type="button"
+          aria-label="Abrir ayuda contextual" title="Abrir ayuda contextual">
+    <i class="bi bi-question-lg fs-4"></i>
+  </button>
+
+  <div id="helpWidget" class="offcanvas offcanvas-end" tabindex="-1"
+       data-page-slug="{% block capacitacion_help_slug %}home{% endblock %}"
+       data-assistant-name="ErgoBot Capacitaciones"
+       data-log-tag="ayuda-capacitaciones"
+       data-guide-url-template="{% if module %}{% url 'dashboard:capacitaciones_help:help_guide_modulo' slug='__slug__' modulo=module.slug %}{% else %}{% url 'dashboard:capacitaciones_help:help_guide' slug='__slug__' %}{% endif %}"
+       data-chat-url-template="{% if module %}{% url 'dashboard:capacitaciones_help:chat_ai_modulo' slug='__slug__' modulo=module.slug %}{% else %}{% url 'dashboard:capacitaciones_help:chat_ai' slug='__slug__' %}{% endif %}">
+    {% include "capacitaciones/_help_widget_body.html" %}
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'vendor/marked/marked-15.0.12.min.js' %}"></script>
+  <script src="{% static 'vendor/dompurify/purify-3.2.6.min.js' %}"></script>
+  <script src="{% static 'ayuda/js/help_widget.js' %}"></script>
+  {% block extra_js_with_help %}{% endblock %}
+{% endblock %}

@@ -1642,3 +1642,92 @@ El nombre de la prueba en el roadmap es simplemente un dato desactualizado del d
 CV-2: las plantillas nuevas usan `{% block capacitacion_help_slug %}`, nunca
 `{% block help_slug %}`. La suite del 886 barre las plantillas de todo el proyecto y exige
 que ese segundo bloque pertenezca a SU catálogo.
+
+---
+
+## Commit 5.2 — Plantilla base y cuerpo del panel
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 5 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se crearon las dos plantillas que montan el botón flotante, el panel lateral y los atributos
+que alimentan al cliente JavaScript. La base consume `extra_css` y `extra_js` para inyectar
+el CSS y el JS del widget, y reexpone `extra_css_with_help` y `extra_js_with_help` para las
+pantallas hijas.
+
+El truco que evita tocar el JavaScript: `help_widget.js` resuelve las URLs con
+`String(templateValue).replace("__slug__", …)`. Si la plantilla emite un template que **ya
+incluye** el segmento del módulo, la sustitución sigue funcionando y el contexto de módulo
+viaja por la ruta sin una línea de JS nueva.
+
+### Archivos creados o modificados
+
+- `templates/capacitaciones/_help_widget_body.html` — pestañas Guía y Chat IA, formulario y
+  CSRF.
+- `templates/base_capacitacion_help.html` — botón `#helpToggle`, `div#helpWidget` con sus
+  `data-*`, e inyección de `marked`, `DOMPurify` y `help_widget.js`.
+
+### Verificaciones ejecutadas
+
+```
+OK carga: base_capacitacion_help.html
+OK carga: capacitaciones/_help_widget_body.html
+
+=== CV-2 ===
+✅ CV-2 OK — usa capacitacion_help_slug
+38:  data-page-slug="{% block capacitacion_help_slug %}home{% endblock %}"
+
+=== atributos data-* ===
+39:  data-assistant-name="ErgoBot Capacitaciones"
+40:  data-log-tag="ayuda-capacitaciones"
+
+=== sin CDN ni inline handlers ===
+✅ sin CDN ni manejadores inline
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.382s
+OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.690s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+Las plantillas nuevas caen dentro del barrido global del módulo 886
+(`test_templates_do_not_depend_on_cdn_or_inline_event_handlers` alcanza `templates/`
+completo) y no lo perturban: 52 en verde.
+
+Se verificó además que las rutas de vendor existen y son las mismas que usa la base del 886:
+
+```
+$ ls static/vendor/marked/ static/vendor/dompurify/
+marked-15.0.12.min.js
+purify-3.2.6.min.js
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. Las dos plantillas se copiaron íntegras de §8.7.2 y §8.7.3 de la PROPUESTA, con la
+sola adaptación de redacción de los comentarios, que nombran al módulo 886 y al chat docente
+en prosa.
+
+### Notas para el commit siguiente
+
+**H-9, el fallo silencioso de la Fase 6.** Si una plantilla hija conserva
+`{% block extra_js %}`, sobrescribe el de la base y el panel abre sin `marked`, sin
+`DOMPurify` y sin `help_widget.js`. No hay error en consola ni en el servidor: simplemente no
+funciona. Por eso cada commit de la fase verifica que la respuesta HTML **contiene** la
+etiqueta `<script>` del widget.

@@ -647,6 +647,14 @@ Registro de avance:
   «ErgoBot está pensando» sin cambios. Es el **único punto de todo el trabajo que toca el
   módulo 886**: una aserción de sus pruebas, reescrita para proteger el respaldo en lugar del
   literal. El módulo 886 sigue con sus 52 pruebas en verde.
+- **12/08/2026 — Commit 5.2:** se crearon `templates/base_capacitacion_help.html` y
+  `templates/capacitaciones/_help_widget_body.html`, que montan el botón flotante y el panel
+  lateral. **DA-3:** el bloque que cada pantalla declara se llama **`capacitacion_help_slug`**
+  y no `help_slug`: la suite del módulo 886 barre las 64 plantillas del proyecto buscando ese
+  segundo nombre y exige que su valor pertenezca a su propio catálogo, de modo que reusarlo
+  rompería tres de sus pruebas. Los dos contratos quedan así aislados y ambos siguen siendo
+  verificables. La base **consume** `extra_css` y `extra_js` para inyectar el widget y
+  reexpone `extra_css_with_help` / `extra_js_with_help` para las pantallas hijas.
 
 ### Registro de cambios documentales
 
