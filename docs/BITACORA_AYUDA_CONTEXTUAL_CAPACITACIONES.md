@@ -831,3 +831,86 @@ Con el corpus completo, la Fase 3 ya puede leer archivos reales. `HELP_TEXTS_PAT
 anclarse a `settings.BASE_DIR` y **no** a la posición del archivo: la app está anidada bajo
 `apps/training/`, de modo que un `parent.parent` apuntaría a un directorio inexistente y
 `md()` lanzaría `HelpContentError` en cada llamada.
+
+---
+
+## Commit 3.1 — Carga versionada del contenido (`prompts.py`)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se implementó la lectura estricta de los Markdown y el cálculo del SHA-256 que sincroniza la
+Guía con el Chat. El versionado no es un adorno: la Guía devuelve el hash en
+`X-Help-Content-Version` y el Chat lo **exige** en el cuerpo del POST, respondiendo 409 si no
+coincide. Es lo que garantiza que el usuario nunca esté leyendo una guía mientras el modelo
+recibe otra.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/prompts.py` — `HELP_TEXTS_PATH`, `VALID_HELP_NAME`,
+  `HelpContentError`, `PageHelpContext` (con `guide_markdown`), `md()` y
+  `page_help_context()`.
+
+### Verificaciones ejecutadas
+
+```
+home                       v=40a7550fd8af… global=  5661 esp= 1357
+capacitaciones_menu        v=5e5b3dc56edb… global=  5661 esp= 1462
+modalidad_selector         v=6f2c34a82b2c… global=  7082 esp= 1387
+online_links               v=2d6c1270d1ef… global=  8744 esp= 2050
+share_link                 v=8ec30a5afb2d… global=  8744 esp= 1501
+presencial_capacitacion    v=8b762273144d… global=  8700 esp= 1449
+presencial_quiz            v=7453cc2ac3cb… global=  8700 esp= 1373
+presencial_historial       v=d03abcb69e2c… global=  7279 esp= 1333
+determinista: True | longitud: 64
+modulo cambia version: True
+guide_markdown crece : True
+OK fail-closed: slug-que-no-existe
+OK fail-closed: ../../../etc/passwd
+OK fail-closed: MAYUSCULAS
+CV-3 HELP_TEXTS_PATH: True /Users/praguirre/ergocapacitacion/static/ayuda/capacitaciones/help_texts
+```
+
+Los tres casos de fallo cerrado cubren las tres familias de riesgo: documento inexistente,
+*path traversal* y nombre fuera del alfabeto permitido. En los tres, `md()` lanza
+`HelpContentError` en vez de devolver texto vacío, que es lo que convierte una ausencia de
+contenido en un 503 explícito y no en una respuesta degradada.
+
+**CV-3 verificada:** `HELP_TEXTS_PATH` apunta al directorio propio anclado a
+`settings.BASE_DIR`, no a la posición del archivo.
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 5.229s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.412s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Desvíos respecto del roadmap
+
+Ninguno. El bloque se copió íntegro de §8.5.1 de la PROPUESTA. Su única mención del módulo
+886 estaba en un comentario que nombraba el directorio del corpus, no la ruta punteada del
+paquete, de modo que la restricción del commit 1.1 no obligó a cambiar nada de fondo; aun así
+se redactó en prosa para mantener la convención del paquete.
+
+### Notas para el commit siguiente
+
+En `preamble.py` **no se reordenan los bloques**. «DÓNDE ESTÁ EL USUARIO» va antes que «QUÉ
+NO PODÉS VER» porque el módulo 886 verificó que el modelo generaliza el descargo de
+privacidad hasta negar que sabe en qué pantalla está el usuario.

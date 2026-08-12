@@ -576,6 +576,15 @@ Registro de avance:
   empresa cliente para la que fue creado. La verificación previa confirmó que `ergonomia` es
   un módulo general; el único personalizado de la base (`personal-smoke`) queda correctamente
   fuera de `MODULOS_CON_FICHA`. Corpus completo: 15 documentos. Fase 2 cerrada.
+- **12/08/2026 — Commit 3.1:** se implementó la carga versionada del contenido
+  (`prompts.py`). Cada composición de contexto se identifica con un **SHA-256** calculado
+  sobre la composición efectiva (slug + módulo + global + específico). La Guía lo devuelve en
+  la cabecera `X-Help-Content-Version` y el Chat lo exige en el cuerpo del POST: si no
+  coincide responde **409** con la versión correcta y el cliente recarga. Es el mecanismo que
+  impide que el usuario lea una guía mientras el modelo recibe otra. La carga es
+  **fail-closed**: un documento faltante, un intento de *path traversal* o un nombre fuera de
+  `^[a-z0-9_-]+$` producen un error explícito (503), nunca una respuesta degradada con texto
+  vacío.
 
 ### Registro de cambios documentales
 

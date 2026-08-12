@@ -311,7 +311,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 3.1 | Carga versionada del contenido (`prompts.py`) | ⬜ |
+| 3.1 | Carga versionada del contenido (`prompts.py`) | ✅ |
 | 3.2 | Preámbulo del sistema (`preamble.py`) | ⬜ |
 | 3.3 | Ensamblado del agente (`agents.py`) | ⬜ |
 
