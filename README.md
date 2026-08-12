@@ -585,6 +585,15 @@ Registro de avance:
   **fail-closed**: un documento faltante, un intento de *path traversal* o un nombre fuera de
   `^[a-z0-9_-]+$` producen un error explícito (503), nunca una respuesta degradada con texto
   vacío.
+- **12/08/2026 — Commit 3.2:** se redactó el preámbulo del sistema (`preamble.py`).
+  **DA-6:** el asistente se presenta como **«ErgoBot Capacitaciones»** y su segundo bloque
+  fija la doble frontera: las preguntas sobre el *contenido* de la capacitación se derivan
+  explícitamente a Ergobot docente, y las del protocolo SRT 886/15 se orientan a la sección
+  Evaluaciones. **El orden de los bloques es funcional, no estético:** «DÓNDE ESTÁ EL
+  USUARIO» va antes que «QUÉ NO PODÉS VER» y este último cierra aclarando que la limitación
+  es sobre los datos y nunca sobre la ubicación. Es la corrección de un fallo real observado
+  en el módulo 886, donde el modelo generalizaba el descargo de privacidad hasta negar que
+  sabía en qué pantalla estaba el usuario.
 
 ### Registro de cambios documentales
 

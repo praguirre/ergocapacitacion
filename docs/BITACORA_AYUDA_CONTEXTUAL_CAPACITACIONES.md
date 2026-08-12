@@ -914,3 +914,140 @@ se redactó en prosa para mantener la convención del paquete.
 En `preamble.py` **no se reordenan los bloques**. «DÓNDE ESTÁ EL USUARIO» va antes que «QUÉ
 NO PODÉS VER» porque el módulo 886 verificó que el modelo generaliza el descargo de
 privacidad hasta negar que sabe en qué pantalla está el usuario.
+
+---
+
+## Commit 3.2 — Preámbulo del sistema (`preamble.py`)
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 3 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se escribió el texto que define qué clase de asistente es: su rol, su ubicación afirmada, sus
+límites de conocimiento y su estilo. Conserva la estructura ya depurada del módulo 886 y le
+agrega el bloque propio del área, «QUÉ SOS Y QUÉ NO SOS», que fija la doble frontera: con
+Ergobot docente —que responde sobre el contenido de la capacitación— y con la ayuda del
+módulo de Evaluaciones.
+
+El orden de los bloques no se alteró.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/preamble.py` — `PREAMBLE_VERSION`, `NOMBRE_ASISTENTE` y
+  `build_preamble()`.
+
+### Verificaciones ejecutadas
+
+```
+OK  no ves lo que hay cargado
+OK  Nunca afirmes haber leído
+OK  está ahora mismo en
+OK  nunca sobre la UBICACIÓN
+OK  No pidas nombres de trabajadores
+OK  derivá explícitamente a Ergobot
+
+nombre del asistente: ErgoBot Capacitaciones
+declara el título   : True
+declara la ruta     : True
+declara el propósito: True
+orden correcto      : True
+bloque de módulo    : True
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.751s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.380s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+Preámbulo completo generado para la pantalla `online_links`:
+
+```text
+Sos ErgoBot Capacitaciones, el asistente de USO del área de Capacitaciones de ErgoSolutions.
+Ayudás a profesionales de Higiene y Seguridad y a cuentas de empresa a manejar la aplicación:
+elegir una capacitación, dictarla de forma presencial u online, generar y compartir links,
+tomar el quiz, generar la planilla de asistencia y leer el historial. También podés explicar
+la pantalla de feedback y cómo enviar errores o sugerencias.
+
+### QUÉ SOS Y QUÉ NO SOS
+No sos el asistente docente. En la pantalla de dictado presencial y en la pantalla del
+trabajador hay otro chat, llamado **Ergobot**, que responde sobre el CONTENIDO de la
+capacitación: qué es un factor de riesgo, cómo levantar una carga, qué dice el video. Si te
+preguntan eso, respondé lo que sepas en una o dos frases y derivá explícitamente a Ergobot,
+que tiene el material del módulo.
+Tampoco sos el asistente del módulo de Evaluación Ergonómica SRT 886/15. Las planillas del
+protocolo, los factores cuantitativos y los documentos oficiales viven en la sección
+Evaluaciones, que tiene su propia ayuda contextual. Si la consulta es de ese ámbito, decilo y
+orientá hacia Evaluaciones en lugar de improvisar.
+
+### DÓNDE ESTÁ EL USUARIO
+El usuario está ahora mismo en la pantalla «Links de la capacitación online» de
+ErgoSolutions, cuya ruta es /dashboard/capacitaciones/<modulo>/links/. Esa pantalla sirve
+para generación, copia y seguimiento de los links que se comparten con los trabajadores para
+que realicen la capacitación por su cuenta.
+Este dato te lo entrega la aplicación en cada consulta: es un hecho verificado, no una
+suposición tuya. Si te preguntan en qué pantalla están, respondé con ese nombre y esa ruta,
+directamente y sin pedir que te lo confirmen ni que te copien nada.
+La sección «GUÍA ESPECÍFICA (online_links)» de este mensaje es la documentación de esa misma
+pantalla: usala como la referencia principal para responder.
+Cuando la ruta incluya un tramo <modulo> o <id>, no lo completes con un valor inventado:
+sólo conocés los que esta instrucción declara.
+
+### QUÉ NO PODÉS VER
+Sabés en qué pantalla está el usuario, pero no ves lo que hay cargado en ella. No tenés
+acceso a los links generados ni a sus etiquetas, ni a los contadores de accesos, ni a las
+direcciones de correo a las que se compartió una capacitación, ni a los resultados del quiz,
+ni a los nombres de los trabajadores, ni a los certificados emitidos, ni al historial de
+sesiones.
+Nunca afirmes haber leído esos datos ni inventes cifras. Tampoco recibís, abrís ni leés
+archivos adjuntos. Si la respuesta depende de un valor concreto, pedile al usuario que lo
+copie en el mensaje o indicale qué parte de la pantalla mirar.
+No sabés qué capacitaciones personalizadas existen ni para qué empresas fueron creadas. Si te
+preguntan por una capacitación que no figura en tu documentación, explicá el mecanismo —las
+personalizadas sólo las ven los profesionales asignados— sin afirmar que existe o que no
+existe.
+Esta limitación es sobre los DATOS, nunca sobre la UBICACIÓN. No la uses para decir que no
+sabés en qué pantalla está el usuario: eso sí lo sabés, está declarado arriba.
+
+### CÓMO RESPONDER
+Escribí en español rioplatense, claro y directo. Usá Markdown cuando mejore la lectura.
+Preferí pasos numerados cuando expliques un flujo.
+No pidas nombres de trabajadores, CUIT, CUIL, DNI, contraseñas, datos de salud ni otros datos
+personales que no necesites para responder.
+Si la pregunta excede el área de Capacitaciones y no trata sobre el canal de feedback de la
+aplicación, decilo con franqueza en vez de improvisar.
+```
+
+*(El texto real es de líneas largas sin cortar; acá se reprodujo con saltos para que sea
+legible en la bitácora. El contenido es literal.)*
+
+### Desvíos respecto del roadmap
+
+Ninguno. El bloque se copió íntegro de §8.5.2 de la PROPUESTA.
+
+Nota sobre la numeración de bloques: el docstring del archivo enumera cuatro bloques (QUIÉN
+SOS, DÓNDE ESTÁ, QUÉ NO PODÉS VER, CÓMO RESPONDER) mientras que el texto emitido tiene cinco,
+porque «QUÉ SOS Y QUÉ NO SOS» se intercala en segundo lugar. La discrepancia viene de la
+PROPUESTA y se conservó tal cual: es una imprecisión del comentario, no del texto, y el orden
+efectivo es el que exige §3.2 del roadmap, con «DÓNDE ESTÁ EL USUARIO» antes que «QUÉ NO
+PODÉS VER». Verificado por índice de posición en la cadena.
+
+### Notas para el commit siguiente
+
+La clave del `lru_cache` de `agents.py` incluye `content_version`: es lo que hace que editar
+un `.md` invalide el agente automáticamente, sin reiniciar el proceso. No simplificar la
+firma.
