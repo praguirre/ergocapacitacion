@@ -602,6 +602,15 @@ Registro de avance:
   y rechaza con `ValueError` cualquier slug ajeno al catálogo. Sin herramientas (`tools=[]`):
   el asistente no lee la base de datos ni la web. Fase 3 cerrada: el motor de contexto está
   completo.
+- **12/08/2026 — Commit 4.1:** se agregaron los límites de uso del chat (`limits.py`): un
+  lease que impide dos streams simultáneos por usuario y una cuota por ventana temporal,
+  reutilizando las variables `CHAT_AI_*` ya existentes. **El prefijo de clave de cache es
+  propio (`help-capa`)**, distinto del `help-ai` del módulo 886: compartirlo haría que un
+  profesional que está consultando la ayuda de Evaluaciones reciba «ya hay una consulta en
+  curso» al abrir la de Capacitaciones. **Efecto secundario aceptado para la beta:** con
+  prefijos separados, un usuario que use los dos asistentes a la vez puede alcanzar el doble
+  de la cuota por ventana (40/min con el valor por defecto). La variante de cuota unificada
+  queda documentada en la auditoría por si se decide lo contrario.
 
 ### Registro de cambios documentales
 

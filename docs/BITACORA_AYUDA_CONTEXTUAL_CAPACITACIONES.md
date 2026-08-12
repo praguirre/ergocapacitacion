@@ -1148,3 +1148,82 @@ Fase 3 cerrada: el sistema ya puede construir el agente, aunque todavía no hay 
 que lo exponga. La Fase 4 empieza por `limits.py`, cuyo punto crítico es
 `KEY_PREFIX = "help-capa"`: reutilizar el prefijo del módulo 886 haría que consultar una
 ayuda bloqueara la otra.
+
+---
+
+## Commit 4.1 — Límites de uso con prefijo propio
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 4 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se implementó la protección del endpoint del chat: un lease de concurrencia que impide dos
+streams simultáneos del mismo usuario, y una cuota por ventana temporal. Es una copia
+deliberada de la mecánica probada del módulo 886 —no un import, por CF-1 bis— con **prefijo
+de clave propio**, `help-capa`.
+
+### Archivos creados o modificados
+
+- `apps/training/help_ai/limits.py` — `KEY_PREFIX`, `ChatLimitExceeded`, `ChatLease`,
+  `acquire_chat_lease()` y `release_chat_lease()`.
+
+### Verificaciones ejecutadas
+
+Ejecutado con `--settings=config.test_settings` para que el cache sea `LocMemCache` y la
+prueba no toque el `DatabaseCache` de desarrollo.
+
+```
+prefijo propio: help-capa
+OK bloquea el segundo stream | retry_after = 2
+OK los leases del 886 y de capacitaciones son independientes
+OK cuota aplicada tras 20 consultas | retry_after = 47
+OK release libera: True
+```
+
+La segunda línea es la que justifica el commit: con el lease del módulo 886 tomado por el
+usuario 1, el lease de Capacitaciones para ese mismo usuario **se concede**. Si se hubiera
+reutilizado el prefijo `help-ai:`, un profesional que estuviera consultando la ayuda de
+Evaluaciones recibiría «ya existe una consulta en curso» al abrir la ayuda de Capacitaciones.
+
+```
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.708s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.382s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+### Efecto secundario declarado y aceptado
+
+Con prefijos separados, un usuario que use **ambos** asistentes en simultáneo puede alcanzar
+`2 × CHAT_AI_RATE_LIMIT` consultas por ventana: 40 por minuto con el valor por defecto, en
+lugar de 20. Se acepta para la beta, como decide el roadmap. La variante de cuota unificada
+—lease propio, bucket de cuota compartido— está documentada en §8.12.2 de la PROPUESTA y
+puede adoptarse sin tocar nada más que este archivo, ajustando además la prueba de leases
+independientes.
+
+### Desvíos respecto del roadmap
+
+Ninguno de fondo. El bloque se copió íntegro de §8.6.1 de la PROPUESTA, con la misma
+adaptación de redacción del commit 3.3: el docstring nombra al módulo 886 en prosa.
+
+### Notas para el commit siguiente
+
+El commit 4.2 es el archivo más largo del roadmap (≈380 líneas) y se copia íntegro de
+§8.6.2, sin simplificar. En particular: el `while` con `asyncio.wait`, el bloque `finally`
+que libera el lease siempre, el respaldo `message_output_created`, `to_wire_thread()` y la
+cabecera `X-Accel-Buffering: no`.
