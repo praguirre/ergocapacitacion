@@ -302,7 +302,7 @@ verificación previa a este roadmap. **El asistente las aplica sin consultar.**
 
 | Commit | Título | Estado |
 |---|---|:---:|
-| 2.1 | Documentos globales del núcleo | ⬜ |
+| 2.1 | Documentos globales del núcleo | ✅ |
 | 2.2 | Anexos temáticos y documento maestro | ⬜ |
 | 2.3 | Documentos específicos de las ocho pantallas | ⬜ |
 | 2.4 | Ficha del módulo `ergonomia` | ⬜ |

@@ -547,6 +547,14 @@ Registro de avance:
   completo, de modo que un olvido cuesta tokens y nunca calidad de respuesta. Réplica del
   criterio ya adoptado en el módulo 886, donde enviar el global completo en todas las
   pantallas ahogaba la señal de la página.
+- **12/08/2026 — Commit 2.1:** se redactaron los dos documentos globales del núcleo del
+  corpus, en `static/ayuda/capacitaciones/help_texts/`: la guía del área y el glosario de
+  conceptos operativos. **DA-4:** el corpus vive en un directorio propio, separado del
+  módulo 886, porque los dos sistemas quieren los mismos nombres genéricos (`home.md`,
+  `dashboard.md`). **Regla de contenido (H-11):** estos archivos se sirven públicamente por
+  `/static/` sin autenticación, de modo que está prohibido incluir en ellos nombres de
+  empresas cliente, correos, CUIT o referencias a campos internos. Se verifica con un
+  barrido por expresiones regulares en cada commit de la fase.
 
 ### Registro de cambios documentales
 

@@ -477,3 +477,78 @@ Con la Fase 1 cerrada, el contrato del slug tiene sus tres patas de código —c
 perfil—. Falta la cuarta: el archivo `.md` de cada slug, que es toda la Fase 2. Hasta que
 esos archivos existan, `documentos_globales()` devuelve nombres que aún no resuelven a
 ningún archivo; es esperable, porque la lógica de composición no lee el disco.
+
+---
+
+## Commit 2.1 — Documentos globales del núcleo
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se escribieron los dos documentos que reciben **todas** las pantallas: la guía general del
+área —qué es, los dos circuitos, el recorrido típico, qué queda registrado, qué NO hace el
+área y el canal de feedback de la beta— y el glosario de conceptos operativos, con las reglas
+exactas del quiz en cada modalidad (3 intentos y 8/10 en online; sin límite y sin certificado
+en presencial).
+
+Ambos van en `static/ayuda/capacitaciones/help_texts/`, el directorio propio del área (CV-3).
+El corpus del módulo 886, en `static/ayuda/help_texts/`, no se tocó.
+
+### Archivos creados o modificados
+
+- `static/ayuda/capacitaciones/help_texts/guia_capacitaciones_usuario.md` — 3.290 bytes.
+- `static/ayuda/capacitaciones/help_texts/guia_capacitaciones_nucleo.md` — 2.447 bytes.
+
+### Verificaciones ejecutadas
+
+```
+$ wc -c guia_capacitaciones_usuario.md guia_capacitaciones_nucleo.md
+    3290 guia_capacitaciones_usuario.md
+    2447 guia_capacitaciones_nucleo.md
+    5737 total
+
+$ tail -c 1 guia_capacitaciones_nucleo.md | xxd | tail -1
+00000000: 0a                                       .
+
+$ grep -nE '<patrones de CV-5>' *.md
+✅ CV-5 OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.634s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.372s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+`guia_capacitaciones_nucleo.md` termina en `0a`, el salto de línea que exige la concatenación
+del commit 2.2: sin él, el título de `anexo_modalidades.md` quedaría pegado al último párrafo
+del glosario.
+
+**CV-5 verificada:** el corpus no contiene direcciones de correo, CUIT, ni referencias a
+`custom_notes` o `company_name_custom`. Los documentos se escribieron asumiendo lectura
+pública, porque `/static/` se sirve sin autenticación (H-11).
+
+### Desvíos respecto del roadmap
+
+Ninguno. Los dos documentos se copiaron íntegros de §8.4.1 y §8.4.2 de la PROPUESTA.
+
+### Notas para el commit siguiente
+
+El commit 2.2 **genera** `guia_capacitaciones_general.md` por concatenación; no se escribe a
+mano. El orden es exactamente el de `PARTES_DEL_GLOBAL` en `catalog.py`: núcleo, modalidades,
+online, presencial.
