@@ -748,3 +748,86 @@ PROPUESTA y todas sus demás afirmaciones se verificaron contra las plantillas r
 
 El commit 2.4 exige **verificación previa de CV-6**: confirmar que el módulo `ergonomia` no
 es personalizado antes de escribirle una ficha pública.
+
+---
+
+## Commit 2.4 — Ficha del módulo `ergonomia`
+
+| Campo | Valor |
+|---|---|
+| Fecha | 2026-08-12 |
+| Rama | feat/ayuda-contextual-capacitaciones |
+| Hash | (se completa después del commit) |
+| Fase | 2 |
+| Estado | ✅ Completado |
+
+### Qué se hizo
+
+Se escribió el anexo que describe la capacitación abierta, para que el asistente pueda decir
+de qué trata el módulo sin leer la base de datos. Incluye la aclaración —importante— de que
+**no** es la evaluación ergonómica del protocolo SRT 886/15, que vive en la sección
+Evaluaciones y tiene su propia ayuda contextual.
+
+Antes de escribirla se ejecutó la verificación previa obligatoria de CV-6.
+
+### Archivos creados o modificados
+
+- `static/ayuda/capacitaciones/help_texts/modulo_ergonomia.md` — creado.
+
+### Verificaciones ejecutadas
+
+Verificación previa de CV-6, **antes** de escribir la ficha:
+
+```
+slug         : ergonomia
+título       : Ergonomía
+activo       : True
+personalizado: False
+
+✅ APTO PARA FICHA PÚBLICA
+```
+
+Verificación posterior:
+
+```
+fichas declaradas: ['ergonomia']
+documentos_modulo("ergonomia"): ('modulo_ergonomia',)
+modulos personalizados en la base: ['personal-smoke']
+CV-6: ✅ OK
+
+$ ls -1 static/ayuda/capacitaciones/help_texts/*.md | wc -l
+      15
+
+$ grep -nE '<patrones de CV-5>' *.md
+✅ CV-5 OK
+
+$ .venv/bin/python manage.py check
+System check identified no issues (0 silenced).
+
+$ .venv/bin/python manage.py test --settings=config.test_settings
+Ran 354 tests in 4.934s
+OK
+
+$ .venv/bin/python manage.py test apps.ergonomia_886.help_ai --settings=config.test_settings
+Ran 52 tests in 0.364s
+OK
+
+$ .venv/bin/python manage.py makemigrations --check --dry-run
+No changes detected
+```
+
+**Dato relevante sobre CV-6:** la base de desarrollo contiene efectivamente un módulo
+personalizado, `personal-smoke`, y **no** tiene ficha. La verificación no es vacua: hay al
+menos un módulo que la condición excluye, y queda excluido.
+
+### Desvíos respecto del roadmap
+
+Ninguno. La ficha se copió íntegra de §8.4.15 de la PROPUESTA. El corpus queda completo con
+sus 15 documentos y la Fase 2 cerrada.
+
+### Notas para el commit siguiente
+
+Con el corpus completo, la Fase 3 ya puede leer archivos reales. `HELP_TEXTS_PATH` debe
+anclarse a `settings.BASE_DIR` y **no** a la posición del archivo: la app está anidada bajo
+`apps/training/`, de modo que un `parent.parent` apuntaría a un directorio inexistente y
+`md()` lanzaría `HelpContentError` en cada llamada.

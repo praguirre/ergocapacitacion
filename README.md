@@ -569,6 +569,13 @@ Registro de avance:
   `templates/dashboard/` y `templates/presencial/` antes de darlas por buenas. Es el
   contenido que alimenta la pestaña «Guía» y que el prompt declara como referencia principal
   de la pantalla. Con esto el corpus llega a 14 documentos.
+- **12/08/2026 — Commit 2.4:** se agregó `modulo_ergonomia.md`, la ficha pública del módulo
+  abierto, que permite al asistente decir de qué trata la capacitación sin leer la base de
+  datos. **Regla de seguridad (CV-6):** un módulo **personalizado nunca recibe ficha**. Las
+  fichas se sirven públicamente por `/static/` y la de un módulo personalizado delataría a la
+  empresa cliente para la que fue creado. La verificación previa confirmó que `ergonomia` es
+  un módulo general; el único personalizado de la base (`personal-smoke`) queda correctamente
+  fuera de `MODULOS_CON_FICHA`. Corpus completo: 15 documentos. Fase 2 cerrada.
 
 ### Registro de cambios documentales
 
