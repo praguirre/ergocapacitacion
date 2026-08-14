@@ -146,13 +146,23 @@ rama `codex/beta-feedback` mediante los commits secuenciales FB.0–FB.5.
   siendo obligatorio por los recursos de ayuda incorporados en FB.4.
 - **12/08/2026 — unificación global del crédito:** la segunda revisión en
   producción detectó que las páginas internas todavía heredaban el crédito
-  anterior desde `base_dashboard.html`. Las dos únicas bases renderizables,
-  `base_landing.html` y `base_dashboard.html`, ahora muestran exactamente
-  `© 2026 ErgoSolutions. Desarrollado por IAinsane`. La búsqueda completa de
-  templates confirma que no queda otra leyenda de desarrollador, y una nueva
+  anterior desde `base_dashboard.html`. Las dos únicas bases que renderizan
+  el footer institucional, `base_landing.html` y `base_dashboard.html`,
+  muestran exactamente `© 2026 ErgoSolutions. Desarrollado por IAinsane`.
+  `base.html` (área de trabajador / ErgoCapacitación, 4 pantallas) también
+  es renderizable y no muestra crédito. La búsqueda completa de templates
+  confirma que no queda otra leyenda de desarrollador, y una nueva
   regresión autenticada eleva la suite a 354 pruebas. El fix no agrega
   migraciones ni modifica archivos de `static/`; sólo requiere actualizar el
   código y reiniciar ErgoSolutions.
+- **14/08/2026 — enlace del crédito IAinsane:** la palabra IAinsane pasa a
+  ser un enlace a `https://www.iainsane.com/` en las dos bases que tienen
+  footer (`base_landing.html` y `base_dashboard.html`), con
+  `target="_blank"` y `rel="noopener"`. El área de trabajador que extiende
+  `base.html` sigue sin footer: no se agregó el crédito allí. La suite
+  alcanza 390 pruebas. El cambio no agrega migraciones ni modifica
+  `static/`; el despliegue requiere únicamente actualizar el código y
+  reiniciar el servicio.
 
 #### Operación y rollback del canal de feedback
 
