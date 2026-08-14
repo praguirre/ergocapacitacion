@@ -3,6 +3,8 @@
 # COMMIT 28: Tests del dashboard y flujos de capacitaciones
 # ============================================================================
 
+import re
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
@@ -10,6 +12,48 @@ from django.urls import reverse
 from apps.training.models import CapacitacionLink, TrainingModule
 
 User = get_user_model()
+
+IAINSANE_CREDIT_LINK_HTML = (
+    '<strong>'
+    '<a href="https://www.iainsane.com/" '
+    'target="_blank" '
+    'rel="noopener" '
+    'class="text-white text-decoration-underline" '
+    'aria-label="IAinsane (se abre en una pestaña nueva)">'
+    'IAinsane'
+    '</a>'
+    '</strong>'
+)
+
+
+def assert_iainsane_credit_link(test_case, response):
+    """El crédito institucional es un enlace externo con la marca IAinsane."""
+    test_case.assertContains(response, "© 2026 ErgoSolutions. Desarrollado por")
+    test_case.assertContains(response, IAINSANE_CREDIT_LINK_HTML, html=True)
+    test_case.assertContains(response, 'href="https://www.iainsane.com/"')
+    test_case.assertContains(response, 'rel="noopener"')
+    test_case.assertContains(response, 'target="_blank"')
+    test_case.assertNotContains(response, "Lic. Pablo Aguirre")
+    test_case.assertNotContains(response, "MN 10.027")
+
+    html = response.content.decode()
+    matches = re.findall(
+        r'<a\b[^>]*href="https://www.iainsane.com/"[^>]*>(.*?)</a>',
+        html,
+        flags=re.DOTALL,
+    )
+    test_case.assertEqual(len(matches), 1)
+    visible = re.sub(r"<[^>]+>", "", matches[0]).strip()
+    test_case.assertEqual(visible, "IAinsane")
+
+    opening_tag = re.search(
+        r'<a\b[^>]*href="https://www.iainsane.com/"[^>]*>',
+        html,
+    )
+    test_case.assertIsNotNone(opening_tag)
+    test_case.assertIn('rel="noopener"', opening_tag.group(0))
+    test_case.assertIn('target="_blank"', opening_tag.group(0))
+
 
 TEST_STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
@@ -58,13 +102,64 @@ class DashboardTests(TestCase):
         response = self.client.get(reverse('dashboard:home'))
 
         self.assertContains(response, '© 2026 ErgoSolutions. Desarrollado por')
-        self.assertContains(
-            response,
-            '<strong class="text-white">IAinsane</strong>',
-            html=True,
-        )
+        self.assertContains(response, IAINSANE_CREDIT_LINK_HTML, html=True)
         self.assertNotContains(response, 'Lic. Pablo Aguirre')
         self.assertNotContains(response, 'MN 10.027')
+
+    def test_footer_enlace_iainsane_abre_el_sitio_en_pestana_nueva(self):
+        self.client.force_login(self.professional)
+
+        response = self.client.get(reverse('dashboard:home'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'base_dashboard.html')
+        assert_iainsane_credit_link(self, response)
+
+    def test_footer_enlace_iainsane_se_hereda_en_cada_rama_de_plantillas(self):
+        """El enlace llega a una pantalla representativa de cada base con footer."""
+        self.client.force_login(self.professional)
+        casos = (
+            (
+                'base_dashboard',
+                reverse('dashboard:home'),
+                ('dashboard/home.html', 'base_dashboard.html'),
+            ),
+            (
+                'base_capacitacion_help',
+                reverse('dashboard:capacitaciones_menu'),
+                (
+                    'dashboard/capacitaciones_menu.html',
+                    'base_capacitacion_help.html',
+                    'base_dashboard.html',
+                ),
+            ),
+            (
+                'base_contextual_help',
+                reverse('dashboard:feedback:create'),
+                (
+                    'feedback/create.html',
+                    'base_contextual_help.html',
+                    'base_dashboard.html',
+                ),
+            ),
+            (
+                'base_landing',
+                reverse('landing:home'),
+                ('landing/home.html', 'base_landing.html'),
+            ),
+        )
+
+        for rama, url, templates in casos:
+            with self.subTest(rama=rama):
+                if rama == 'base_landing':
+                    response = Client().get(url)
+                else:
+                    response = self.client.get(url)
+
+                self.assertEqual(response.status_code, 200)
+                for template in templates:
+                    self.assertTemplateUsed(response, template)
+                assert_iainsane_credit_link(self, response)
 
     def test_tarjeta_evaluaciones_esta_disponible_y_navega_al_modulo(self):
         self.client.force_login(self.professional)
