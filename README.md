@@ -98,6 +98,20 @@ Para revertir únicamente esta migración:
 python manage.py migrate accounts 0003_add_is_visible_in_directory
 ```
 
+### Reporte operativo de atribución
+
+El comando C-17 resume registros profesionales sin exponer datos personales:
+
+```bash
+.venv/bin/python manage.py atribucion --dias 30
+.venv/bin/python manage.py atribucion --dias 90 --campana ergoreach
+.venv/bin/python manage.py atribucion --dias 30 --detalle
+```
+
+La cifra atribuida es un **piso, no el total real**: una cookie eliminada, el
+cambio de dispositivo o una sesión vencida pueden hacer que una conversión
+válida figure como directa o desconocida.
+
 ## Documentación
 
 La documentación técnica y operativa está centralizada en
