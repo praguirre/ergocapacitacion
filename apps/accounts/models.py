@@ -235,6 +235,43 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         help_text='Si está activo, este profesional será visible en el directorio para empresas.',
     )
     date_joined = models.DateTimeField(default=timezone.now)
+
+    # =========================================================================
+    # Atribución de origen (ErgoReach) — first-touch
+    # Registra de qué campaña y de qué mensaje concreto llegó el usuario.
+    # Se completa solo para user_type='professional'.
+    # =========================================================================
+    attribution_source = models.CharField(
+        max_length=64, blank=True, default="",
+        verbose_name="Origen (utm_source)",
+    )
+    attribution_medium = models.CharField(
+        max_length=64, blank=True, default="",
+        verbose_name="Medio (utm_medium)",
+    )
+    attribution_campaign = models.CharField(
+        max_length=64, blank=True, default="", db_index=True,
+        verbose_name="Campaña (utm_campaign)",
+        help_text="'ergoreach' identifica al copiloto de marketing",
+    )
+    attribution_content = models.CharField(
+        max_length=64, blank=True, default="", db_index=True,
+        verbose_name="Contenido (utm_content)",
+        help_text="short_id del borrador que originó la visita",
+    )
+    attribution_landing_path = models.CharField(
+        max_length=255, blank=True, default="",
+        verbose_name="Primera página vista",
+    )
+    attribution_referrer_host = models.CharField(
+        max_length=128, blank=True, default="",
+        verbose_name="Host de procedencia",
+        help_text="Solo el host, nunca la URL completa (minimización)",
+    )
+    attribution_first_seen_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name="Primer contacto",
+    )
     
     # =========================================================================
     # Configuración del modelo

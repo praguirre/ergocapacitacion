@@ -50,6 +50,16 @@ class CustomUserAdmin(DjangoUserAdmin):
     )
     
     ordering = ("-date_joined",)
+
+    readonly_fields = (
+        "attribution_source",
+        "attribution_medium",
+        "attribution_campaign",
+        "attribution_content",
+        "attribution_landing_path",
+        "attribution_referrer_host",
+        "attribution_first_seen_at",
+    )
     
     # Campos en el formulario de edición
     fieldsets = (
@@ -81,6 +91,19 @@ class CustomUserAdmin(DjangoUserAdmin):
         ("Suscripción (Futuro)", {
             "fields": ("subscription_tier", "subscription_status", "subscription_expires"),
             "classes": ("collapse",),
+        }),
+        ("Atribución de origen (ErgoReach)", {
+            "classes": ("collapse",),
+            "description": "First-touch. Datos de sistema, no se editan a mano.",
+            "fields": (
+                "attribution_source",
+                "attribution_medium",
+                "attribution_campaign",
+                "attribution_content",
+                "attribution_landing_path",
+                "attribution_referrer_host",
+                "attribution_first_seen_at",
+            ),
         }),
         ("Permisos", {
             "fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions"),

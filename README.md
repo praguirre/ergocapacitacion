@@ -66,6 +66,32 @@ python manage.py runserver
 | `/ai/` | Chatbot Ergobot (SSE) |
 | `/admin/` | Panel de administración |
 
+## Atribución first-touch de registros profesionales
+
+La atribución first-touch permite medir qué registros profesionales llegan
+desde un borrador de ErgoReach mediante parámetros UTM. `CustomUser` conserva
+el primer origen observado en siete campos:
+
+| Campo | Significado |
+|-------|-------------|
+| `attribution_source` | Origen de la visita (`utm_source`). |
+| `attribution_medium` | Medio utilizado (`utm_medium`). |
+| `attribution_campaign` | Campaña de marketing (`utm_campaign`). |
+| `attribution_content` | Borrador concreto que originó la visita (`utm_content` / `short_id`). |
+| `attribution_landing_path` | Primera página vista dentro del sitio. |
+| `attribution_referrer_host` | Solo el host de procedencia; nunca almacena la URL completa. |
+| `attribution_first_seen_at` | Fecha y hora del primer contacto atribuido. |
+
+En C-14 los campos existen, pero todavía no se completan: la captura y la
+escritura first-touch corresponden a C-15/C-16. Un fallo futuro de atribución
+**nunca debe impedir el registro** de un profesional.
+
+Para revertir únicamente esta migración:
+
+```bash
+python manage.py migrate accounts 0003_add_is_visible_in_directory
+```
+
 ## Documentación
 
 La documentación técnica y operativa está centralizada en
