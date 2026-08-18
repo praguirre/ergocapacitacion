@@ -82,9 +82,13 @@ el primer origen observado en siete campos:
 | `attribution_referrer_host` | Solo el host de procedencia; nunca almacena la URL completa. |
 | `attribution_first_seen_at` | Fecha y hora del primer contacto atribuido. |
 
-En C-14 los campos existen, pero todavía no se completan: la captura y la
-escritura first-touch corresponden a C-15/C-16. Un fallo futuro de atribución
-**nunca debe impedir el registro** de un profesional.
+Desde C-15, el middleware captura los UTM first-touch en la sesión desde
+cualquier request GET y conserva el primer conjunto observado durante la
+navegación. La sesión guarda únicamente el host del referer, nunca la URL
+completa. Los datos todavía no se persisten en `CustomUser`: esa escritura
+corresponde a C-16. La captura es *never-break*: cualquier fallo de atribución
+se descarta y **nunca debe tumbar la request ni impedir el registro** de un
+profesional.
 
 Para revertir únicamente esta migración:
 
