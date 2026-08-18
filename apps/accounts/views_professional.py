@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods, require_POST
 
+from .attribution import aplicar_atribucion
 from .forms import ProfessionalRegisterForm, ProfessionalLoginForm
 
 User = get_user_model()
@@ -37,6 +38,7 @@ def register(request):
                 profession=form.cleaned_data["profession"],
                 license_number=form.cleaned_data.get("license_number", ""),
             )
+            aplicar_atribucion(user, request)
 
             # Login automático usando el backend de profesionales (Commit 10)
             login(request, user, backend="apps.accounts.backends.ProfessionalBackend")

@@ -85,10 +85,12 @@ el primer origen observado en siete campos:
 Desde C-15, el middleware captura los UTM first-touch en la sesión desde
 cualquier request GET y conserva el primer conjunto observado durante la
 navegación. La sesión guarda únicamente el host del referer, nunca la URL
-completa. Los datos todavía no se persisten en `CustomUser`: esa escritura
-corresponde a C-16. La captura es *never-break*: cualquier fallo de atribución
-se descarta y **nunca debe tumbar la request ni impedir el registro** de un
-profesional.
+completa. Desde C-16, al registrar un profesional,
+`aplicar_atribucion(user, request)` copia los siete valores al usuario y limpia
+la atribución de la sesión. La captura y persistencia son *never-break*:
+cualquier fallo de atribución se descarta y **nunca debe tumbar la request ni
+impedir el registro** de un profesional. Toda futura vía de alta profesional
+debe llamar al mismo helper después de crear el usuario.
 
 Para revertir únicamente esta migración:
 
